@@ -27,9 +27,13 @@ export default function ProductPageClient({ product, locale }: { product: Produc
         {/* Left: Image Gallery */}
         <div className="flex flex-col space-y-4">
           <div className="aspect-square bg-secondary w-full relative border border-border">
-            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground bg-[#F9F9F9]">
-              <span className="font-serif text-lg">Main Product Image Placeholder</span>
-            </div>
+            <Image 
+              src={product.images[0] || '/placeholder.jpg'} 
+              alt={product.name} 
+              fill 
+              priority 
+              className="object-cover" 
+            />
           </div>
           <div className="grid grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(idx => (

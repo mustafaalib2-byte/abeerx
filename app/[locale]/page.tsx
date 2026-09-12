@@ -70,9 +70,13 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             {featuredProducts.map(product => (
               <div key={product.id} className="group flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
                 <div className="relative aspect-square bg-secondary mb-4 overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground bg-[#F9F9F9]">
-                    <span className="font-serif text-sm">Image Placeholder</span>
-                  </div>
+                  <Image 
+                  src={product.images[0] || '/placeholder.jpg'} 
+                  alt={product.name} 
+                  fill 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
                   {product.isNewArrival && (
                     <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] uppercase tracking-wider px-2 py-1 z-10">
                       New
