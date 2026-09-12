@@ -358,6 +358,7 @@
   .print-img-toggle-wrap { display:inline-flex; align-items:center; gap:6px; font-size:0.82rem; font-weight:600; color:var(--muted); cursor:pointer; user-select:none; padding:6px 10px; border:1px solid var(--border); border-radius:7px; background:var(--paper); }
   .print-img-toggle-wrap input[type=checkbox] { width:15px; height:15px; cursor:pointer; accent-color:var(--brand-pink); }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -1567,6 +1568,20 @@
           <input type="file" id="excel-uploader" style="display:none;" accept=".xlsx, .xls, .csv" onchange="importItemsExcel(event)">
         </label>
       </div>
+
+                  <div class="card" style="border-left: 5px solid #2196F3; margin-top:15px;">
+        <div class="card-title">?? Bulk Upload Product Images (Folder)</div>
+        <p style="font-size:0.9rem; color:var(--muted); margin-bottom:15px; line-height:1.5;">
+          Simply select the folder on your computer that contains all your product images. Ensure the image filenames exactly match the perfume names (e.g., <code>Royal Oud.jpg</code>). The system will automatically compress and assign them!
+        </p>
+        <div style="display:flex; gap:15px; align-items:center;">
+          <label class="btn btn-outline" style="flex:1; cursor:pointer; text-align:center; border-color:#2196F3; color:#2196F3;">
+            ?? Select Image Folder
+            <input type="file" style="display:none;" webkitdirectory directory multiple onchange="uploadBulkImagesFolder(event)">
+          </label>
+        </div>
+        <div id="folder-progress" style="margin-top:10px; font-size:0.85rem; color:#2196F3; font-weight:bold;"></div>
+      </div>
       
       <div class="card" style="border-left: 5px solid #2b78e4;">
         <div class="card-title">ðŸ“Š Professional Ledger Export</div>
@@ -1944,7 +1959,116 @@ function resetLabelPositions() {
 // ==========================================
 // PER-LABEL CUSTOM IMAGE (overrides shop logo for the label being designed right now)
 // ==========================================
-function uploadCustomLabelImage(event) {
+  function populateProductImageDropdown() {
+      const sel = document.getElementById('product-image-select');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">-- Select a Perfume --</option>';
+      items.forEach(i => {
+          sel.innerHTML += '<option value="' + escH(i) + '">' + escH(i) + '</option>';
+      });
+  }
+
+  function uploadProductImage(event) {
+      if (!isAdmin) return toast('Security Block: Must be logged in as Admin.');
+      const itemName = document.getElementById('product-image-select').value;
+      if (!itemName) return toast('Please select a perfume first!');
+      
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      showLoading('Optimizing and uploading product image...');
+      const reader = new FileReader();
+      reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 600; 
+              let width = img.width; let height = img.height;
+              if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
+              canvas.width = width; canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              const base64Str = canvas.toDataURL('image/jpeg', 0.85);
+              
+              dbRef.child('abeerx/productImages/' + itemName).set(base64Str).then(() => {
+                  hideLoading(); toast('Image synced to website!');
+              }).catch(err => { hideLoading(); toast('Error uploading image.'); });
+          }
+          img.onerror = function() { hideLoading(); toast('Invalid image format.'); }
+          img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+  }
+
+      async function uploadBulkImagesFolder(event) {
+      if (!isAdmin) return toast('Security Block: Must be logged in as Admin.');
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      const progressEl = document.getElementById('folder-progress');
+      progressEl.innerText = 'Scanning folder...';
+      showLoading('Processing Folder...');
+
+      const imageFiles = [];
+      for (let i = 0; i < files.length; i++) {
+          if (files[i].type.startsWith('image/')) {
+              imageFiles.push(files[i]);
+          }
+      }
+
+      if (imageFiles.length === 0) {
+          hideLoading();
+          progressEl.innerText = 'No valid images found in folder.';
+          return toast('No images found in the selected folder.');
+      }
+
+      progressEl.innerText = 'Found ' + imageFiles.length + ' images. Compressing & Uploading...';
+      
+      let successCount = 0;
+      let failCount = 0;
+
+      for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          const rawName = file.name.replace(/\.[^/.]+$/, "").trim(); // Remove extension
+          const itemKey = rawName.replace(/\./g, '·').replace(/[#$\[\]\/\n\r]/g, '-').trim();
+
+          try {
+              progressEl.innerText = 'Uploading ' + (i+1) + '/' + imageFiles.length + ': ' + rawName;
+              const base64Str = await resizeAndCompressImageBlob(file);
+              await dbRef.child('abeerx/productImages/' + itemKey).set(base64Str);
+              successCount++;
+          } catch(e) {
+              console.error('Error on', rawName, e);
+              failCount++;
+          }
+      }
+
+      hideLoading();
+      progressEl.innerText = 'Done! Uploaded ' + successCount + ' images.';
+      toast('Bulk upload complete!');
+      setTimeout(refreshAllItemThumbs, 1500);
+      event.target.value = ''; 
+  }
+
+  function resizeAndCompressImageBlob(blob) {
+      return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = function() {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 600; 
+              let width = img.width; let height = img.height;
+              if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
+              canvas.width = width; canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              resolve(canvas.toDataURL('image/jpeg', 0.85));
+          };
+          img.onerror = reject;
+          img.src = URL.createObjectURL(blob);
+      });
+  }
+
+  function uploadCustomLabelImage(event) {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -8051,6 +8175,11 @@ function exportFullLedgerExcel() {
 </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
