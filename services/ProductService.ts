@@ -117,9 +117,9 @@ function getMockProducts(): Product[] {
         { sku: "ABX-001-100", size: "100ml", price: 75.00, stock: 30, isAvailable: true }
       ],
       fragranceFamily: "Oriental",
-      topNotes: ["Saffron", "Pink Pepper"],
-      heartNotes: ["Taif Rose", "Jasmine"],
-      baseNotes: ["Cambodian Oud", "Amber", "Musk"],
+      topNotes: "Saffron, Pink Pepper",
+      heartNotes: "Taif Rose, Jasmine",
+      baseNotes: "Cambodian Oud, Amber, Musk",
       concentration: "Parfum",
       tags: ["oud", "luxury", "bestseller"],
       slug: "oud-royal",
@@ -160,3 +160,4 @@ function getMockProducts(): Product[] {
     }
   ];
 }
+

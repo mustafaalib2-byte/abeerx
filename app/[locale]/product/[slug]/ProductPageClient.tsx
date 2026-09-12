@@ -120,7 +120,7 @@ export default function ProductPageClient({ product, locale }: { product: Produc
           {product.variants && product.variants.length > 0 && (
             <div className="mb-8">
               <span className="block text-sm font-medium tracking-wider uppercase mb-3 text-foreground">
-                {isArabic ? "الحجم" : "Size"}
+                {isArabic ? "Ø§Ù„Ø­Ø¬Ù…" : "Size"}
               </span>
               <div className="flex flex-wrap gap-4">
                 {product.variants.map((variant, idx) => (
@@ -164,24 +164,12 @@ export default function ProductPageClient({ product, locale }: { product: Produc
               }`}
             >
               {!isAvailable 
-                ? (isArabic ? "نفذت الكمية" : "Out of Stock")
-                : (isArabic ? "أضف للسلة" : "Add to Cart")}
+                ? (isArabic ? "Ù†ÙØ°Øª Ø§Ù„ÙƒÙ…ÙŠØ©" : "Out of Stock")
+                : (isArabic ? "Ø£Ø¶Ù Ù„Ù„Ø³Ù„Ø©" : "Add to Cart")}
             </button>
           </div>
-
-          {/* Accordion Info */}
-          <div className="border-t border-border pt-8 space-y-6">
-            <div>
-              <h3 className="text-sm font-medium tracking-wider uppercase mb-2 text-foreground">{isArabic ? "المكونات العطرية" : "Fragrance Notes"}</h3>
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">Top:</span> {product.topNotes?.join(', ')}<br/>
-                <span className="font-medium text-foreground">Heart:</span> {product.heartNotes?.join(', ')}<br/>
-                <span className="font-medium text-foreground">Base:</span> {product.baseNotes?.join(', ')}
-              </p>
-            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
 }
