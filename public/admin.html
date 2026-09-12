@@ -8147,6 +8147,115 @@ function importItemsExcel(event) {
   reader.readAsArrayBuffer(file);
 }
 
+// Load saved Google Sheet URL on startup
+db.ref('abeerx/settings/googleSheetUrl').on('value', snap => {
+    const url = snap.val();
+    if(url) {
+        const el = document.getElementById('google-sheet-url');
+        if(el && !el.value) el.value = url;
+    }
+});
+
+async function syncGoogleSheets() {
+    if (!isAdmin) return toast('Security Block: Admin login required.');
+    const url = document.getElementById('google-sheet-url').value.trim();
+    if (!url || !url.includes('google.com')) return toast('Please enter a valid Google Sheets published CSV URL.');
+    
+    showLoading('Fetching live data from Google Sheets...');
+    
+    // Save URL to settings so they don't have to paste it next time
+    dbRef.child('settings/googleSheetUrl').set(url);
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const arrayBuffer = await response.arrayBuffer();
+        
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+        
+        if(rows.length < 2) { hideLoading(); toast('Google Sheet is empty.'); return; }
+
+        let headerRowIdx = -1;
+        for(let i=0; i<Math.min(5, rows.length); i++) {
+          const rStr = (rows[i]||[]).map(c=>String(c).toLowerCase());
+          if(rStr.some(c=>c.includes('item') || c.includes('product') || c.includes('perfume'))) { headerRowIdx = i; break; }
+        }
+        if(headerRowIdx === -1) { hideLoading(); toast('Could not find header row in Google Sheet.'); return; }
+        
+        const headers = (rows[headerRowIdx]||[]).map(c=>String(c).toLowerCase());
+        const itemIdx = headers.findIndex(h => h.includes('item') || h.includes('product') || h.includes('perfume') || h.includes('name'));
+        const rateIdx = headers.findIndex(h => h.includes('rate') || h.includes('price') || h.includes('kd'));
+        const skuIdx = headers.findIndex(h => h.includes('sku') || h.includes('barcode'));
+        const brandIdx = headers.findIndex(h => h.includes('brand'));
+        const genderIdx = headers.findIndex(h => h.includes('gender') || h.includes('men/women'));
+        const concIdx = headers.findIndex(h => h.includes('edp'));
+        const sizeIdx = headers.findIndex(h => h.includes('size') || h.includes('ml'));
+        const catIdx = headers.findIndex(h => h.includes('category'));
+        const famIdx = headers.findIndex(h => h.includes('family') || h.includes('scent'));
+        const accordIdx = headers.findIndex(h => h.includes('accord'));
+        const topIdx = headers.findIndex(h => h.includes('top'));
+        const heartIdx = headers.findIndex(h => h.includes('heart') || h.includes('middle'));
+        const baseIdx = headers.findIndex(h => h.includes('base'));
+        const occIdx = headers.findIndex(h => h.includes('occasion'));
+        const originIdx = headers.findIndex(h => h.includes('origin') || h.includes('country'));
+        const descIdx = headers.findIndex(h => h.includes('desc'));
+
+        if (itemIdx === -1 || rateIdx === -1) { hideLoading(); toast('Sheet must have "Item" and "Price" columns.'); return; }
+
+        let newItems = []; let newItemRates = {}; let newItemDetails = {}; 
+        
+        for (let i = headerRowIdx + 1; i < rows.length; i++) {
+          const row = rows[i]; if (!row || row.length === 0) continue;
+          let originalName = String(row[itemIdx] || '').trim(); 
+          let itemKey = originalName.replace(/\./g, '·').replace(/[#$\[\]\/\n\r]/g, '-').trim(); 
+          
+          if (!itemKey) continue; 
+          
+          let rawRate = row[rateIdx]; let rate = parseFloat(rawRate); if (isNaN(rate)) rate = 0.00;
+          
+          let excelSku = skuIdx !== -1 && row[skuIdx] ? String(row[skuIdx]).trim() : '';
+          let existingSku = (itemDetails[itemKey] && itemDetails[itemKey].sku) ? itemDetails[itemKey].sku : '';
+          let sku = existingSku || excelSku;
+          
+          let brand = brandIdx !== -1 && row[brandIdx] ? String(row[brandIdx]).trim() : '';
+          let gender = genderIdx !== -1 && row[genderIdx] ? String(row[genderIdx]).trim() : 'Unisex';
+          let concentration = concIdx !== -1 && row[concIdx] ? String(row[concIdx]).trim() : 'EDP';
+          let size = sizeIdx !== -1 && row[sizeIdx] ? String(row[sizeIdx]).trim() : '100ml';
+          let category = catIdx !== -1 && row[catIdx] ? String(row[catIdx]).trim() : 'Perfume';
+          let scentFamily = famIdx !== -1 && row[famIdx] ? String(row[famIdx]).trim() : 'Floral';
+          let mainAccord = accordIdx !== -1 && row[accordIdx] ? String(row[accordIdx]).trim() : '';
+          let topNotes = topIdx !== -1 && row[topIdx] ? String(row[topIdx]).trim() : '';
+          let heartNotes = heartIdx !== -1 && row[heartIdx] ? String(row[heartIdx]).trim() : '';
+          let baseNotes = baseIdx !== -1 && row[baseIdx] ? String(row[baseIdx]).trim() : '';
+          let occasion = occIdx !== -1 && row[occIdx] ? String(row[occIdx]).trim() : '';
+          let origin = originIdx !== -1 && row[originIdx] ? String(row[originIdx]).trim() : '';
+          let description = descIdx !== -1 && row[descIdx] ? String(row[descIdx]).trim() : '';
+
+          let exactImageName = originalName + '.jpg';
+          
+          if (!newItems.includes(itemKey)) { newItems.push(itemKey); }
+          newItemRates[itemKey] = rate;
+          newItemDetails[itemKey] = { 
+              name: itemKey, price: rate, sku: sku, brand: brand, gender: gender, 
+              concentration: concentration, size: size, category: category, scentFamily: scentFamily, mainAccord: mainAccord,
+              topNotes: topNotes, heartNotes: heartNotes, baseNotes: baseNotes, occasion: occasion, origin: origin,
+              description: description, imageName: exactImageName 
+          };
+        }
+      
+        await dbRef.update({ items: newItems, itemRates: newItemRates, itemDetails: newItemDetails });
+        hideLoading(); 
+        toast('Google Sheets Synced Successfully!'); 
+    } catch(err) { 
+        hideLoading(); 
+        console.error("Google Sheets Sync Error:", err); 
+        toast('Error reading Google Sheet. Ensure it is published as CSV.'); 
+    }
+}
+
 function exportFullLedgerExcel() {
   if (!isAdmin) return toast('âŒ Security Block: Admin login required to export data.');
   showLoading('Generating Accountancy Excel...');
@@ -8175,6 +8284,7 @@ function exportFullLedgerExcel() {
 </script>
 </body>
 </html>
+
 
 
 
