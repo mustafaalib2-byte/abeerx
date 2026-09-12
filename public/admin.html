@@ -2035,7 +2035,7 @@ function resetLabelPositions() {
           try {
               progressEl.innerText = 'Uploading ' + (i+1) + '/' + imageFiles.length + ': ' + rawName;
               const base64Str = await resizeAndCompressImageBlob(file);
-              await dbRef.child('abeerx/productImages/' + itemKey).set(base64Str);
+              await dbRef.child('productImages/' + itemKey).set(base64Str);
               successCount++;
           } catch(e) {
               console.error('Error on', rawName, e);
@@ -8175,6 +8175,7 @@ function exportFullLedgerExcel() {
 </script>
 </body>
 </html>
+
 
 
 
