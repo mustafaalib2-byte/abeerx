@@ -62,6 +62,60 @@ export default function ProductPageClient({ product, locale }: { product: Produc
             {product.description}
           </p>
 
+          {/* Fragrance Profile Grid */}
+          <div className="grid grid-cols-2 gap-4 mb-8 bg-secondary p-6 border border-border">
+            {product.gender && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Gender</span>
+                <span className="text-sm font-medium">{product.gender}</span>
+              </div>
+            )}
+            {product.concentration && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Concentration</span>
+                <span className="text-sm font-medium">{product.concentration}</span>
+              </div>
+            )}
+            {product.fragranceFamily && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Scent Family</span>
+                <span className="text-sm font-medium">{product.fragranceFamily}</span>
+              </div>
+            )}
+            {product.origin && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Origin</span>
+                <span className="text-sm font-medium">{product.origin}</span>
+              </div>
+            )}
+          </div>
+
+          {(product.topNotes || product.heartNotes || product.baseNotes) && (
+            <div className="mb-8 border-t border-border pt-6">
+              <h3 className="text-lg font-serif mb-4 uppercase tracking-widest">Fragrance Notes</h3>
+              <div className="space-y-3">
+                {product.topNotes && (
+                  <div>
+                    <span className="font-semibold text-sm uppercase tracking-wider">Top: </span>
+                    <span className="text-sm text-muted-foreground">{product.topNotes}</span>
+                  </div>
+                )}
+                {product.heartNotes && (
+                  <div>
+                    <span className="font-semibold text-sm uppercase tracking-wider">Heart: </span>
+                    <span className="text-sm text-muted-foreground">{product.heartNotes}</span>
+                  </div>
+                )}
+                {product.baseNotes && (
+                  <div>
+                    <span className="font-semibold text-sm uppercase tracking-wider">Base: </span>
+                    <span className="text-sm text-muted-foreground">{product.baseNotes}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Variants */}
           {product.variants && product.variants.length > 0 && (
             <div className="mb-8">

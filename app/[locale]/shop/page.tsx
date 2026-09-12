@@ -24,7 +24,7 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
           <div>
             <h3 className="font-medium mb-3 text-sm tracking-wider uppercase text-foreground">{isArabic ? "الماركة" : "Brand"}</h3>
             <div className="space-y-2">
-              {['Faiz Perfumes', 'Dior', 'Chanel', 'Tom Ford'].map(brand => (
+              {Array.from(new Set(products.map(p => p.brand))).filter(Boolean).sort().map(brand => (
                 <label key={brand} className="flex items-center space-x-2 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
                   <input type="checkbox" className="rounded border-border text-ring focus:ring-ring" />
                   <span>{brand}</span>
@@ -36,7 +36,7 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
           <div>
             <h3 className="font-medium mb-3 text-sm tracking-wider uppercase text-foreground">{isArabic ? "العائلة العطرية" : "Fragrance Family"}</h3>
             <div className="space-y-2">
-              {['Oriental', 'Floral', 'Woody', 'Fresh'].map(family => (
+              {Array.from(new Set(products.map(p => p.fragranceFamily))).filter(Boolean).sort().map(family => (
                 <label key={family} className="flex items-center space-x-2 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
                   <input type="checkbox" className="rounded border-border text-ring focus:ring-ring" />
                   <span>{family}</span>
