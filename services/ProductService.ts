@@ -1,6 +1,14 @@
 import { Product } from "@/types/product";
 import { db } from "@/firebase/clientApp";
-import { ref, get, child } from "firebase/database";
+import { ref, get, child, set } from "firebase/database";
+
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
+  }
+  return hash;
+}
 
 export const ProductService = {
   async getAllProducts(): Promise<Product[]> {
@@ -27,19 +35,34 @@ export const ProductService = {
 
       if (detailsSnap && detailsSnap.exists() && ratesSnap.exists()) {
         const details = detailsSnap.val();
-        const rates = ratesSnap.val();
-        const images = imagesSnap.exists() ? imagesSnap.val() : {};
+          const rates = ratesSnap.val();
+          const images = imagesSnap.exists() ? imagesSnap.val() : {};
+  
+          const todayStr = new Date().toISOString().split('T')[0];
 
-        return Object.keys(details).map(key => {
-          const item = details[key];
-          const price = rates[key] || 0;
-          
-          let imageUrl = "/placeholder.jpg";
+          return Object.keys(details).map(key => {
+            const item = details[key];
+            const basePrice = rates[key] || 0;
+            
+            const isDiscounted = Math.abs(hashString(todayStr + key)) % 2 === 0;
+            let finalPrice = basePrice;
+            let finalSalePrice = null;
+            let discountPercentage = 0;
+            
+            if (isDiscounted && basePrice > 0) {
+              finalPrice = basePrice * 1.25; 
+              finalSalePrice = basePrice; 
+              discountPercentage = 20; 
+            }
+            
+            let imageUrl = "/placeholder.jpg";
           const rawImage = images[key];
           if (rawImage) {
              if (typeof rawImage === 'string') imageUrl = rawImage;
              else if (rawImage.images && Array.isArray(rawImage.images)) imageUrl = rawImage.images[0];
           }
+
+          const price = basePrice;
 
           return {
             id: key, 
@@ -50,7 +73,9 @@ export const ProductService = {
             gender: item.gender || 'Unisex',
             shortDescription: item.concentration || 'EDP',
             description: item.description || '',
-            price: price,
+            price: finalPrice,
+            salePrice: finalSalePrice,
+            discountPercentage: discountPercentage,
             currency: 'KWD',
             totalStock: 99, 
             isAvailable: true,

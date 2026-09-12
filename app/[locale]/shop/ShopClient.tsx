@@ -216,6 +216,11 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500" 
                   />
+                  {product.discountPercentage ? (
+                    <span className="absolute top-2 left-2 bg-red-600 text-white text-[10px] uppercase font-bold tracking-wider px-2 py-1 z-10">
+                      -{product.discountPercentage}% OFF
+                    </span>
+                  ) : null}
                 </div>
                 <div className="flex-grow flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{product.brand}</span>
@@ -223,7 +228,16 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                     {product.name}
                   </Link>
                   <div className="mt-auto flex items-center justify-between text-foreground">
-                    <span className="font-medium">{product.price.toFixed(2)} {product.currency}</span>
+                    <div>
+                      {product.salePrice ? (
+                        <>
+                          <span className="font-medium text-red-600 mr-2">{product.salePrice.toFixed(2)} {product.currency}</span>
+                          <span className="text-sm text-muted-foreground line-through">{product.price.toFixed(2)}</span>
+                        </>
+                      ) : (
+                        <span className="font-medium">{product.price.toFixed(2)} {product.currency}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

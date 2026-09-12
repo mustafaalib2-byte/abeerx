@@ -54,8 +54,18 @@ export default function ProductPageClient({ product, locale }: { product: Produc
           </span>
           <h1 className="text-4xl font-serif text-foreground mb-4">{product.name}</h1>
           
-          <div className="text-2xl font-medium text-foreground mb-6">
-            {price.toFixed(2)} {product.currency}
+          <div className="text-2xl font-medium mb-6 flex items-center gap-4">
+            {product.salePrice ? (
+              <>
+                <span className="text-red-600">{product.salePrice.toFixed(2)} {product.currency}</span>
+                <span className="text-lg text-muted-foreground line-through">{product.price.toFixed(2)} {product.currency}</span>
+                <span className="text-sm bg-red-600 text-white px-2 py-1 uppercase tracking-wider font-bold">
+                  -{product.discountPercentage}% OFF
+                </span>
+              </>
+            ) : (
+              <span className="text-foreground">{product.price.toFixed(2)} {product.currency}</span>
+            )}
           </div>
 
           <p className="text-muted-foreground mb-8 leading-relaxed">
