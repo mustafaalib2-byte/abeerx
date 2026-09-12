@@ -1,3 +1,4 @@
+export const revalidate = 60;
 import { ProductService } from "@/services/ProductService";
 import Link from "next/link";
 import Image from "next/image";

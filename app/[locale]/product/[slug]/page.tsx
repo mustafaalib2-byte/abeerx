@@ -1,3 +1,4 @@
+export const revalidate = 60;
 import { ProductService } from "@/services/ProductService";
 import { notFound } from "next/navigation";
 import ProductPageClient from "./ProductPageClient";
