@@ -38,7 +38,7 @@ export default async function BrandsPage({ params }: { params: Promise<{ locale:
             <ul className="space-y-3">
               {groupedBrands[letter].map(brand => (
                 <li key={brand}>
-                  <Link href={`/${locale}/shop`} className="text-lg text-muted-foreground hover:text-ring transition-colors block">
+                  <Link href={`/${locale}/shop?brand=${encodeURIComponent(brand)}`} className="text-lg text-muted-foreground hover:text-ring transition-colors block">
                     {brand}
                   </Link>
                 </li>
