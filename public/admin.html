@@ -1567,6 +1567,15 @@
           ğŸ“ Choose Excel File to Overwrite Database
           <input type="file" id="excel-uploader" style="display:none;" accept=".xlsx, .xls, .csv" onchange="importItemsExcel(event)">
         </label>
+<div style="margin-top:20px; padding-top:20px; border-top:1px dashed var(--border);">
+<div style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">Or Auto-Sync from Google Sheets</div>
+<div style="font-size:0.8rem; color:var(--muted); margin-bottom:10px;">Paste your Published CSV Link here (File -> Share -> Publish to web -> CSV):</div>
+<div style="display:flex; gap:10px;">
+<input type="text" id="google-sheet-url" class="input" placeholder="https://docs.google.com/spreadsheets/.../pub?output=csv" style="flex:1;">
+<button class="btn" style="background:#10b981; color:white; width:auto; padding:0 20px;" onclick="syncGoogleSheets()">ğŸ”„ Sync</button>
+</div>
+</div>
+
       </div>
 
                   <div class="card" style="border-left: 5px solid #2196F3; margin-top:15px;">
@@ -2030,7 +2039,7 @@ function resetLabelPositions() {
       for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
           const rawName = file.name.replace(/\.[^/.]+$/, "").trim(); // Remove extension
-          const itemKey = rawName.replace(/\./g, '·').replace(/[#$\[\]\/\n\r]/g, '-').trim();
+          const itemKey = rawName.replace(/\./g, 'ï¿½').replace(/[#$\[\]\/\n\r]/g, '-').trim();
 
           try {
               progressEl.innerText = 'Uploading ' + (i+1) + '/' + imageFiles.length + ': ' + rawName;
@@ -8210,7 +8219,7 @@ async function syncGoogleSheets() {
         for (let i = headerRowIdx + 1; i < rows.length; i++) {
           const row = rows[i]; if (!row || row.length === 0) continue;
           let originalName = String(row[itemIdx] || '').trim(); 
-          let itemKey = originalName.replace(/\./g, '·').replace(/[#$\[\]\/\n\r]/g, '-').trim(); 
+          let itemKey = originalName.replace(/\./g, 'ï¿½').replace(/[#$\[\]\/\n\r]/g, '-').trim(); 
           
           if (!itemKey) continue; 
           
