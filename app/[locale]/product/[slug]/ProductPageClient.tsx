@@ -63,7 +63,7 @@ export default function ProductPageClient({ product, locale }: { product: Produc
           </p>
 
           {/* Fragrance Profile Grid */}
-          <div className="grid grid-cols-2 gap-4 mb-8 bg-secondary p-6 border border-border">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 bg-secondary p-6 border border-border">
             {product.gender && (
               <div>
                 <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Gender</span>
@@ -80,6 +80,18 @@ export default function ProductPageClient({ product, locale }: { product: Produc
               <div>
                 <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Scent Family</span>
                 <span className="text-sm font-medium">{product.fragranceFamily}</span>
+              </div>
+            )}
+            {product.mainAccord && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Main Accord</span>
+                <span className="text-sm font-medium">{product.mainAccord}</span>
+              </div>
+            )}
+            {product.occasion && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Occasion</span>
+                <span className="text-sm font-medium">{product.occasion}</span>
               </div>
             )}
             {product.origin && (
@@ -120,7 +132,7 @@ export default function ProductPageClient({ product, locale }: { product: Produc
           {product.variants && product.variants.length > 0 && (
             <div className="mb-8">
               <span className="block text-sm font-medium tracking-wider uppercase mb-3 text-foreground">
-                {isArabic ? "Ø§Ù„Ø­Ø¬Ù…" : "Size"}
+                {isArabic ? "الحجم" : "Size"}
               </span>
               <div className="flex flex-wrap gap-4">
                 {product.variants.map((variant, idx) => (
@@ -164,12 +176,13 @@ export default function ProductPageClient({ product, locale }: { product: Produc
               }`}
             >
               {!isAvailable 
-                ? (isArabic ? "Ù†ÙØ°Øª Ø§Ù„ÙƒÙ…ÙŠØ©" : "Out of Stock")
-                : (isArabic ? "Ø£Ø¶Ù Ù„Ù„Ø³Ù„Ø©" : "Add to Cart")}
+                ? (isArabic ? "نفذت الكمية" : "Out of Stock")
+                : (isArabic ? "أضف للسلة" : "Add to Cart")}
             </button>
           </div>
-          </div>
+
         </div>
       </div>
-    );
+    </div>
+  );
 }
