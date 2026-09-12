@@ -28,10 +28,14 @@ export interface Product {
   videoUrl?: string;
   variants: ProductVariant[];
   fragranceFamily: string;
-  topNotes?: string[];
-  heartNotes?: string[];
-  baseNotes?: string[];
-  concentration?: 'EDP' | 'EDT' | 'Parfum' | 'Cologne' | 'Oil';
+  topNotes?: string;
+  heartNotes?: string;
+  baseNotes?: string;
+  mainAccord?: string;
+  occasion?: string;
+  origin?: string;
+  size?: string;
+      concentration?: 'EDP' | 'EDT' | 'Parfum' | 'Cologne' | 'Oil';
   tags: string[];
   slug: string;
   seoTitle?: string;
@@ -42,3 +46,4 @@ export interface Product {
   createdAt: string; // ISO Date String
   updatedAt: string;
 }
+
