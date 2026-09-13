@@ -170,6 +170,8 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
     let sorted = [...filtered];
     if (sortBy === 'price-low') sorted.sort((a, b) => a.price - b.price);
     if (sortBy === 'price-high') sorted.sort((a, b) => b.price - a.price);
+      if (sortBy === 'alpha-asc') sorted.sort((a, b) => a.name.localeCompare(b.name));
+      if (sortBy === 'alpha-desc') sorted.sort((a, b) => b.name.localeCompare(a.name));
     return sorted;
   }, [baseProducts, selectedFilters, currentMin, currentMax, urlQuery, sortBy]);
 
@@ -197,6 +199,36 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
 
   return (
     <div className="container mx-auto px-4 py-12 flex flex-col md:flex-row gap-8">
+      
+      {/* Mobile Sort Modal */}
+      {isMobileSortOpen && (
+        <div className="fixed inset-0 z-[100] md:hidden flex flex-col bg-background">
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <h2 className="font-serif text-xl">{isArabic ? "الترتيب" : "Sort By"}</h2>
+            <button onClick={() => setIsMobileSortOpen(false)} className="p-2 text-foreground">
+               <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <button onClick={() => { setSortBy('recommended'); setIsMobileSortOpen(false); }} className={`w-full text-left p-4 border ${sortBy === 'recommended' ? 'border-ring text-ring' : 'border-border'}`}>
+              {isArabic ? "موصى به" : "Recommended"}
+            </button>
+            <button onClick={() => { setSortBy('price-low'); setIsMobileSortOpen(false); }} className={`w-full text-left p-4 border ${sortBy === 'price-low' ? 'border-ring text-ring' : 'border-border'}`}>
+              {isArabic ? "السعر: من الأقل للأعلى" : "Price: Low to High"}
+            </button>
+            <button onClick={() => { setSortBy('price-high'); setIsMobileSortOpen(false); }} className={`w-full text-left p-4 border ${sortBy === 'price-high' ? 'border-ring text-ring' : 'border-border'}`}>
+              {isArabic ? "السعر: من الأعلى للأقل" : "Price: High to Low"}
+            </button>
+            <button onClick={() => { setSortBy('alpha-asc'); setIsMobileSortOpen(false); }} className={`w-full text-left p-4 border ${sortBy === 'alpha-asc' ? 'border-ring text-ring' : 'border-border'}`}>
+              {isArabic ? "أبجديًا: أ - ي" : "Alphabetical: A to Z"}
+            </button>
+            <button onClick={() => { setSortBy('alpha-desc'); setIsMobileSortOpen(false); }} className={`w-full text-left p-4 border ${sortBy === 'alpha-desc' ? 'border-ring text-ring' : 'border-border'}`}>
+              {isArabic ? "أبجديًا: ي - أ" : "Alphabetical: Z to A"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <aside className={`
         fixed inset-0 z-[100] bg-background flex flex-col transition-transform duration-300 md:relative md:z-auto md:translate-y-0 md:w-64 md:flex-shrink-0 md:block
         ${isMobileFiltersOpen ? 'translate-y-0' : 'translate-y-full'}
@@ -303,6 +335,8 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                 <option value="recommended">{isArabic ? "موصى به" : "Recommended"}</option>
                 <option value="price-low">{isArabic ? "السعر: من الأقل للأعلى" : "Price: Low to High"}</option>
                 <option value="price-high">{isArabic ? "السعر: من الأعلى للأقل" : "Price: High to Low"}</option>
+                <option value="alpha-asc">{isArabic ? "أبجديًا: أ - ي" : "Alphabetical: A to Z"}</option>
+                <option value="alpha-desc">{isArabic ? "أبجديًا: ي - أ" : "Alphabetical: Z to A"}</option>
               </select>
             </div>
           </div>
