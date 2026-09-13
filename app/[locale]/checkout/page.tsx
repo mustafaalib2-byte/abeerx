@@ -17,6 +17,44 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('KNET'); // KNET, Visa/Mastercard, Cash on Delivery
+  const [couponCode, setCouponCode] = useState('');
+  const [couponError, setCouponError] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{code: string, type: string, value: number, min: number} | null>(null);
+
+  const applyCoupon = async () => {
+    setCouponError('');
+    if (!couponCode) return;
+    try {
+      const code = couponCode.toUpperCase().replace(/\s+/g, '');
+      const snap = await fetch(`https://abeerx-a9260-default-rtdb.firebaseio.com/coupons/${code}.json`).then(r => r.json());
+      if (!snap || !snap.active) {
+        setCouponError(isArabic ? 'كوبون غير صالح أو منتهي الصلاحية' : 'Invalid or expired coupon');
+        setAppliedCoupon(null);
+        return;
+      }
+      if (snap.min_order_value && cartTotal < snap.min_order_value) {
+        setCouponError(isArabic ? `يجب أن يكون الطلب أكثر من ${snap.min_order_value} د.ك لاستخدام هذا الكوبون` : `Minimum order ${snap.min_order_value} KWD required`);
+        setAppliedCoupon(null);
+        return;
+      }
+      setAppliedCoupon({ code, type: snap.type, value: snap.value, min: snap.min_order_value || 0 });
+      setCouponCode('');
+    } catch (e) {
+      setCouponError('Error verifying coupon');
+    }
+  };
+
+  const calculateFinalTotal = () => {
+    if (!appliedCoupon) return cartTotal;
+    if (cartTotal < appliedCoupon.min) return cartTotal; // Security check
+    if (appliedCoupon.type === 'percentage') {
+      return Math.max(0, cartTotal - (cartTotal * (appliedCoupon.value / 100)));
+    }
+    return Math.max(0, cartTotal - appliedCoupon.value);
+  };
+  
+  const finalTotal = calculateFinalTotal();
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,7 +78,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
         date: new Date().toISOString().split('T')[0],
         status: 'Pending',
         paymentMethod: paymentMethod === 'Cash on Delivery' ? 'Cash on Delivery' : 'Online Payment',
-        total: cartTotal,
+        total: finalTotal, discount: appliedCoupon ? { code: appliedCoupon.code, value: cartTotal - finalTotal } : null, subtotal: cartTotal,
         customer: {
           name: formData.name,
           mobile: formData.mobile,
