@@ -44,16 +44,22 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
       {/* 2. Featured Categories */}
       <section className="py-20 px-4 container mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-          {['Women', 'Men', 'Unisex', 'Oud'].map((category) => (
-            <Link href={`/${locale}/category/${category.toLowerCase()}`} key={category} className="group cursor-pointer">
-              <div className="aspect-square bg-secondary flex items-center justify-center relative overflow-hidden mb-4 border border-border">
-                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-300 z-10" />
-                <span className="text-xl font-serif z-20 relative text-foreground">{category}</span>
-              </div>
-            </Link>
-          ))}
-        </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            {['Women', 'Men', 'Unisex', 'Oud'].map((category) => {
+              const href = category === 'Oud' 
+                ? `/${locale}/shop?family=Oud` 
+                : `/${locale}/shop?gender=${category.toLowerCase()}`;
+                
+              return (
+                <Link href={href} key={category} className="group cursor-pointer">
+                  <div className="aspect-square bg-secondary flex items-center justify-center relative overflow-hidden mb-4 border border-border group-hover:border-ring transition-colors">
+                    <div className="absolute inset-0 bg-foreground/5 group-hover:bg-foreground/10 transition-all duration-300 z-10" />
+                    <span className="text-xl font-serif z-20 relative text-foreground">{category}</span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
       </section>
 
       {/* 2.5. Shop By Notes */}
