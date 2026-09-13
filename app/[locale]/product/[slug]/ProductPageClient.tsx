@@ -1,6 +1,6 @@
 "use client";
-import Image from "next/image";
 
+import Image from "next/image";
 import { useState } from "react";
 import { Product } from "@/types/product";
 import { useCart } from "@/features/cart/CartContext";
@@ -75,6 +75,59 @@ export default function ProductPageClient({ product, locale }: { product: Produc
             )}
           </div>
 
+          {/* Variants */}
+          {product.variants && product.variants.length > 0 && (
+            <div className="mb-8">
+              <span className="block text-sm font-medium tracking-wider uppercase mb-3 text-foreground">
+                {isArabic ? "الحجم" : "Size"}
+              </span>
+              <div className="flex flex-wrap gap-4">
+                {product.variants.map((variant, idx) => (
+                  <button 
+                    key={variant.sku}
+                    onClick={() => setSelectedVariantIndex(idx)}
+                    className={`px-6 py-2 text-sm tracking-wider uppercase transition-colors border ${
+                      selectedVariantIndex === idx 
+                        ? 'border-foreground bg-foreground text-background' 
+                        : 'border-border text-foreground hover:border-foreground'
+                    }`}
+                  >
+                    {variant.size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quantity & Add to Cart */}
+          <div className="flex items-center gap-4 mb-12">
+            <div className="flex items-center border border-border">
+              <button 
+                className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              >-</button>
+              <span className="px-4 py-3 min-w-[3rem] text-center text-foreground">{quantity}</span>
+              <button 
+                className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
+                onClick={() => setQuantity(quantity + 1)}
+              >+</button>
+            </div>
+            
+            <button 
+              onClick={handleAddToCart}
+              disabled={!isAvailable}
+              className={`flex-grow py-4 px-8 text-sm tracking-widest uppercase font-bold transition-colors ${
+                isAvailable 
+                  ? 'bg-ring text-white hover:bg-black' 
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
+              }`}
+            >
+              {!isAvailable 
+                ? (isArabic ? "نفدت الكمية" : "Out of Stock")
+                : (isArabic ? "أضف للسلة" : "Add to Cart")}
+            </button>
+          </div>
+
           <p className="text-muted-foreground mb-8 leading-relaxed">
             {product.description}
           </p>
@@ -144,59 +197,6 @@ export default function ProductPageClient({ product, locale }: { product: Produc
               </div>
             </div>
           )}
-
-          {/* Variants */}
-          {product.variants && product.variants.length > 0 && (
-            <div className="mb-8">
-              <span className="block text-sm font-medium tracking-wider uppercase mb-3 text-foreground">
-                {isArabic ? "الحجم" : "Size"}
-              </span>
-              <div className="flex flex-wrap gap-4">
-                {product.variants.map((variant, idx) => (
-                  <button 
-                    key={variant.sku}
-                    onClick={() => setSelectedVariantIndex(idx)}
-                    className={`px-6 py-2 text-sm tracking-wider uppercase transition-colors border ${
-                      selectedVariantIndex === idx 
-                        ? 'border-foreground bg-foreground text-background' 
-                        : 'border-border text-foreground hover:border-foreground'
-                    }`}
-                  >
-                    {variant.size}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Quantity & Add to Cart */}
-          <div className="flex items-center gap-4 mb-12">
-            <div className="flex items-center border border-border">
-              <button 
-                className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >-</button>
-              <span className="px-4 py-3 min-w-[3rem] text-center text-foreground">{quantity}</span>
-              <button 
-                className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
-                onClick={() => setQuantity(quantity + 1)}
-              >+</button>
-            </div>
-            
-            <button 
-              onClick={handleAddToCart}
-              disabled={!isAvailable}
-              className={`flex-grow py-4 px-8 text-sm tracking-widest uppercase font-bold transition-colors ${
-                isAvailable 
-                  ? 'bg-ring text-white hover:bg-black' 
-                  : 'bg-muted text-muted-foreground cursor-not-allowed'
-              }`}
-            >
-              {!isAvailable 
-                ? (isArabic ? "نفذت الكمية" : "Out of Stock")
-                : (isArabic ? "أضف للسلة" : "Add to Cart")}
-            </button>
-          </div>
 
         </div>
       </div>
