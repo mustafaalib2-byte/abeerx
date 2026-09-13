@@ -79,7 +79,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <Link href={`/${locale}/shop?family=${encodeURIComponent(note.name)}`} key={note.name} className="group cursor-pointer flex flex-col items-center">
               <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-secondary relative overflow-hidden mb-4 border-4 border-transparent group-hover:border-ring transition-colors shadow-lg">
                 <Image 
-                  src="/placeholder.jpg" 
+                  src={`/images/notes/${note.label.toLowerCase()}.jpg`}
                   alt={note.name} 
                   fill 
                   sizes="(max-width: 768px) 192px, 192px"
