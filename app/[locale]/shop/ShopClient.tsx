@@ -101,15 +101,9 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
     return val.split(',').map(v => v.trim()).filter(Boolean);
   };
 
-  const filteredProducts = useMemo(() => {
-    return baseProducts.filter(p => {
+    const filteredProducts = useMemo(() => {
+    const filtered = baseProducts.filter(p => {
       if (p.price < currentMin || p.price > currentMax) return false;
-
-      if (urlQuery) {
-        const query = urlQuery.toLowerCase();
-        const searchTarget = `${p.name} ${p.brand || ''} ${p.description || ''}`.toLowerCase();
-        if (!searchTarget.includes(query)) return false;
-      }
 
       for (const key of Object.keys(selectedFilters)) {
         const selectedValues = selectedFilters[key];
@@ -123,7 +117,36 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
       }
       return true;
     });
-  }, [baseProducts, selectedFilters, currentMin, currentMax]);
+    
+    // Now apply fuzzy search scoring and sort if there's a query
+    if (urlQuery) {
+      const query = urlQuery.toLowerCase();
+      const scored = filtered.map(p => {
+        let score = 0;
+        const searchTarget = `${p.name} ${p.brand || ''} ${p.description || ''}`.toLowerCase();
+        
+        if (searchTarget.includes(query)) {
+          score += 100;
+        } else {
+           const words = query.split(' ').filter(Boolean);
+           let wordMatches = 0;
+           words.forEach(w => { if (searchTarget.includes(w)) wordMatches += 1; });
+           score += (wordMatches / Math.max(words.length, 1)) * 50;
+
+           let charMatches = 0;
+           for (const char of query) {
+             if (searchTarget.includes(char)) charMatches += 1;
+           }
+           score += (charMatches / Math.max(query.length, 1)) * 10;
+        }
+        return { product: p, score };
+      });
+      
+      return scored.sort((a, b) => b.score - a.score).map(s => s.product);
+    }
+    
+    return filtered;
+  }, [baseProducts, selectedFilters, currentMin, currentMax, urlQuery]);
 
   const filterData = useMemo(() => {
     const data: Record<string, { val: string, available: boolean }[]> = {};
