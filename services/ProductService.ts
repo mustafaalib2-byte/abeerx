@@ -1,5 +1,7 @@
 import { Product } from "@/types/product";
 import { db } from "@/firebase/clientApp";
+import fs from 'fs';
+import path from 'path';
 import { ref, get, child, set } from "firebase/database";
 
 function hashString(str: string): number {
@@ -62,6 +64,20 @@ export const ProductService = {
              else if (rawImage.images && Array.isArray(rawImage.images)) imageUrl = rawImage.images[0];
           }
 
+          const slug = key.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          
+          let dynamicImages = [];
+          try {
+            for (let i = 1; i <= 5; i++) {
+              const imgPath = path.join(process.cwd(), 'public', 'images', 'products', `${slug}-${i}.jpg`);
+              if (fs.existsSync(imgPath)) {
+                dynamicImages.push(`/images/products/${slug}-${i}.jpg`);
+              }
+            }
+          } catch(e) {}
+          
+          const finalImages = dynamicImages.length > 0 ? dynamicImages : [imageUrl];
+
           const price = basePrice;
 
           return {
@@ -79,7 +95,7 @@ export const ProductService = {
             currency: 'KWD',
             totalStock: 99, 
             isAvailable: true,
-            images: [imageUrl],
+            images: finalImages,
             variants: [],
             fragranceFamily: item.scentFamily || 'General',
             topNotes: item.topNotes || '',

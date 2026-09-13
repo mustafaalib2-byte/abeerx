@@ -8,7 +8,7 @@ import { useCart } from "@/features/cart/CartContext";
 export default function ProductPageClient({ product, locale }: { product: Product, locale: string }) {
   const isArabic = locale === 'ar';
   
-  // Default to the first variant if available, otherwise fallback to base product price
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
@@ -29,22 +29,28 @@ export default function ProductPageClient({ product, locale }: { product: Produc
         <div className="flex flex-col space-y-4">
           <div className="aspect-square bg-secondary w-full relative border border-border">
             <Image 
-              src={product.images[0] || '/placeholder.jpg'} 
+              src={product.images[selectedImageIndex] || product.images[0] || '/placeholder.jpg'} 
               alt={product.name} 
               fill 
               priority 
               className="object-cover" 
             />
           </div>
-          <div className="grid grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(idx => (
-              <div key={idx} className="aspect-square bg-secondary relative border border-border cursor-pointer hover:opacity-80 transition-opacity">
-                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground bg-[#F9F9F9]">
-                  <span className="text-xs">Img {idx}</span>
+          {product.images.length > 1 && (
+            <div className="grid grid-cols-4 gap-4">
+              {product.images.map((img, idx) => (
+                <div 
+                  key={idx} 
+                  onClick={() => setSelectedImageIndex(idx)}
+                  className={`aspect-square bg-secondary relative border cursor-pointer hover:opacity-80 transition-opacity ${
+                    selectedImageIndex === idx ? 'border-ring' : 'border-border'
+                  }`}
+                >
+                  <Image src={img} alt={`${product.name} ${idx + 1}`} fill className="object-cover" />
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Product Info */}
