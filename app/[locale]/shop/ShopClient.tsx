@@ -274,14 +274,31 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                 className="w-full bg-secondary border border-border p-2 text-sm"
               />
             </div>
-            <input 
-              type="range" 
-              min={priceMin} 
-              max={priceMax} 
-              value={currentMax} 
-              onChange={e => setCurrentMax(Number(e.target.value))}
-              className="w-full accent-ring"
-            />
+            <div className="relative w-full h-1 bg-border rounded mt-6 mb-6">
+                <div 
+                  className="absolute h-full bg-ring rounded" 
+                  style={{ 
+                    left: `${Math.max(0, Math.min(100, ((currentMin - priceMin) / (priceMax - priceMin)) * 100))}%`,
+                    right: `${Math.max(0, Math.min(100, 100 - ((currentMax - priceMin) / (priceMax - priceMin)) * 100))}%` 
+                  }}
+                ></div>
+                <input 
+                  type="range" 
+                  min={priceMin} 
+                  max={priceMax} 
+                  value={currentMin} 
+                  onChange={e => setCurrentMin(Math.min(Number(e.target.value), currentMax - 1))}
+                  className="absolute w-full -top-1.5 h-1 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-ring [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-ring [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer"
+                />
+                <input 
+                  type="range" 
+                  min={priceMin} 
+                  max={priceMax} 
+                  value={currentMax} 
+                  onChange={e => setCurrentMax(Math.max(Number(e.target.value), currentMin + 1))}
+                  className="absolute w-full -top-1.5 h-1 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-ring [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-ring [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer"
+                />
+              </div>
           </div>
 
           {filterConfigs.map(config => {
