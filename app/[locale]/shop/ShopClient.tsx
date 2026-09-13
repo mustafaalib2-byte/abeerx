@@ -10,6 +10,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   const searchParams = useSearchParams();
   const urlBrand = searchParams.get("brand");
   const urlFamily = searchParams.get("family");
+  const urlQuery = searchParams.get("q");
   const isArabic = locale === 'ar';
 
   const baseProducts = useMemo(() => {
@@ -79,6 +80,12 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   const filteredProducts = useMemo(() => {
     return baseProducts.filter(p => {
       if (p.price < currentMin || p.price > currentMax) return false;
+
+      if (urlQuery) {
+        const query = urlQuery.toLowerCase();
+        const searchTarget = `${p.name} ${p.brand || ''} ${p.description || ''}`.toLowerCase();
+        if (!searchTarget.includes(query)) return false;
+      }
 
       for (const key of Object.keys(selectedFilters)) {
         const selectedValues = selectedFilters[key];
