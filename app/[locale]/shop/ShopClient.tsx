@@ -11,6 +11,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   const urlBrand = searchParams.get("brand");
   const urlFamily = searchParams.get("family");
   const urlQuery = searchParams.get("q");
+  const urlGender = searchParams.get("gender");
   const isArabic = locale === 'ar';
 
   const baseProducts = useMemo(() => {
@@ -44,8 +45,31 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
     const init: Record<string, string[]> = {};
     if (urlFamily) init.fragranceFamily = [urlFamily];
+    if (urlGender) init.gender = [urlGender.charAt(0).toUpperCase() + urlGender.slice(1)];
     return init;
   });
+
+  useEffect(() => {
+    setSelectedFilters(prev => {
+      const next = { ...prev };
+      let changed = false;
+      
+      if (urlFamily && (!prev.fragranceFamily || !prev.fragranceFamily.includes(urlFamily))) {
+        next.fragranceFamily = [urlFamily];
+        changed = true;
+      }
+      
+      if (urlGender) {
+        const formattedGender = urlGender.charAt(0).toUpperCase() + urlGender.slice(1);
+        if (!prev.gender || !prev.gender.includes(formattedGender)) {
+          next.gender = [formattedGender];
+          changed = true;
+        }
+      }
+      
+      return changed ? next : prev;
+    });
+  }, [urlFamily, urlGender]);
 
   const filterConfigs = [
     { key: 'gender', label: isArabic ? "الجنس" : "Gender" },
