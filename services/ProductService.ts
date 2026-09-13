@@ -42,7 +42,7 @@ export const ProductService = {
   
           const todayStr = new Date().toISOString().split('T')[0];
 
-          return Object.keys(details).map(key => {
+          const allItems = Object.keys(details).map(key => {
             const item = details[key];
             const basePrice = rates[key] || 0;
             
@@ -115,6 +115,62 @@ export const ProductService = {
             updatedAt: new Date().toISOString(),
           } as Product;
         });
+
+        // Group by base name to merge sizes into variants
+        const grouped = new Map<string, Product>();
+        allItems.forEach((p: Product) => {
+          // Sometimes size is in the item object, sometimes appended to name
+          let baseName = p.name;
+          let size = '100ml'; // Default
+          
+          // Look for 'Size' or 'size' in original details if possible, or parse from name
+          const sizeMatch = p.name.match(/\s*[-()]*\s*(\d+)\s*(ml|oz)\s*[-()]*\s*$/i);
+          if (sizeMatch) {
+            baseName = p.name.substring(0, sizeMatch.index).trim();
+            size = sizeMatch[1] + sizeMatch[2].toLowerCase();
+          }
+
+          // Use the cleaned baseName for the slug to ensure they group together
+          const groupSlug = baseName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+          if (grouped.has(groupSlug)) {
+            const existing = grouped.get(groupSlug)!;
+            existing.variants.push({
+              sku: p.sku || p.id,
+              size: size,
+              price: p.price,
+              salePrice: p.salePrice,
+              stock: p.totalStock,
+              isAvailable: p.isAvailable
+            });
+            existing.totalStock += p.totalStock;
+            
+            // Deduplicate variants
+            const uniqueVariants: any[] = [];
+            const seenSizes = new Set<string>();
+            existing.variants.forEach((v: any) => {
+              if(!seenSizes.has(v.size)) {
+                seenSizes.add(v.size);
+                uniqueVariants.push(v);
+              }
+            });
+            existing.variants = uniqueVariants.sort((a,b) => parseInt(a.size) - parseInt(b.size));
+            
+          } else {
+            const newProduct: Product = { ...p, name: baseName, slug: groupSlug, variants: [] };
+            newProduct.variants.push({
+              sku: p.sku || p.id,
+              size: size,
+              price: p.price,
+              salePrice: p.salePrice,
+              stock: p.totalStock,
+              isAvailable: p.isAvailable
+            });
+            grouped.set(groupSlug, newProduct);
+          }
+        });
+
+        return Array.from(grouped.values());
       }
       return [];
     } catch (error) {

@@ -14,7 +14,8 @@ export default function ProductPageClient({ product, locale }: { product: Produc
   const { addToCart } = useCart();
 
   const currentVariant = product.variants?.[selectedVariantIndex];
-  const price = currentVariant ? (currentVariant.salePrice || currentVariant.price) : (product.salePrice || product.price);
+  const displayPrice = currentVariant ? currentVariant.price : product.price;
+  const displaySalePrice = currentVariant ? currentVariant.salePrice : product.salePrice;
   const isAvailable = currentVariant ? currentVariant.isAvailable : product.isAvailable;
 
   const handleAddToCart = () => {
@@ -61,16 +62,16 @@ export default function ProductPageClient({ product, locale }: { product: Produc
           <h1 className="text-4xl font-serif text-foreground mb-4">{product.name}</h1>
           
           <div className="text-2xl font-medium mb-6 flex items-center gap-4">
-            {product.salePrice ? (
+            {displaySalePrice ? (
               <>
-                <span className="text-red-600">{product.salePrice.toFixed(2)} {product.currency}</span>
-                <span className="text-lg text-muted-foreground line-through">{product.price.toFixed(2)} {product.currency}</span>
+                <span className="text-red-600">{displaySalePrice.toFixed(2)} {product.currency}</span>
+                <span className="text-lg text-muted-foreground line-through">{displayPrice.toFixed(2)} {product.currency}</span>
                 <span className="text-sm bg-red-600 text-white px-2 py-1 uppercase tracking-wider font-bold">
                   -{product.discountPercentage}% OFF
                 </span>
               </>
             ) : (
-              <span className="text-foreground">{product.price.toFixed(2)} {product.currency}</span>
+              <span className="text-foreground">{displayPrice.toFixed(2)} {product.currency}</span>
             )}
           </div>
 
