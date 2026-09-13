@@ -56,6 +56,7 @@ export default function Header({ locale }: { locale: string }) {
   };
   
   return (
+    <>
     <header className="w-full border-b border-border bg-background sticky top-0 z-50">
       <div className="bg-primary text-primary-foreground text-xs text-center py-2 uppercase tracking-widest font-medium">
         {isArabic ? "توصيل مجاني في الكويت للطلبات فوق 20 دينار" : "Free Delivery in Kuwait for orders over 20 KWD"}
@@ -199,5 +200,70 @@ export default function Header({ locale }: { locale: string }) {
         </div>
       )}
     </header>
+    {/* Mobile Bottom Navigation (App-like) */}
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 flex items-center justify-between px-2 py-3 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+      {/* 1. Filters (Extreme Left) */}
+      <button 
+        onClick={() => {
+          if (typeof window !== 'undefined') {
+            if (window.location.pathname.includes('/shop')) {
+              window.dispatchEvent(new CustomEvent('open-mobile-filters'));
+            } else {
+              router.push(`/${locale}/shop?openFilters=true`);
+            }
+          }
+        }}
+        className="flex flex-col items-center justify-center flex-1 text-muted-foreground hover:text-foreground"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+        <span className="text-[10px] mt-1 font-medium uppercase tracking-wider">{isArabic ? "تصفية" : "Filters"}</span>
+      </button>
+
+      {/* 2. Search */}
+      <button 
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setIsSearchOpen(true);
+        }}
+        className="flex flex-col items-center justify-center flex-1 text-muted-foreground hover:text-foreground"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span className="text-[10px] mt-1 font-medium uppercase tracking-wider">{isArabic ? "بحث" : "Search"}</span>
+      </button>
+
+      {/* 3. Sort By */}
+      <button 
+        onClick={() => {
+          if (typeof window !== 'undefined') {
+            if (window.location.pathname.includes('/shop')) {
+              window.dispatchEvent(new CustomEvent('open-mobile-sort'));
+            } else {
+              router.push(`/${locale}/shop?openSort=true`);
+            }
+          }
+        }}
+        className="flex flex-col items-center justify-center flex-1 text-muted-foreground hover:text-foreground"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+        <span className="text-[10px] mt-1 font-medium uppercase tracking-wider">{isArabic ? "ترتيب" : "Sort By"}</span>
+      </button>
+
+      {/* 4. Cart (Extreme Right) */}
+      <button 
+        onClick={() => setIsCartOpen(true)}
+        className="flex flex-col items-center justify-center flex-1 text-muted-foreground hover:text-foreground relative"
+      >
+        <div className="relative">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-ring text-primary-foreground text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+              {cartItemCount}
+            </span>
+          )}
+        </div>
+        <span className="text-[10px] mt-1 font-medium uppercase tracking-wider">{isArabic ? "السلة" : "Cart"}</span>
+      </button>
+    </div>
+    </>
   );
 }

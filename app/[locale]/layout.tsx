@@ -40,7 +40,7 @@ export default async function RootLayout({
         <CartProvider>
           <Header locale={locale} />
           <CartDrawer locale={locale} />
-          <main className="flex-grow">
+          <main className="flex-grow pb-20 md:pb-0">
             {children}
           </main>
           <Footer />

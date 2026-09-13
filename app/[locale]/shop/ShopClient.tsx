@@ -14,6 +14,25 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   const urlGender = searchParams.get("gender");
   const isArabic = locale === 'ar';
 
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [isMobileSortOpen, setIsMobileSortOpen] = useState(false);
+  const [sortBy, setSortBy] = useState('recommended');
+
+  useEffect(() => {
+    const handleOpenFilters = () => setIsMobileFiltersOpen(true);
+    const handleOpenSort = () => setIsMobileSortOpen(true);
+    window.addEventListener('open-mobile-filters', handleOpenFilters);
+    window.addEventListener('open-mobile-sort', handleOpenSort);
+    
+    if (searchParams.get('openFilters') === 'true') setIsMobileFiltersOpen(true);
+    if (searchParams.get('openSort') === 'true') setIsMobileSortOpen(true);
+
+    return () => {
+      window.removeEventListener('open-mobile-filters', handleOpenFilters);
+      window.removeEventListener('open-mobile-sort', handleOpenSort);
+    };
+  }, [searchParams]);
+
   const baseProducts = useMemo(() => {
     if (!urlBrand) return products;
     return products.filter(p => p.brand?.toLowerCase() === urlBrand.toLowerCase());
@@ -142,11 +161,17 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
         return { product: p, score };
       });
       
-      return scored.sort((a, b) => b.score - a.score).map(s => s.product);
+      let sorted = scored.sort((a, b) => b.score - a.score).map(s => s.product);
+      if (sortBy === 'price-low') sorted = sorted.sort((a, b) => a.price - b.price);
+      if (sortBy === 'price-high') sorted = sorted.sort((a, b) => b.price - a.price);
+      return sorted;
     }
     
-    return filtered;
-  }, [baseProducts, selectedFilters, currentMin, currentMax, urlQuery]);
+    let sorted = [...filtered];
+    if (sortBy === 'price-low') sorted.sort((a, b) => a.price - b.price);
+    if (sortBy === 'price-high') sorted.sort((a, b) => b.price - a.price);
+    return sorted;
+  }, [baseProducts, selectedFilters, currentMin, currentMax, urlQuery, sortBy]);
 
   const filterData = useMemo(() => {
     const data: Record<string, { val: string, available: boolean }[]> = {};
@@ -172,8 +197,18 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
 
   return (
     <div className="container mx-auto px-4 py-12 flex flex-col md:flex-row gap-8">
-      <aside className="w-full md:w-64 flex-shrink-0">
-        <div className="flex justify-between items-center mb-6 border-b border-border pb-2">
+      <aside className={`
+        fixed inset-0 z-[100] bg-background flex flex-col transition-transform duration-300 md:relative md:z-auto md:translate-y-0 md:w-64 md:flex-shrink-0 md:block
+        ${isMobileFiltersOpen ? 'translate-y-0' : 'translate-y-full'}
+      `}>
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-border">
+          <h2 className="font-serif text-xl">{isArabic ? "تصفية" : "Filters"}</h2>
+          <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 text-foreground">
+             <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 md:p-0 md:overflow-visible">
+          <div className="hidden md:flex justify-between items-center mb-6 border-b border-border pb-2">
           <h2 className="font-serif text-xl text-foreground">
             {isArabic ? "تصفية" : "Filter"}
           </h2>
@@ -247,17 +282,30 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
             );
           })}
         </div>
+        </div>
       </aside>
 
       <div className="flex-grow">
-        <div className="flex justify-between items-center mb-8 border-b border-border pb-4">
-          <div>
-            <h1 className="text-3xl font-serif text-foreground capitalize">
-              {urlBrand ? urlBrand : (isArabic ? "جميع العطور" : "All Fragrances")}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">{filteredProducts.length} Results</p>
+        <div className="flex justify-between items-end mb-8 border-b border-border pb-4">
+            <div>
+              <h1 className="text-3xl font-serif text-foreground capitalize">
+                {urlBrand ? urlBrand : (isArabic ? "جميع العطور" : "All Fragrances")}
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">{filteredProducts.length} {isArabic ? "نتيجة" : "Results"}</p>
+            </div>
+            {/* Desktop Sort */}
+            <div className="hidden md:block">
+              <select 
+                value={sortBy} 
+                onChange={e => setSortBy(e.target.value)}
+                className="bg-transparent border border-border text-sm p-2 outline-none focus:border-ring"
+              >
+                <option value="recommended">{isArabic ? "موصى به" : "Recommended"}</option>
+                <option value="price-low">{isArabic ? "السعر: من الأقل للأعلى" : "Price: Low to High"}</option>
+                <option value="price-high">{isArabic ? "السعر: من الأعلى للأقل" : "Price: High to Low"}</option>
+              </select>
+            </div>
           </div>
-        </div>
 
         {filteredProducts.length === 0 ? (
           <div className="text-center py-24 text-muted-foreground">
