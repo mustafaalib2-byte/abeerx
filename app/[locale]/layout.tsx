@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display, Noto_Kufi_Arabic } from "next/font/google";
 import "@/app/globals.css";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 // Fonts
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -42,18 +43,7 @@ export default async function RootLayout({
           <main className="flex-grow">
             {children}
           </main>
-        {/* Footer will go here */}
-        <footer className="bg-primary text-primary-foreground py-12 text-center text-sm mt-auto border-t border-border">
-          <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-serif tracking-widest mb-4">ABEERX</h2>
-            <p className="opacity-70 mb-8">Authentic Luxury Perfumery in Kuwait.</p>
-            <div className="flex justify-center space-x-6">
-              <a href="#" className="hover:text-ring">Privacy Policy</a>
-              <a href="#" className="hover:text-ring">Terms of Service</a>
-              <a href="#" className="hover:text-ring">Contact Us</a>
-            </div>
-          </div>
-        </footer>
+          <Footer />
         </CartProvider>
       </body>
     </html>

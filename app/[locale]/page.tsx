@@ -56,6 +56,46 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </div>
       </section>
 
+      {/* 2.5. Shop By Notes */}
+      <section className="py-20 px-4 container mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-serif mb-4 text-foreground">
+            {isArabic ? "تسوق حسب العائلة العطرية" : "Shop By Notes"}
+          </h2>
+          <div className="w-16 h-[1px] bg-ring mx-auto" />
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+          {[
+            { name: 'Aquatic Fresh', label: 'Aquatic' },
+            { name: 'Citrus', label: 'Citrus' },
+            { name: 'Aromatic', label: 'Aromatic' },
+            { name: 'Woody', label: 'Woody' },
+            { name: 'Floral', label: 'Floral' },
+            { name: 'Sweet Spicy', label: 'Spicy' },
+            { name: 'Chypre Fruity', label: 'Fruity' },
+            { name: 'Amber Oriental', label: 'Oriental' }
+          ].map((note) => (
+            <Link href={`/${locale}/shop?family=${encodeURIComponent(note.name)}`} key={note.name} className="group cursor-pointer flex flex-col items-center">
+              <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-secondary relative overflow-hidden mb-4 border-4 border-transparent group-hover:border-ring transition-colors shadow-lg">
+                <Image 
+                  src="/placeholder.jpg" 
+                  alt={note.name} 
+                  fill 
+                  sizes="(max-width: 768px) 192px, 192px"
+                  className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                />
+                {/* Translucent Banner */}
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-sm py-2">
+                  <p className="text-center text-white font-serif tracking-widest uppercase text-lg">{note.label}</p>
+                </div>
+              </div>
+              <span className="text-xs uppercase tracking-widest text-muted-foreground">{note.label}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* 3. Best Sellers / Featured Products (Data from Firebase Adapter) */}
       <section className="py-20 bg-secondary px-4 border-t border-border">
         <div className="container mx-auto">

@@ -9,6 +9,7 @@ import { Product } from "@/types/product";
 function ShopContent({ products, locale }: { products: Product[], locale: string }) {
   const searchParams = useSearchParams();
   const urlBrand = searchParams.get("brand");
+  const urlFamily = searchParams.get("family");
   const isArabic = locale === 'ar';
 
   const baseProducts = useMemo(() => {
@@ -39,7 +40,11 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
     setCurrentMax(priceMax);
   }, [priceMin, priceMax]);
 
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
+    const init: Record<string, string[]> = {};
+    if (urlFamily) init.fragranceFamily = [urlFamily];
+    return init;
+  });
 
   const filterConfigs = [
     { key: 'gender', label: isArabic ? "الجنس" : "Gender" },
