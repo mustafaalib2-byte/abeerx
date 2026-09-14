@@ -12,6 +12,7 @@ export default function Header({ locale }: { locale: string }) {
   const router = useRouter();
   
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -64,7 +65,7 @@ export default function Header({ locale }: { locale: string }) {
       
       <div className="container mx-auto px-4 h-32 flex items-center justify-between relative">
         <div className="flex-1 flex items-center justify-start space-x-2 md:space-x-0">
-          <button className="md:hidden p-2 -ml-2 text-foreground">
+          <button onClick={() => setIsMobileMenuOpen(true)} className="md:hidden p-2 -ml-2 text-foreground">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
           <Link href={`/${locale}`}>
@@ -199,6 +200,31 @@ export default function Header({ locale }: { locale: string }) {
           )}
         </div>
       )}
+    
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-[100] bg-background flex flex-col animate-in fade-in slide-in-from-left-4 duration-300">
+          <div className="flex items-center justify-between px-4 h-32 border-b border-border">
+            <Link href={`/${locale}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <Image src="/logo-zoomed.png" alt="ABEERX" width={150} height={150} priority className="object-contain h-24 w-auto transform origin-left scale-110" />
+            </Link>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 -mr-2 text-foreground">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <nav className="flex flex-col p-6 space-y-6 text-base font-medium tracking-widest uppercase">
+            <Link href={`/${locale}/shop`} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-ring transition-colors border-b border-border pb-4">{isArabic ? "التسوق" : "Shop"}</Link>
+            <Link href={`/${locale}/brands`} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-ring transition-colors border-b border-border pb-4">{isArabic ? "العلامات التجارية" : "Brands"}</Link>
+            <Link href={`/${locale}/about`} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-ring transition-colors border-b border-border pb-4">{isArabic ? "تراثنا" : "Our Legacy"}</Link>
+          </nav>
+          <div className="p-6 mt-auto">
+            <Link href={`/${locale === 'en' ? 'ar' : 'en'}`} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center w-full py-4 bg-secondary hover:bg-secondary/80 transition-colors font-medium text-foreground tracking-widest uppercase rounded-md border border-border">
+              {locale === 'en' ? 'العربية' : 'English'}
+            </Link>
+          </div>
+        </div>
+      )}
+
     </header>
     {/* Mobile Bottom Navigation (App-like) */}
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 flex items-center justify-between px-2 py-3 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
