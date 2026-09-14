@@ -185,7 +185,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
             disabled={isSubmitting}
             className="w-full bg-ring text-white py-4 text-sm tracking-widest uppercase font-bold hover:bg-black transition-colors disabled:opacity-50"
           >
-            {isSubmitting ? "Processing..." : (isArabic ? `ادفع ${cartTotal.toFixed(2)} د.ك` : `Pay ${cartTotal.toFixed(2)} KWD`)}
+            {isSubmitting ? "Processing..." : (isArabic ? `دفع ${(finalTotal + (finalTotal >= 20 ? 0 : 2.90)).toFixed(2)} د.ك` : `Pay ${(finalTotal + (finalTotal >= 20 ? 0 : 2.90)).toFixed(2)} KWD`)}
           </button>
         </form>
       </div>
@@ -226,10 +226,30 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
             </div>
           </div>
 
-          <div className="border-t border-black mt-4 pt-4 flex justify-between items-end font-bold text-foreground">
-            <span className="uppercase tracking-wider">{isArabic ? "الإجمالي" : "Total"}</span>
-            <span className="text-xl">{(cartTotal + (cartTotal >= 20 ? 0 : 2.90)).toFixed(2)} KWD</span>
-          </div>
+          
+            {/* Coupon UI */}
+            <div className="pt-4 border-t border-border mt-4">
+              <div className="flex gap-2">
+                <input type="text" placeholder={isArabic ? "كود الخصم" : "Coupon Code"} value={couponCode} onChange={e => setCouponCode(e.target.value)} className="flex-1 bg-secondary border border-border p-2 text-sm" />
+                <button type="button" onClick={applyCoupon} className="bg-ring text-white px-4 py-2 text-sm font-medium hover:bg-ring/90">{isArabic ? "تطبيق" : "Apply"}</button>
+              </div>
+              {couponError && <p className="text-red-500 text-xs mt-2">{couponError}</p>}
+              {appliedCoupon && (
+                <div className="flex justify-between items-center mt-3 text-sm text-ring font-medium bg-ring/10 p-2 rounded">
+                  <span>{isArabic ? "تم تطبيق الكوبون:" : "Coupon applied:"} {appliedCoupon.code}</span>
+                  <button type="button" onClick={() => setAppliedCoupon(null)} className="text-muted-foreground hover:text-foreground text-xs underline">Remove</button>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-black mt-4 pt-4 flex justify-between items-end font-bold text-foreground">
+              <span className="uppercase tracking-wider">{isArabic ? "الإجمالي" : "Total"}</span>
+              <div className="text-right">
+                {appliedCoupon && <div className="text-sm line-through text-muted-foreground font-normal">{(cartTotal + (cartTotal >= 20 ? 0 : 2.90)).toFixed(2)} KWD</div>}
+                <span className="text-xl">{(finalTotal + (finalTotal >= 20 ? 0 : 2.90)).toFixed(2)} KWD</span>
+              </div>
+            </div>
+
         </div>
       </div>
     </div>

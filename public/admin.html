@@ -3144,7 +3144,7 @@ function attachPublicListeners() {
     }, e => console.warn(e));
 }
 
-function attachPrivateListeners() {
+function attachPrivateListeners() { initCoupons(); loadWebEditorPage(); 
     db.ref('abeerx/expenseCats').on('value', s => { expenseCats = s.val() || ['Rent', 'Salary', 'Utilities', 'Logistics', 'Misc']; processDataUpdate(); }, e => console.warn(e));
     db.ref('abeerx/payments').on('value', s => { payments = s.val() ? Object.values(s.val()).sort(dateSorter) : []; processDataUpdate(); }, e => console.warn(e));
     db.ref('abeerx/expenses').on('value', s => {
@@ -3323,7 +3323,7 @@ function saveImageToCloud(event, type) {
 
 function updateLockUI() {
   const btn = document.getElementById('lock-btn');
-  const adminNavs = ['nav-purchase', 'nav-po', 'nav-expense', 'nav-parties', 'nav-ledger', 'nav-stock', 'nav-reports', 'nav-items', 'nav-barcode', 'nav-staff', 'nav-catalog'];
+  const adminNavs = ['nav-purchase', 'nav-po', 'nav-expense', 'nav-parties', 'nav-ledger', 'nav-stock', 'nav-reports', 'nav-items', 'nav-barcode', 'nav-staff', 'nav-catalog', 'nav-webeditor', 'nav-coupons'];
   if(isAdmin) {
     btn.innerHTML = '🔓 Admin Logged In (Click to Logout)'; btn.style.color = 'var(--sage)'; btn.style.borderColor = 'var(--sage)';
     adminNavs.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'flex'; });
