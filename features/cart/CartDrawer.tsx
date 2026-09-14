@@ -19,7 +19,7 @@ export function CartDrawer({ locale }: { locale: string }) {
       />
       
       {/* Drawer */}
-      <div className={`fixed top-0 bottom-0 ${isArabic ? 'left-0' : 'right-0'} w-full sm:w-96 bg-background z-50 shadow-2xl flex flex-col transition-transform transform translate-x-0`}>
+      <div className={`fixed top-0 bottom-0 ${isArabic ? 'left-0' : 'right-0'} w-[75%] sm:w-96 bg-background z-50 shadow-2xl flex flex-col transition-transform transform translate-x-0`}>
         <div className="p-6 border-b border-border flex justify-between items-center bg-secondary">
           <h2 className="text-xl font-serif text-foreground">{isArabic ? "سلة المشتريات" : "Your Cart"}</h2>
           <button onClick={() => setIsCartOpen(false)} className="text-muted-foreground hover:text-foreground">

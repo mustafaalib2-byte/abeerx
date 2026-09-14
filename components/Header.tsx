@@ -203,8 +203,10 @@ export default function Header({ locale }: { locale: string }) {
     
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[100] bg-background flex flex-col animate-in fade-in slide-in-from-left-4 duration-300">
-          <div className="flex items-center justify-between px-4 h-32 border-b border-border">
+        <div className="md:hidden fixed inset-0 z-[100] flex">
+          <div className="fixed inset-0 bg-black/50 transition-opacity animate-in fade-in duration-300" onClick={() => setIsMobileMenuOpen(false)}></div>
+          <div className="relative w-[75%] max-w-sm h-full bg-background flex flex-col animate-in slide-in-from-left duration-300 shadow-2xl">
+            <div className="flex items-center justify-between px-4 h-32 border-b border-border">
             <Link href={`/${locale}`} onClick={() => setIsMobileMenuOpen(false)}>
               <Image src="/logo-zoomed.png" alt="ABEERX" width={150} height={150} priority className="object-contain h-24 w-auto transform origin-left scale-110" />
             </Link>
@@ -221,6 +223,7 @@ export default function Header({ locale }: { locale: string }) {
             <Link href={`/${locale === 'en' ? 'ar' : 'en'}`} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center w-full py-4 bg-secondary hover:bg-secondary/80 transition-colors font-medium text-foreground tracking-widest uppercase rounded-md border border-border">
               {locale === 'en' ? 'العربية' : 'English'}
             </Link>
+          </div>
           </div>
         </div>
       )}

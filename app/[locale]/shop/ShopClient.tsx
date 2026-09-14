@@ -202,8 +202,10 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
       
       {/* Mobile Sort Modal */}
       {isMobileSortOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden flex flex-col bg-background">
-          <div className="flex items-center justify-between p-4 border-b border-border">
+        <div className="fixed inset-0 z-[100] md:hidden flex justify-end">
+          <div className="fixed inset-0 bg-black/50 transition-opacity animate-in fade-in duration-300" onClick={() => setIsMobileSortOpen(false)}></div>
+          <div className="relative w-[75%] h-full bg-background flex flex-col animate-in slide-in-from-right duration-300 shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b border-border">
             <h2 className="font-serif text-xl">{isArabic ? "الترتيب" : "Sort By"}</h2>
             <button onClick={() => setIsMobileSortOpen(false)} className="p-2 text-foreground">
                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -226,13 +228,18 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
               {isArabic ? "أبجديًا: ي - أ" : "Alphabetical: Z to A"}
             </button>
           </div>
-        </div>
-      )}
+          </div>
+          </div>
+        )}
 
-      <aside className={`
-        fixed inset-0 z-[100] bg-background flex flex-col transition-transform duration-300 md:relative md:z-auto md:translate-y-0 md:w-64 md:flex-shrink-0 md:block
-        ${isMobileFiltersOpen ? 'translate-y-0' : 'translate-y-full'}
-      `}>
+        {/* Mobile Filters Backdrop */}
+        {isMobileFiltersOpen && (
+          <div className="md:hidden fixed inset-0 z-[90] bg-black/50 animate-in fade-in duration-300" onClick={() => setIsMobileFiltersOpen(false)}></div>
+        )}
+        <aside className={`
+          fixed top-0 bottom-0 left-0 w-[75%] z-[100] bg-background flex flex-col transition-transform duration-300 md:relative md:z-auto md:translate-y-0 md:translate-x-0 md:w-64 md:flex-shrink-0 md:block
+          ${isMobileFiltersOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
         <div className="md:hidden flex items-center justify-between p-4 border-b border-border">
           <h2 className="font-serif text-xl">{isArabic ? "تصفية" : "Filters"}</h2>
           <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 text-foreground">
