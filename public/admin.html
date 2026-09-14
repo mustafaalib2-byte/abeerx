@@ -3669,13 +3669,15 @@ function renderWebOrders() {
 
         ${isPending ? `
           <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="cancelWebOrder(${order.id})">❌ Decline</button>
-            <button class="btn btn-outline" onclick="quickAssignOrderTask(${order.id})">🧑‍🍳 Assign to Staff</button>
+            <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="cancelWebOrder(${order.id})">🛑 Decline</button>
+            <button class="btn btn-outline" onclick="quickAssignOrderTask(${order.id})">📦 Assign to Staff</button>
             <button class="btn btn-sage" onclick="acceptAndInvoiceWebOrder(${order.id})">✅ Accept & Load into Invoice</button>
           </div>
         ` : `
           <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button class="btn btn-outline" onclick="quickAssignOrderTask(${order.id})">🧑‍🍳 Assign to Staff</button>
+            <span style="color:var(--muted); font-size:0.9rem; align-self:center; margin-right:auto;">Action completed.</span>
+            <button class="btn btn-outline" onclick="quickAssignOrderTask(${order.id})">📦 Assign to Staff</button>
+            <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="deleteWebOrder(${order.id})">🗑️ Delete Record</button>
           </div>
         `}
       </div>
@@ -3733,9 +3735,16 @@ function acceptAndInvoiceWebOrder(orderId) {
 }
 
 function cancelWebOrder(orderId) {
-  if (confirm('Are you sure you want to decline and cancel this online order?')) {
-    dbRef.child(`webOrders/${orderId}/status`).set('Cancelled');
-    toast('Order Cancelled');
+  if (confirm('Are you sure you want to decline this online order? This will completely delete it.')) {
+    dbRef.child(`webOrders/${orderId}`).remove();
+    toast('Order Declined and Deleted');
+  }
+}
+
+function deleteWebOrder(orderId) {
+  if (confirm('Are you sure you want to permanently delete this web order record?')) {
+    dbRef.child(`webOrders/${orderId}`).remove();
+    toast('Web Order Deleted');
   }
 }
 
