@@ -26,7 +26,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
     if (!couponCode) return;
     try {
       const code = couponCode.toUpperCase().replace(/\s+/g, '');
-      const snap = await fetch(`https://abeerx-a9260-default-rtdb.firebaseio.com/coupons/${code}.json`).then(r => r.json());
+      const snap = await fetch(`https://abeerx-a9260-default-rtdb.firebaseio.com/abeerx/coupons/${code}.json`).then(r => r.json());
       if (!snap || !snap.active) {
         setCouponError(isArabic ? 'كوبون غير صالح أو منتهي الصلاحية' : 'Invalid or expired coupon');
         setAppliedCoupon(null);
@@ -46,11 +46,13 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
 
   const calculateFinalTotal = () => {
     if (!appliedCoupon) return cartTotal;
-    if (cartTotal < appliedCoupon.min) return cartTotal; // Security check
+    const minVal = Number(appliedCoupon.min) || 0;
+    const cVal = Number(appliedCoupon.value) || 0;
+    if (cartTotal < minVal) return cartTotal; // Security check
     if (appliedCoupon.type === 'percentage') {
-      return Math.max(0, cartTotal - (cartTotal * (appliedCoupon.value / 100)));
+      return Math.max(0, cartTotal - (cartTotal * (cVal / 100)));
     }
-    return Math.max(0, cartTotal - appliedCoupon.value);
+    return Math.max(0, cartTotal - cVal);
   };
   
   const finalTotal = calculateFinalTotal();
