@@ -3171,7 +3171,7 @@ function attachPublicListeners() {
     
     db.ref('abeerx/webOrders').on('value', s => { 
         const rawData = s.val();
-        webOrders = rawData ? Object.values(rawData).sort((a,b) => b.id - a.id) : [];
+        webOrders = rawData ? Object.keys(rawData).map(k => ({ ...rawData[k], firebaseKey: k })).sort((a,b) => b.id - a.id) : [];
         const pendingOrders = webOrders.filter(o => o.status === 'Pending');
         const badge = document.getElementById('web-order-badge');
         if (badge) badge.textContent = pendingOrders.length;
@@ -3678,16 +3678,16 @@ function renderWebOrders() {
     
             ${isPending ? `
               <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="cancelWebOrder('${order.id}')">🛑 Decline</button>
-                <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="deleteWebOrder('${order.id}')">🗑️ Delete</button>
-                <button class="btn btn-outline" onclick="quickAssignOrderTask('${order.id}')">📦 Assign to Staff</button>
-                <button class="btn btn-sage" onclick="acceptAndInvoiceWebOrder('${order.id}')">✅ Accept & Invoice</button>
+                <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="cancelWebOrder('${order.firebaseKey}')">🛑 Decline</button>
+                <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="deleteWebOrder('${order.firebaseKey}')">🗑️ Delete</button>
+                <button class="btn btn-outline" onclick="quickAssignOrderTask('${order.firebaseKey}')">📦 Assign to Staff</button>
+                <button class="btn btn-sage" onclick="acceptAndInvoiceWebOrder('${order.firebaseKey}')">✅ Accept & Invoice</button>
               </div>
             ` : `
               <div style="display:flex; gap:10px; justify-content:flex-end;">
                 <span style="color:var(--muted); font-size:0.9rem; align-self:center; margin-right:auto;">Action completed.</span>
-                <button class="btn btn-outline" onclick="quickAssignOrderTask('${order.id}')">📦 Assign to Staff</button>
-                <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="deleteWebOrder('${order.id}')">🗑️ Delete</button>
+                <button class="btn btn-outline" onclick="quickAssignOrderTask('${order.firebaseKey}')">📦 Assign to Staff</button>
+                <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="deleteWebOrder('${order.firebaseKey}')">🗑️ Delete</button>
               </div>
             `}
           </div>
@@ -3698,8 +3698,9 @@ function renderWebOrders() {
   container.innerHTML = html;
 }
 
-function acceptAndInvoiceWebOrder(orderId) {
-  const order = webOrders.find(o => o.id === orderId);
+function acceptAndInvoiceWebOrder(firebaseKey) {
+    const order = webOrders.find(o => o.firebaseKey === firebaseKey);
+    const orderId = firebaseKey;
   if (!order) return;
 
   showTab('sale', document.querySelector('.nav-btn[onclick*="sale"]'), true);
@@ -3788,8 +3789,8 @@ function toggleAllWebOrders(expand) {
 // ==========================================
 // STAFF TASK MANAGEMENT (admin side)
 // ==========================================
-function quickAssignOrderTask(orderId) {
-  const order = webOrders.find(o => o.id === orderId);
+function quickAssignOrderTask(firebaseKey) {
+    const order = webOrders.find(o => o.firebaseKey === firebaseKey);
   if (!order) return;
   showTab('staff', document.querySelector('.nav-btn[onclick*="staff"]'), true);
   setTimeout(() => {
