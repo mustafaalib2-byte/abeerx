@@ -1701,7 +1701,63 @@
   <div id="error-diagnostic" class="error-diagnostic"></div>
 </div>
 
-<!-- MANDATORY LOGIN GATE: every device (Admin or Staff) must sign in with its own
+
+  
+  <!-- WEB EDITOR PANEL -->
+  <div id="panel-webeditor" class="panel">
+    <div class="card" style="border-left: 5px solid var(--brand-pink);">
+      <div class="card-title">🌍 Website Editor</div>
+      <p style="font-size:0.9rem; color:var(--muted); margin-bottom:15px;">Edit the content of your public pages.</p>
+      
+      <div style="display:flex; gap:15px; margin-bottom:15px;">
+        <select id="webeditor-page" style="flex:1; padding:8px;" onchange="loadWebEditorPage()">
+          <option value="faq">FAQ</option>
+          <option value="privacy-policy">Privacy Policy</option>
+          <option value="shipping-policy">Shipping Policy</option>
+          <option value="returns-refunds">Returns & Refunds</option>
+          <option value="terms-conditions">Terms & Conditions</option>
+          <option value="request-fragrance">Request a Fragrance</option>
+        </select>
+        <select id="webeditor-lang" style="flex:1; padding:8px;" onchange="loadWebEditorPage()">
+          <option value="en">English</option>
+          <option value="ar">Arabic</option>
+        </select>
+      </div>
+      <textarea id="webeditor-content" style="width:100%; height:350px; padding:15px; font-family:monospace; border:1px solid var(--border); border-radius:8px;" placeholder="Loading..."></textarea>
+      <div style="display:flex; justify-content:flex-end; margin-top:15px;">
+        <button class="btn btn-pink" onclick="saveWebEditorPage()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COUPONS PANEL -->
+  <div id="panel-coupons" class="panel">
+    <div class="card" style="border-left: 5px solid #ff9800;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <div class="card-title">🎟️ Discount Coupons</div>
+        <button class="btn btn-brown" onclick="openCouponModal()">+ New Coupon</button>
+      </div>
+      <div class="table-scroll mt-4">
+        <table class="data-table" style="width:100%">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Discount Type</th>
+              <th>Discount Value</th>
+              <th>Min Order Value</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="coupons-table-body">
+            <tr><td colspan="6" style="text-align:center;">Loading coupons...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANDATORY LOGIN GATE: every device (Admin or Staff) must sign in with its own
      email + password before the app is usable. Nobody browses anonymously anymore. -->
 <div id="login-gate-overlay">
   <div class="login-gate-box">
@@ -8292,7 +8348,118 @@ function exportFullLedgerExcel() {
   }, 100);
 }
 
+
+// ==================== WEB EDITOR LOGIC ====================
+async function loadWebEditorPage() {
+  const page = document.getElementById('webeditor-page').value;
+  const lang = document.getElementById('webeditor-lang').value;
+  const ta = document.getElementById('webeditor-content');
+  ta.value = 'Loading...';
+  
+  try {
+    const snap = await db.ref('content/' + lang + '/' + page).once('value');
+    const data = snap.val();
+    if (data && data.body) {
+      ta.value = data.body;
+    } else {
+      ta.value = '';
+    }
+  } catch (e) {
+    ta.value = 'Error loading content.';
+  }
+}
+
+async function saveWebEditorPage() {
+  const page = document.getElementById('webeditor-page').value;
+  const lang = document.getElementById('webeditor-lang').value;
+  const ta = document.getElementById('webeditor-content').value;
+  
+  try {
+    await db.ref('content/' + lang + '/' + page).set({ body: ta, updated_at: firebase.database.ServerValue.TIMESTAMP });
+    toast('Content saved successfully! Changes will appear live on the website instantly.');
+  } catch (e) {
+    toast('Error saving content: ' + e.message);
+  }
+}
+
+// ==================== COUPONS LOGIC ====================
+let allCoupons = {};
+function initCoupons() {
+  db.ref('coupons').on('value', snap => {
+    allCoupons = snap.val() || {};
+    renderCoupons();
+  });
+}
+
+function renderCoupons() {
+  const tbody = document.getElementById('coupons-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const keys = Object.keys(allCoupons);
+  if (keys.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No coupons found.</td></tr>';
+    return;
+  }
+  
+  keys.forEach(k => {
+    const c = allCoupons[k];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="badge" style="background:#000;color:#fff;">${k}</span></td>
+      <td style="text-transform: capitalize;">${c.type}</td>
+      <td>${c.type === 'percentage' ? c.value + '%' : c.value + ' KD'}</td>
+      <td>${c.min_order_value || 0} KD</td>
+      <td>${c.active ? '<span class="badge" style="background:green;color:white;">Active</span>' : '<span class="badge" style="background:red;color:white;">Disabled</span>'}</td>
+      <td>
+        <button class="btn btn-outline" style="padding:4px 8px;font-size:12px;" onclick="toggleCoupon('${k}', ${!c.active})">${c.active ? 'Disable' : 'Enable'}</button>
+        <button class="btn btn-outline" style="padding:4px 8px;font-size:12px;color:red;border-color:red;" onclick="deleteCoupon('${k}')">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleCoupon(code, active) {
+  db.ref('coupons/' + code).update({ active });
+}
+
+function deleteCoupon(code) {
+  if (confirm('Are you sure you want to delete coupon ' + code + '?')) {
+    db.ref('coupons/' + code).remove();
+  }
+}
+
+function openCouponModal() {
+  const code = prompt('Enter new coupon code (e.g. SUMMER20):');
+  if (!code) return;
+  const upperCode = code.toUpperCase().replace(/\s+/g, '');
+  
+  const type = prompt('Enter discount type ("percentage" or "fixed"):', 'percentage');
+  if (type !== 'percentage' && type !== 'fixed') { alert('Invalid type'); return; }
+  
+  const val = prompt('Enter discount value (e.g. 20 for 20% or 5 for 5 KD):');
+  if (isNaN(val) || !val) { alert('Invalid value'); return; }
+  
+  const minOrder = prompt('Enter minimum order value required in KD (e.g. 15):', '0');
+  
+  db.ref('coupons/' + upperCode).set({
+    type: type,
+    value: parseFloat(val),
+    min_order_value: parseFloat(minOrder) || 0,
+    active: true,
+    created_at: firebase.database.ServerValue.TIMESTAMP
+  });
+}
+
+// Ensure initCoupons is called when the script loads so it binds the Firebase listener
+// and loadWebEditorPage is called to set the initial textarea content.
+setTimeout(() => {
+  if (typeof initCoupons === 'function') initCoupons();
+  if (typeof loadWebEditorPage === 'function') loadWebEditorPage();
+}, 2000);
+
 </script>
+
 </body>
 </html>
 
