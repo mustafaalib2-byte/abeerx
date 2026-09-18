@@ -3,10 +3,10 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const s3Client = new S3Client({
   region: "auto",
-  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  endpoint: `https://2604e12e7f799e4e440edaeba8db3d20.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY || "",
+    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID || "762534b8472c635b562556734a5a3b58",
+    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY || "2397ba96b3235b86776e6c694204906220f384c3db03acf62bffce8696119e8a",
   },
 });
 
@@ -29,14 +29,14 @@ export async function POST(req: NextRequest) {
 
     await s3Client.send(
       new PutObjectCommand({
-        Bucket: process.env.CLOUDFLARE_BUCKET_NAME,
+        Bucket: process.env.CLOUDFLARE_BUCKET_NAME || "abeerx",
         Key: key,
         Body: buffer,
         ContentType: file.type,
       })
     );
 
-    const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL}/${key}`;
+    const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL || 'https://pub-209a4e728df44d029c946408e718e9c8.r2.dev'}/${key}`;
 
     return NextResponse.json({ success: true, url: publicUrl, key }, {
       headers: {
