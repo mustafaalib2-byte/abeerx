@@ -12,10 +12,21 @@ function hashString(str: string): number {
   return hash;
 }
 
+// --- CACHE TO PREVENT MASSIVE FIREBASE BILLS ---
+let cachedProducts: Product[] | null = null;
+let lastFetchTime = 0;
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+
 export const ProductService = {
   async getAllProducts(): Promise<Product[]> {
     if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || !db) {
       return getMockProducts();
+    }
+    
+    // RETURN CACHE IF IT EXISTS AND IS FRESH
+    if (cachedProducts && (Date.now() - lastFetchTime < CACHE_DURATION_MS)) {
+      console.log("Serving 7100+ items from CACHE (Saved ~10MB bandwidth)");
+      return cachedProducts;
     }
     
     try {
@@ -170,7 +181,10 @@ export const ProductService = {
           }
         });
 
-        return Array.from(grouped.values());
+        const finalArray = Array.from(grouped.values());
+        cachedProducts = finalArray;
+        lastFetchTime = Date.now();
+        return finalArray;
       }
       return [];
     } catch (error) {
