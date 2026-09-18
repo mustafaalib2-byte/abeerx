@@ -8,6 +8,7 @@ const s3Client = new S3Client({
     accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID || "762534b8472c635b562556734a5a3b58",
     secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY || "2397ba96b3235b86776e6c694204906220f384c3db03acf62bffce8696119e8a",
   },
+  forcePathStyle: true,
 });
 
 export async function POST(req: NextRequest) {
