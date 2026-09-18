@@ -3599,6 +3599,47 @@ function wrapTablesForMobileScroll() {
 }
 document.addEventListener('DOMContentLoaded', wrapTablesForMobileScroll);
 
+
+async function runCloudflareBulkUpload(e) {
+    const files = Array.from(e.target.files).filter(f => f.name.match(/\.(jpg|jpeg|png)$/i));
+    if (files.length === 0) return alert("No images found!");
+    
+    document.getElementById('cf-bulk-progress').innerText = `Uploading 0 / ${files.length}`;
+    let uploaded = 0;
+    const logDiv = document.getElementById('cf-bulk-log');
+    const log = (msg) => { logDiv.innerHTML += `<div>${msg}</div>`; logDiv.scrollTop = logDiv.scrollHeight; };
+    log("Starting bulk upload via API Bridge...");
+
+    const apiUrl = 'https://abeerx.vercel.app/api/r2/upload';
+
+    for (let i = 0; i < files.length; i += 5) {
+        const batch = files.slice(i, i + 5);
+        const promises = batch.map(file => {
+            return new Promise(async (resolve) => {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("prefix", "products");
+                try {
+                    const res = await fetch(apiUrl, { method: "POST", body: formData });
+                    const data = await res.json();
+                    if (res.ok && data.success) { log(`Success: ${file.name}`); }
+                    else { log(`<span style="color:red">Failed: ${file.name} - ${data.error || 'Server error'}</span>`); }
+                } catch (err) { log(`<span style="color:red">Failed: ${file.name} - ${err.message}</span>`); }
+                uploaded++;
+                resolve();
+            });
+        });
+        await Promise.all(promises);
+        document.getElementById('cf-bulk-progress').innerText = `Uploading ${uploaded} / ${files.length}`;
+    }
+    document.getElementById('cf-bulk-progress').innerText = `✅ Finished uploading ${files.length} images!`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const picker = document.getElementById('cf-bulk-picker');
+    if (picker) picker.addEventListener('change', runCloudflareBulkUpload);
+});
+
 function showTab(name, btn, bypass = false) {
   if(name !== 'sale' && name !== 'quote' && name !== 'weborders' && !isAdmin && !bypass) { pendingTab = name; pendingBtn = btn; openPinModal(); return; }
   toggleMobileSidebar(true);
