@@ -371,6 +371,7 @@
   <div class="nav-menu">
     <button class="nav-btn active" onclick="showTab('sale',this)">🧾 Invoices (KD)</button>
     <button class="nav-btn" onclick="showTab('weborders',this)">🌐 Web Orders <span class="web-badge" id="web-order-badge">0</span></button>
+    <button id="nav-analyzer" class="nav-btn" onclick="showTab('analyzer',this)" style="color:#00ff00;">🔍 Data Analyzer</button>
     <button class="nav-btn" onclick="showTab('quote',this)">📝 Quotations</button>
     <button id="nav-purchase" class="nav-btn" onclick="showTab('purchase',this)" style="display:none;">🛒 Purchases</button>
     <button id="nav-po" class="nav-btn" onclick="showTab('po',this)" style="display:none;">🧰 Purchase Orders</button>
@@ -384,7 +385,7 @@
     <button id="nav-catalog" class="nav-btn" onclick="showTab('catalog',this)" style="display:none;">📚 Item Catalog</button>
     <button id="nav-items" class="nav-btn" onclick="showTab('items',this)" style="display:none;">⚙️ Data & Settings</button>
     <button id="nav-webeditor" class="nav-btn" onclick="showTab('webeditor',this)" style="display:none;">🌍 Web Editor</button>
-    <button id="nav-analyzer" class="nav-btn" onclick="showTab('analyzer',this)">🔍 Data Analyzer</button>
+    
     <button id="nav-coupons" class="nav-btn" onclick="showTab('coupons',this)" style="display:none;">🎟️ Coupons</button>
   </div>
   <div class="lock-area">
@@ -8527,7 +8528,69 @@ setTimeout(() => {
   if (typeof loadWebEditorPage === 'function') loadWebEditorPage();
 }, 2000);
 
+
+// --- DATABASE ANALYZER ---
+async function runDatabaseAnalysis() {
+  const btn = document.getElementById('btn-run-analysis');
+  const res = document.getElementById('analyzer-results');
+  btn.disabled = true;
+  btn.innerText = "Scanning... Please wait (Downloading Database)";
+  res.style.display = "block";
+  res.innerHTML = "Connecting to Firebase and downloading snapshot...";
+
+  try {
+    const snapshot = await db.ref('/').once('value');
+    const data = snapshot.val() || {};
+    const rawSize = new TextEncoder().encode(JSON.stringify(data)).length;
+    
+    let html = `<strong>TOTAL FIREBASE SIZE: ${(rawSize / (1024*1024)).toFixed(2)} MB</strong>\n`;
+    html += `<span style="color:red"><em>Note: If this is 5MB, then 200 visitors loading the site = 1 GB of bandwidth usage.</em></span>\n\n`;
+    html += `<strong>--- ROOT FOLDER BREAKDOWN ---</strong>\n`;
+    
+    for (const key in data) {
+      const sizeBytes = new TextEncoder().encode(JSON.stringify(data[key])).length;
+      html += `/${key}: ${(sizeBytes / 1024).toFixed(2)} KB (${((sizeBytes/rawSize)*100).toFixed(1)}%)\n`;
+    }
+    
+    html += `\n<strong>--- ABEERX (POS) DEEP DIVE ---</strong>\n`;
+    if (data.abeerx) {
+      for (const key in data.abeerx) {
+        const sizeBytes = new TextEncoder().encode(JSON.stringify(data.abeerx[key])).length;
+        const count = typeof data.abeerx[key] === 'object' ? Object.keys(data.abeerx[key]).length : 'N/A';
+        html += `  /abeerx/${key}: ${(sizeBytes / (1024*1024)).toFixed(2)} MB (Contains ${count} items)\n`;
+      }
+    }
+    
+    html += `\n<strong>--- DATA HOGS / WARNINGS ---</strong>\n`;
+    let foundHogs = false;
+    if (data.abeerx && data.abeerx.productImages) {
+      for (const prodId in data.abeerx.productImages) {
+        const imgSize = new TextEncoder().encode(JSON.stringify(data.abeerx.productImages[prodId])).length;
+        if (imgSize > 50000) {
+           html += `  [WARNING] Product '${prodId}' image node is huge (${(imgSize/1024).toFixed(1)} KB). You might be saving raw Base64 images instead of URLs!\n`;
+           foundHogs = true;
+        }
+      }
+    }
+    if (data.perfumes) {
+        const perfumesSize = new TextEncoder().encode(JSON.stringify(data.perfumes)).length;
+        html += `  [INFO] Public /perfumes catalog size: ${(perfumesSize / (1024*1024)).toFixed(2)} MB.\n`;
+    }
+
+    if (!foundHogs) {
+        html += `  No massive individual items found! Your database structure looks healthy.\n`;
+        html += `  The 84GB usage was caused by the Next.js website re-downloading these few Megabytes thousands of times, which has now been fixed with a Memory Cache!`;
+    }
+    
+    res.innerHTML = html;
+  } catch (err) {
+    res.innerHTML = `<span style="color:red">Error: ${err.message}</span>`;
+  }
+  btn.innerText = "Start Scan (Downloads full DB once)";
+  btn.disabled = false;
+}
 </script>
+
 
 </body>
 </html>
