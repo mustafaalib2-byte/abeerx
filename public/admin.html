@@ -1602,6 +1602,7 @@
     <div class="card-title">☁️ Cloudflare Bulk Uploader</div>
     <p style="margin-bottom: 15px; color: var(--muted);">Select your Perfume_Images folder. This safely tunnels images through the Vercel API Bridge, completely bypassing Windows SSL network restrictions.</p>
     <input type="file" id="cf-bulk-picker" webkitdirectory directory multiple style="margin-bottom:15px; font-size:1rem; padding:10px;" />
+    <button class="btn btn-outline" style="margin-left: 15px; border-color: red; color: red;" onclick="cleanUpOldR2Images()">🗑️ Clean Up Misnamed Images</button>
     <div id="cf-bulk-progress" style="font-weight:bold; font-size:1.1rem; margin-bottom:10px;"></div>
     <div id="cf-bulk-log" style="font-family: monospace; font-size: 0.8rem; background: #1f2937; color: #10b981; padding: 15px; height: 250px; overflow-y: auto; border-radius: 6px;"></div>
   </div>
