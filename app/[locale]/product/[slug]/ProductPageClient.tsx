@@ -172,13 +172,6 @@ export default function ProductPageClient({ product, locale }: { product: Produc
             </button>
           </div>
 
-              <div>
-                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Origin</span>
-                <span className="text-sm font-medium">{product.origin}</span>
-              </div>
-            )}
-          </div>
-
           {(product.topNotes || product.heartNotes || product.baseNotes) && (
             <div className="mb-8 border-t border-border pt-6">
               <h3 className="text-lg font-serif mb-4 uppercase tracking-widest">Fragrance Notes</h3>
