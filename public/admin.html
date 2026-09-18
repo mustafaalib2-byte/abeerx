@@ -3614,7 +3614,7 @@ async function cleanUpOldR2Images() {
         if (!listRes.ok) throw new Error(listData.error || "Failed to list files");
         
         // Find files that start with products/17..._
-        const timestampedFiles = listData.files.filter(f => /^products\/\d{13}_/.test(f.key));
+        const timestampedFiles = listData.files.filter(f => /^products\/\d{13}_/.test(f.key) || f.key.startsWith("products/perfume_images_"));
         
         if (timestampedFiles.length === 0) {
             log("✅ No timestamped images found! Your bucket is clean.");

@@ -25,7 +25,10 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(bytes);
     
     // Clean filename
-    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_").toLowerCase();
+    let rawName = file.name;
+    if (rawName.includes("/")) rawName = rawName.split("/").pop();
+    if (rawName.includes("\\")) rawName = rawName.split("\\").pop();
+    const safeName = rawName.replace(/[^a-zA-Z0-9.\-_]/g, "_").toLowerCase();
     const key = `${prefix}/${safeName}`;
 
     await s3Client.send(

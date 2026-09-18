@@ -14,16 +14,28 @@ const s3Client = new S3Client({
 export async function POST(req: NextRequest) {
   try {
     const { key } = await req.json();
-    if (!key) return NextResponse.json({ error: "No key provided" }, { status: 400 });
+    if (!key) return NextResponse.json({ error: "No key provided" }, { status: 400, headers: { 'Access-Control-Allow-Origin': '*' } });
 
     await s3Client.send(new DeleteObjectCommand({
       Bucket: process.env.CLOUDFLARE_BUCKET_NAME || "abeerx",
       Key: key
     }));
     
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true }, { headers: { 'Access-Control-Allow-Origin': '*' } });
   } catch (error: any) {
     console.error("R2 Delete Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*' } });
   }
+}
+
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }
