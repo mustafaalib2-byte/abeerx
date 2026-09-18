@@ -8541,15 +8541,24 @@ async function runDatabaseAnalysis() {
   try {
     
     // Avoid root-level permission denied by fetching nodes we know the admin has access to
-    const [abeerxSnap, perfumesSnap] = await Promise.all([
-      db.ref('/abeerx').once('value').catch(() => ({ val: () => null })),
-      db.ref('/perfumes').once('value').catch(() => ({ val: () => null }))
+    
+    // Avoid root-level permission denied by fetching EXACT nodes the app uses
+    const [detailsSnap, ratesSnap, imagesSnap, perfumesSnap] = await Promise.all([
+      db.ref('abeerx/itemDetails').once('value').catch((e) => { console.error(e); return { val: () => null }; }),
+      db.ref('abeerx/itemRates').once('value').catch((e) => { console.error(e); return { val: () => null }; }),
+      db.ref('abeerx/productImages').once('value').catch((e) => { console.error(e); return { val: () => null }; }),
+      db.ref('perfumes').once('value').catch((e) => { console.error(e); return { val: () => null }; })
     ]);
     
     const data = {
-      abeerx: abeerxSnap.val() || {},
+      abeerx: {
+         itemDetails: detailsSnap.val() || {},
+         itemRates: ratesSnap.val() || {},
+         productImages: imagesSnap.val() || {}
+      },
       perfumes: perfumesSnap.val() || {}
     };
+
 
     const rawSize = new TextEncoder().encode(JSON.stringify(data)).length;
     
