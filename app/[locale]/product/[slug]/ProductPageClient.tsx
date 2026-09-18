@@ -75,6 +75,50 @@ export default function ProductPageClient({ product, locale }: { product: Produc
             )}
           </div>
 
+          <p className="text-muted-foreground mb-6 leading-relaxed">
+            {product.description}
+          </p>
+
+          {/* Fragrance Profile Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 bg-secondary p-6 border border-border">
+            {product.gender && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Gender</span>
+                <span className="text-sm font-medium">{product.gender}</span>
+              </div>
+            )}
+            {product.concentration && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Concentration</span>
+                <span className="text-sm font-medium">{product.concentration}</span>
+              </div>
+            )}
+            {product.fragranceFamily && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Scent Family</span>
+                <span className="text-sm font-medium">{product.fragranceFamily}</span>
+              </div>
+            )}
+            {product.mainAccord && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Main Accord</span>
+                <span className="text-sm font-medium">{product.mainAccord}</span>
+              </div>
+            )}
+            {product.occasion && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Occasion</span>
+                <span className="text-sm font-medium">{product.occasion}</span>
+              </div>
+            )}
+            {product.origin && (
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Origin</span>
+                <span className="text-sm font-medium">{product.origin}</span>
+              </div>
+            )}
+          </div>
+
           {/* Variants */}
           {product.variants && product.variants.length > 0 && (
             <div className="mb-8">
@@ -128,43 +172,6 @@ export default function ProductPageClient({ product, locale }: { product: Produc
             </button>
           </div>
 
-          <p className="text-muted-foreground mb-8 leading-relaxed">
-            {product.description}
-          </p>
-
-          {/* Fragrance Profile Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 bg-secondary p-6 border border-border">
-            {product.gender && (
-              <div>
-                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Gender</span>
-                <span className="text-sm font-medium">{product.gender}</span>
-              </div>
-            )}
-            {product.concentration && (
-              <div>
-                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Concentration</span>
-                <span className="text-sm font-medium">{product.concentration}</span>
-              </div>
-            )}
-            {product.fragranceFamily && (
-              <div>
-                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Scent Family</span>
-                <span className="text-sm font-medium">{product.fragranceFamily}</span>
-              </div>
-            )}
-            {product.mainAccord && (
-              <div>
-                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Main Accord</span>
-                <span className="text-sm font-medium">{product.mainAccord}</span>
-              </div>
-            )}
-            {product.occasion && (
-              <div>
-                <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Occasion</span>
-                <span className="text-sm font-medium">{product.occasion}</span>
-              </div>
-            )}
-            {product.origin && (
               <div>
                 <span className="block text-xs uppercase tracking-widest text-muted-foreground mb-1">Origin</span>
                 <span className="text-sm font-medium">{product.origin}</span>
