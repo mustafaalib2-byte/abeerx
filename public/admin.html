@@ -8529,7 +8529,19 @@ setTimeout(() => {
 }, 2000);
 
 
+
 // --- DATABASE ANALYZER ---
+window.deleteFirebaseNode = async function(path) {
+    if(confirm(`Are you SURE you want to delete ${path}? This will instantly remove it from the database to save space.`)) {
+        try {
+            await db.ref(path).remove();
+            alert("Deleted successfully! Run the scan again to see your new database size.");
+        } catch(e) {
+            alert("Error deleting: " + e.message);
+        }
+    }
+};
+
 async function runDatabaseAnalysis() {
   const btn = document.getElementById('btn-run-analysis');
   const res = document.getElementById('analyzer-results');
@@ -8539,66 +8551,60 @@ async function runDatabaseAnalysis() {
   res.innerHTML = "Connecting to Firebase and downloading snapshot...";
 
   try {
+    const abeerxKeys = ['content', 'invoices', 'itemDetails', 'itemRates', 'items', 'liveStock', 'partiesList', 'payments', 'productImages', 'purchases', 'settings', 'staffDesignations'];
+    const promises = abeerxKeys.map(k => db.ref(`abeerx/${k}`).once('value').catch((e) => ({ val: () => null })));
+    promises.push(db.ref('perfumes').once('value').catch((e) => ({ val: () => null })));
     
-    // Avoid root-level permission denied by fetching nodes we know the admin has access to
+    const snaps = await Promise.all(promises);
     
-    // Avoid root-level permission denied by fetching EXACT nodes the app uses
-    const [detailsSnap, ratesSnap, imagesSnap, perfumesSnap] = await Promise.all([
-      db.ref('abeerx/itemDetails').once('value').catch((e) => { console.error(e); return { val: () => null }; }),
-      db.ref('abeerx/itemRates').once('value').catch((e) => { console.error(e); return { val: () => null }; }),
-      db.ref('abeerx/productImages').once('value').catch((e) => { console.error(e); return { val: () => null }; }),
-      db.ref('perfumes').once('value').catch((e) => { console.error(e); return { val: () => null }; })
-    ]);
+    const data = { abeerx: {} };
+    abeerxKeys.forEach((k, i) => { data.abeerx[k] = snaps[i].val() || {}; });
+    data.perfumes = snaps[snaps.length - 1].val() || {};
     
-    const data = {
-      abeerx: {
-         itemDetails: detailsSnap.val() || {},
-         itemRates: ratesSnap.val() || {},
-         productImages: imagesSnap.val() || {}
-      },
-      perfumes: perfumesSnap.val() || {}
-    };
-
-
-    const rawSize = new TextEncoder().encode(JSON.stringify(data)).length;
+    let rawSize = 0;
     
-    let html = `<strong>TOTAL FIREBASE SIZE: ${(rawSize / (1024*1024)).toFixed(2)} MB</strong>\n`;
-    html += `<span style="color:red"><em>Note: If this is 5MB, then 200 visitors loading the site = 1 GB of bandwidth usage.</em></span>\n\n`;
-    html += `<strong>--- ROOT FOLDER BREAKDOWN ---</strong>\n`;
-    
-    for (const key in data) {
-      const sizeBytes = new TextEncoder().encode(JSON.stringify(data[key])).length;
-      html += `/${key}: ${(sizeBytes / 1024).toFixed(2)} KB (${((sizeBytes/rawSize)*100).toFixed(1)}%)\n`;
-    }
-    
-    html += `\n<strong>--- ABEERX (POS) DEEP DIVE ---</strong>\n`;
-    if (data.abeerx) {
-      for (const key in data.abeerx) {
+    let html = `<strong>--- ABEERX (POS) FOLDER SIZES ---</strong>\n`;
+    for (const key of abeerxKeys) {
+        if (!data.abeerx[key] || Object.keys(data.abeerx[key]).length === 0) continue;
         const sizeBytes = new TextEncoder().encode(JSON.stringify(data.abeerx[key])).length;
+        rawSize += sizeBytes;
         const count = typeof data.abeerx[key] === 'object' ? Object.keys(data.abeerx[key]).length : 'N/A';
         html += `  /abeerx/${key}: ${(sizeBytes / (1024*1024)).toFixed(2)} MB (Contains ${count} items)\n`;
-      }
     }
     
-    html += `\n<strong>--- DATA HOGS / WARNINGS ---</strong>\n`;
+    const perfumesSize = new TextEncoder().encode(JSON.stringify(data.perfumes)).length;
+    rawSize += perfumesSize;
+    html += `  /perfumes: ${(perfumesSize / (1024*1024)).toFixed(2)} MB\n`;
+    
+    let header = `<strong>TOTAL FIREBASE SCANNED SIZE: ${(rawSize / (1024*1024)).toFixed(2)} MB</strong>\n`;
+    header += `<span style="color:red"><em>Note: If this is 5MB, then 200 visitors loading the site = 1 GB of bandwidth usage.</em></span>\n\n`;
+    
+    html = header + html;
+    
+    html += `\n<strong>--- DATA HOGS / BASE64 IMAGE SCANNER ---</strong>\n`;
     let foundHogs = false;
+    
+    // Check productImages specifically
     if (data.abeerx && data.abeerx.productImages) {
       for (const prodId in data.abeerx.productImages) {
-        const imgSize = new TextEncoder().encode(JSON.stringify(data.abeerx.productImages[prodId])).length;
-        if (imgSize > 50000) {
-           html += `  [WARNING] Product '${prodId}' image node is huge (${(imgSize/1024).toFixed(1)} KB). You might be saving raw Base64 images instead of URLs!\n`;
+        const imgData = data.abeerx.productImages[prodId];
+        const imgSize = new TextEncoder().encode(JSON.stringify(imgData)).length;
+        
+        // If an image is larger than 30KB, it's almost certainly a Base64 string directly in the DB
+        if (imgSize > 30000) {
+           html += `  <div style="background:#fff3cd; border-left:4px solid #ffc107; padding:10px; margin-top:10px; color:#856404;">
+             <strong>[WARNING] Base64 Image Detected!</strong><br>
+             Product: <strong>${prodId}</strong><br>
+             Size: <strong>${(imgSize/1024).toFixed(1)} KB</strong> (Taking up massive space!)<br>
+             <button onclick="deleteFirebaseNode('abeerx/productImages/${prodId}')" style="margin-top:8px; background:#dc3545; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">🗑️ Delete Base64 Data</button>
+           </div>`;
            foundHogs = true;
         }
       }
     }
-    if (data.perfumes) {
-        const perfumesSize = new TextEncoder().encode(JSON.stringify(data.perfumes)).length;
-        html += `  [INFO] Public /perfumes catalog size: ${(perfumesSize / (1024*1024)).toFixed(2)} MB.\n`;
-    }
 
     if (!foundHogs) {
-        html += `  No massive individual items found! Your database structure looks healthy.\n`;
-        html += `  The 84GB usage was caused by the Next.js website re-downloading these few Megabytes thousands of times, which has now been fixed with a Memory Cache!`;
+        html += `  ✅ No massive Base64 images found! Your database structure looks clean.\n`;
     }
     
     res.innerHTML = html;
