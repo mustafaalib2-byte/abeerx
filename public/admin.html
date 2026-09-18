@@ -8539,8 +8539,18 @@ async function runDatabaseAnalysis() {
   res.innerHTML = "Connecting to Firebase and downloading snapshot...";
 
   try {
-    const snapshot = await db.ref('/').once('value');
-    const data = snapshot.val() || {};
+    
+    // Avoid root-level permission denied by fetching nodes we know the admin has access to
+    const [abeerxSnap, perfumesSnap] = await Promise.all([
+      db.ref('/abeerx').once('value').catch(() => ({ val: () => null })),
+      db.ref('/perfumes').once('value').catch(() => ({ val: () => null }))
+    ]);
+    
+    const data = {
+      abeerx: abeerxSnap.val() || {},
+      perfumes: perfumesSnap.val() || {}
+    };
+
     const rawSize = new TextEncoder().encode(JSON.stringify(data)).length;
     
     let html = `<strong>TOTAL FIREBASE SIZE: ${(rawSize / (1024*1024)).toFixed(2)} MB</strong>\n`;
