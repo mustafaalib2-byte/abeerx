@@ -372,6 +372,7 @@
     <button class="nav-btn active" onclick="showTab('sale',this)">🧾 Invoices (KD)</button>
     <button class="nav-btn" onclick="showTab('weborders',this)">🌐 Web Orders <span class="web-badge" id="web-order-badge">0</span></button>
     <button id="nav-analyzer" class="nav-btn" onclick="showTab('analyzer',this)" style="color:#00ff00;">🔍 Data Analyzer</button>
+    <button id="nav-cloudflare" class="nav-btn" onclick="showTab('cloudflare',this)" style="color:#00e5ff;">☁️ Cloudflare Uploader</button>
     <button class="nav-btn" onclick="showTab('quote',this)">📝 Quotations</button>
     <button id="nav-purchase" class="nav-btn" onclick="showTab('purchase',this)" style="display:none;">🛒 Purchases</button>
     <button id="nav-po" class="nav-btn" onclick="showTab('po',this)" style="display:none;">🧰 Purchase Orders</button>
@@ -1487,6 +1488,7 @@
           </div>
           <div class="field"><label>Category</label><input type="text" id="cat-new-category" list="cat-category-list" placeholder="e.g. Cakes"><datalist id="cat-category-list"></datalist></div>
           <div class="field"><label>Selling Price (KD)</label><input type="number" id="cat-new-price" min="0" step="0.001" placeholder="0.000"></div>
+          <div class="field"><label>Product Image (Optional)</label><input type="file" id="cat-new-image" accept="image/*"></div>
           <div class="field">
             <label>SKU (Auto-Generated)</label>
             <input type="text" id="cat-new-sku" readonly style="background:#f4f2ef; color:var(--muted); font-weight:bold;">
@@ -1592,6 +1594,16 @@
     <p style="margin-bottom: 15px; color: var(--muted);">Scan your Firebase to find out what is taking up space and bandwidth.</p>
     <button class="btn btn-brown" onclick="runDatabaseAnalysis()" id="btn-run-analysis">Start Scan (Downloads full DB once)</button>
     <div id="analyzer-results" style="margin-top: 20px; font-family: monospace; white-space: pre-wrap; background: #f5f5f5; padding: 15px; border-radius: 5px; display: none; overflow-x: auto; font-size: 14px; line-height: 1.5;"></div>
+  </div>
+</div>
+
+<div id="panel-cloudflare" class="panel">
+  <div class="card" style="border-left: 5px solid #00e5ff;">
+    <div class="card-title">☁️ Cloudflare Bulk Uploader</div>
+    <p style="margin-bottom: 15px; color: var(--muted);">Select your Perfume_Images folder. This safely tunnels images through the Vercel API Bridge, completely bypassing Windows SSL network restrictions.</p>
+    <input type="file" id="cf-bulk-picker" webkitdirectory directory multiple style="margin-bottom:15px; font-size:1rem; padding:10px;" />
+    <div id="cf-bulk-progress" style="font-weight:bold; font-size:1.1rem; margin-bottom:10px;"></div>
+    <div id="cf-bulk-log" style="font-family: monospace; font-size: 0.8rem; background: #1f2937; color: #10b981; padding: 15px; height: 250px; overflow-y: auto; border-radius: 6px;"></div>
   </div>
 </div>
 
