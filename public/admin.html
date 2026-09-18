@@ -3600,6 +3600,66 @@ function wrapTablesForMobileScroll() {
 document.addEventListener('DOMContentLoaded', wrapTablesForMobileScroll);
 
 
+
+async function cleanUpOldR2Images() {
+    const logDiv = document.getElementById('cf-bulk-log');
+    const log = (msg) => { logDiv.innerHTML += `<div>${msg}</div>`; logDiv.scrollTop = logDiv.scrollHeight; };
+    
+    log("<br/><b>Scanning Cloudflare for misnamed timestamped images...</b>");
+    
+    try {
+        const listRes = await fetch('https://abeerx.vercel.app/api/r2/list');
+        const listData = await listRes.json();
+        if (!listRes.ok) throw new Error(listData.error || "Failed to list files");
+        
+        // Find files that start with products/17..._
+        const timestampedFiles = listData.files.filter(f => /^products\/\d{13}_/.test(f.key));
+        
+        if (timestampedFiles.length === 0) {
+            log("✅ No timestamped images found! Your bucket is clean.");
+            return;
+        }
+        
+        if (!confirm(`Found ${timestampedFiles.length} timestamped images that are wasting space.\nDo you want to permanently delete them?`)) {
+            log("Cleanup cancelled.");
+            return;
+        }
+        
+        log(`<b>Starting deletion of ${timestampedFiles.length} files...</b>`);
+        
+        let deleted = 0;
+        for (let i = 0; i < timestampedFiles.length; i += 10) {
+            const batch = timestampedFiles.slice(i, i + 10);
+            const promises = batch.map(file => {
+                return new Promise(async (resolve) => {
+                    try {
+                        const delRes = await fetch('https://abeerx.vercel.app/api/r2/delete', {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ key: file.key })
+                        });
+                        if (delRes.ok) {
+                            log(`Deleted: ${file.key.substring(0, 30)}...`);
+                        } else {
+                            log(`<span style="color:red">Failed to delete: ${file.key}</span>`);
+                        }
+                    } catch (e) {
+                        log(`<span style="color:red">Error deleting: ${file.key}</span>`);
+                    }
+                    deleted++;
+                    resolve();
+                });
+            });
+            await Promise.all(promises);
+            document.getElementById('cf-bulk-progress').innerText = `Deleted ${deleted} / ${timestampedFiles.length}`;
+        }
+        log("✅ Cleanup complete!");
+        
+    } catch(err) {
+        log(`<span style="color:red">Cleanup Error: ${err.message}</span>`);
+    }
+}
+
 async function runCloudflareBulkUpload(e) {
     const files = Array.from(e.target.files).filter(f => f.name.match(/\.(jpg|jpeg|png)$/i));
     if (files.length === 0) return alert("No images found!");
