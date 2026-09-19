@@ -3744,9 +3744,7 @@ async function runCloudflareBulkUpload(e) {
     
     log("✅ Bulk upload process complete!");
 }
-  };
-  reader.readAsArrayBuffer(file);
-}
+
 
 function downloadBackup() { 
   if (!isAdmin) return toast('❌ Security Block: Admin login required to download backups.');
