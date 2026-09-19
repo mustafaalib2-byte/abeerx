@@ -9,7 +9,7 @@ function getPriority(p: any) {
     return 0;
 }
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, useEffect, Suspense, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -26,6 +26,15 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [isMobileSortOpen, setIsMobileSortOpen] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
+  
+  // Infinite Scroll State
+  const [visibleCount, setVisibleCount] = useState(15);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  
+  // Reset visible count when filters or search changes
+  useEffect(() => {
+    setVisibleCount(15);
+  }, [urlBrand, urlFamily, urlQuery, urlGender, sortBy]);
 
   useEffect(() => {
     const handleOpenFilters = () => setIsMobileFiltersOpen(true);
@@ -211,6 +220,28 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
     return data;
   }, [baseProducts, filteredProducts]);
 
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount(prev => Math.min(prev + 15, filteredProducts.length));
+        }
+      },
+      { rootMargin: "400px" } // Load the next 15 when we are 400px away from the bottom
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [observerTarget, filteredProducts.length]);
+
   return (
     <div className="container mx-auto px-4 py-12 flex flex-col md:flex-row gap-8">
       
@@ -385,7 +416,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProducts.map(product => (
+            {filteredProducts.slice(0, visibleCount).map(product => (
               <div key={product.id} className="group flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
                 <div className="relative aspect-square bg-secondary mb-4 overflow-hidden border border-border/50">
                   <Image 
@@ -421,6 +452,13 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        
+        {/* Infinite Scroll Observer Target */}
+        {filteredProducts.length > visibleCount && (
+          <div ref={observerTarget} className="w-full h-20 flex items-center justify-center mt-8">
+             <div className="w-6 h-6 border-2 border-ring border-t-transparent rounded-full animate-spin"></div>
           </div>
         )}
       </div>
