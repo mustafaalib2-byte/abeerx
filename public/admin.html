@@ -3691,6 +3691,14 @@ async function loadWebCatalog() {
     try {
         const res = await fetch('https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog.json?t=' + Date.now());
         webCatalogCache = await res.json();
+        
+        webCatalogCache.sort((a, b) => {
+            const stockA = getStock(a.name) > 0 ? 1 : 0;
+            const stockB = getStock(b.name) > 0 ? 1 : 0;
+            if (stockA !== stockB) return stockB - stockA;
+            return a.name.localeCompare(b.name);
+        });
+        
         renderImageMgr();
     } catch (e) {
         listDiv.innerHTML = '<div style="color:red;">Error loading catalog: ' + e.message + '</div>';
@@ -5718,7 +5726,7 @@ function openPicker(targetId, mode) {
       gridEl.classList.remove('list-mode'); titleEl.textContent = 'Select or Type Expense Category'; 
       expenseCats.forEach(c => gridEl.appendChild(createPickerBtn(c))); 
   }
-  document.getElementById('picker-modal').classList.add('open'); setTimeout(() => { searchInput.focus(); updatePickerHighlight(); }, 50);
+  filterPicker(); document.getElementById('picker-modal').classList.add('open'); setTimeout(() => { searchInput.focus(); updatePickerHighlight(); }, 50);
 }
 
 function closePicker() { document.getElementById('picker-modal').classList.remove('open'); }
@@ -5759,7 +5767,12 @@ function renderBulkAddResults() {
     const matches = items.filter(name => {
         const sku = (itemDetails[name] && itemDetails[name].sku) || '';
         return name.toLowerCase().includes(q) || sku.toLowerCase().includes(q);
-    }).sort((a, b) => a.localeCompare(b));
+    }).sort((a, b) => {
+        const stockA = getStock(a) > 0 ? 1 : 0;
+        const stockB = getStock(b) > 0 ? 1 : 0;
+        if (stockA !== stockB) return stockB - stockA;
+        return a.localeCompare(b);
+    });
 
     if (matches.length === 0) {
         const none = document.createElement('div');

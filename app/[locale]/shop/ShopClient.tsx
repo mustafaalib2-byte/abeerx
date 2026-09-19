@@ -161,7 +161,12 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
         return { product: p, score };
       });
       
-      let sorted = scored.sort((a, b) => b.score - a.score).map(s => s.product);
+      let sorted = scored.sort((a, b) => {
+        const stockA = (a.product.totalStock || 0) > 0 ? 1 : 0;
+        const stockB = (b.product.totalStock || 0) > 0 ? 1 : 0;
+        if (stockA !== stockB) return stockB - stockA;
+        return b.score - a.score;
+      }).map(s => s.product);
       if (sortBy === 'price-low') sorted = sorted.sort((a, b) => a.price - b.price);
       if (sortBy === 'price-high') sorted = sorted.sort((a, b) => b.price - a.price);
       return sorted;

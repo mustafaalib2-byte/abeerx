@@ -20,14 +20,31 @@ const CATALOG_URL = 'https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog
 export const ProductService = {
   async getAllProducts(): Promise<Product[]> {
     try {
-      // Next.js will automatically cache this request, but revalidate every 60 seconds
-      // so when POS pushes a new catalog, the website updates smoothly.
       const res = await fetch(CATALOG_URL, { next: { revalidate: 60 } });
       if (!res.ok) throw new Error("Failed to fetch catalog from R2");
-      return await res.json();
+      const products = await res.json();
+      
+      const liveStock = await this.getLiveStock();
+      products.forEach((p: any) => {
+          p.totalStock = liveStock[p.name] || 0;
+      });
+      
+      return products;
     } catch (e) {
       console.error("Failed to load R2 catalog, falling back to empty:", e);
       return [];
+    }
+  },
+
+    async getLiveStock(): Promise<Record<string, number>> {
+    try {
+      if (!db) return {};
+      const snapshot = await get(child(ref(db), 'abeerx/liveStock'));
+      if (snapshot.exists()) return snapshot.val();
+      return {};
+    } catch (e) {
+      console.error("Failed to fetch liveStock:", e);
+      return {};
     }
   },
 
@@ -37,8 +54,13 @@ export const ProductService = {
   },
 
   async getFeaturedProducts(): Promise<Product[]> {
-    const products = catalogData as Product[];
-    return products.slice(0, 8); // Just return the first 8 for the homepage grid
+    const products = await this.getAllProducts();
+    products.sort((a, b) => {
+        const stockA = (a.totalStock || 0) > 0 ? 1 : 0;
+        const stockB = (b.totalStock || 0) > 0 ? 1 : 0;
+        return stockB - stockA;
+    });
+    return products.slice(0, 8);
   }
 };
 
