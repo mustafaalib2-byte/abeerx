@@ -3621,6 +3621,171 @@ document.addEventListener('DOMContentLoaded', wrapTablesForMobileScroll);
 
 
 
+
+let webCatalogCache = [];
+
+async function loadWebCatalog() {
+    const listDiv = document.getElementById('imagemgr-list');
+    listDiv.innerHTML = '<div>Loading from Cloudflare...</div>';
+    try {
+        const res = await fetch('https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog.json?t=' + Date.now());
+        webCatalogCache = await res.json();
+        renderImageMgr();
+    } catch (e) {
+        listDiv.innerHTML = '<div style="color:red;">Error loading catalog: ' + e.message + '</div>';
+    }
+}
+
+function filterImageMgr() {
+    renderImageMgr();
+}
+
+function renderImageMgr() {
+    const listDiv = document.getElementById('imagemgr-list');
+    const search = document.getElementById('imagemgr-search').value.toLowerCase();
+    
+    let html = '';
+    let count = 0;
+    
+    for (let i = 0; i < webCatalogCache.length; i++) {
+        const prod = webCatalogCache[i];
+        if (search && !prod.name.toLowerCase().includes(search) && !prod.sku.toLowerCase().includes(search)) {
+            continue;
+        }
+        
+        if (count > 50) {
+            html += '<div style="padding:10px; text-align:center; color:var(--muted);">Showing first 50 results. Keep typing to narrow down.</div>';
+            break;
+        }
+        
+        let imagesHtml = '';
+        const images = prod.images || [];
+        images.forEach((imgUrl, imgIdx) => {
+            let label = imgIdx === 0 ? "Cover" : `Image ${imgIdx + 1}`;
+            imagesHtml += `
+                <div style="position:relative; width:100px; height:100px; border:1px solid #ddd; border-radius:8px; overflow:hidden;">
+                    <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect fill=\'%23eee\' width=\'100\' height=\'100\'/><text x=\'50\' y=\'50\' text-anchor=\'middle\' dominant-baseline=\'middle\'>Error</text></svg>'">
+                    <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; font-size:10px; text-align:center; padding:2px;">${label}</div>
+                    <button onclick="deleteWebImage(${i}, ${imgIdx})" style="position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-weight:bold; font-size:12px; line-height:10px;">×</button>
+                </div>
+            `;
+        });
+        
+        html += `
+            <div style="border: 1px solid var(--border); border-radius: 8px; padding: 15px; background: #fafafa;">
+                <h4 style="margin-bottom:10px; color:var(--brand-brown);">${prod.name} <span style="color:var(--muted); font-size:0.85em;">(${prod.sku})</span></h4>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    ${imagesHtml}
+                    
+                    <div style="width:100px; height:100px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-direction:column; position:relative; background:#fff;">
+                        <input type="file" onchange="uploadWebImage(event, ${i})" style="opacity:0; position:absolute; top:0; left:0; width:100%; height:100%; cursor:pointer;" accept="image/*">
+                        <span style="font-size:24px; color:#aaa;">+</span>
+                        <span style="font-size:10px; color:#aaa;">Add Image</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        count++;
+    }
+    
+    if (count === 0) {
+        html = '<div style="color:var(--muted); text-align:center;">No products match your search.</div>';
+    }
+    listDiv.innerHTML = html;
+}
+
+async function uploadWebImage(event, prodIdx) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const prod = webCatalogCache[prodIdx];
+    const originalText = document.getElementById('imagemgr-search').placeholder;
+    document.getElementById('imagemgr-search').placeholder = 'Uploading image... Please wait...';
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("prefix", "products");
+    
+    try {
+        const res = await fetch('https://abeerx.vercel.app/api/r2/upload', { method: "POST", body: formData });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            prod.images = prod.images || [];
+            prod.images.push(data.url);
+            renderImageMgr();
+            await saveProductToWeb(prod.sku, prod.images);
+        } else {
+            alert("Upload failed: " + (data.error || "Unknown error"));
+        }
+    } catch(e) {
+        alert("Upload error: " + e.message);
+    }
+    document.getElementById('imagemgr-search').placeholder = originalText;
+}
+
+async function deleteWebImage(prodIdx, imgIdx) {
+    if (!confirm("Remove this image from the website?")) return;
+    
+    const prod = webCatalogCache[prodIdx];
+    const removedUrl = prod.images[imgIdx];
+    prod.images.splice(imgIdx, 1);
+    renderImageMgr();
+    
+    await saveProductToWeb(prod.sku, prod.images);
+    
+    try {
+        const key = removedUrl.split('.r2.dev/')[1];
+        if (key) {
+            await fetch('https://abeerx.vercel.app/api/r2/delete', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key: key })
+            });
+        }
+    } catch(e) {}
+}
+
+async function saveProductToWeb(sku, images) {
+    try {
+        const res = await fetch('https://abeerx.vercel.app/api/r2/update-images', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sku: sku, images: images })
+        });
+        if (!res.ok) throw new Error("Failed to sync database");
+    } catch (e) {
+        alert("Warning: Saved locally, but failed to sync to live website. " + e.message);
+    }
+}
+
+async function autoLinkWebImages() {
+    if (!confirm("This will scan all uploaded files in Cloudflare and automatically link Image 1, Image 2, Image 3 to products based on their barcode. Continue?")) return;
+    
+    const btn = event.target;
+    const oldText = btn.innerText;
+    btn.innerText = "⏳ Linking & Saving...";
+    btn.disabled = true;
+    
+    try {
+        const res = await fetch('https://abeerx.vercel.app/api/r2/auto-link', {
+            method: 'POST'
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+            alert(`Success! Successfully auto-linked images for ${data.updatedCount} products.`);
+            loadWebCatalog();
+        } else {
+            alert("Auto-Link failed: " + (data.error || "Unknown error"));
+        }
+    } catch(e) {
+        alert("Error auto-linking: " + e.message);
+    }
+    
+    btn.innerText = oldText;
+    btn.disabled = false;
+}
+
 async function cleanUpOldR2Images() {
     const logDiv = document.getElementById('cf-bulk-log');
     const log = (msg) => { logDiv.innerHTML += `<div>${msg}</div>`; logDiv.scrollTop = logDiv.scrollHeight; };
