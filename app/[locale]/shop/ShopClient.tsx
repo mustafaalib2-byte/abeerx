@@ -191,10 +191,27 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
     }
     
     let sorted = [...filtered];
-    if (sortBy === 'price-low') sorted.sort((a, b) => a.price - b.price);
-    if (sortBy === 'price-high') sorted.sort((a, b) => b.price - a.price);
-      if (sortBy === 'alpha-asc') sorted.sort((a, b) => a.name.localeCompare(b.name));
-      if (sortBy === 'alpha-desc') sorted.sort((a, b) => b.name.localeCompare(a.name));
+    if (sortBy === 'price-low') {
+        sorted.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price-high') {
+        sorted.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'alpha-asc') {
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'alpha-desc') {
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+    } else {
+        sorted.sort((a, b) => {
+             const pA = getPriority(a);
+             const pB = getPriority(b);
+             if (pA !== pB) return pB - pA;
+             
+             if (a.isBestSeller && !b.isBestSeller) return -1;
+             if (!a.isBestSeller && b.isBestSeller) return 1;
+             if (a.isFeatured && !b.isFeatured) return -1;
+             if (!a.isFeatured && b.isFeatured) return 1;
+             return a.name.localeCompare(b.name);
+        });
+    }
     return sorted;
   }, [baseProducts, selectedFilters, currentMin, currentMax, urlQuery, sortBy]);
 

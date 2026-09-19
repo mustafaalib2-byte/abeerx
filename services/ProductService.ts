@@ -48,12 +48,13 @@ export const ProductService = {
 
     async getLiveStock(): Promise<Record<string, number>> {
     try {
-      if (!db) return {};
-      const snapshot = await get(child(ref(db), 'abeerx/liveStock'));
-      if (snapshot.exists()) return snapshot.val();
-      return {};
+      const url = "https://abeerx-a9260-default-rtdb.firebaseio.com/abeerx/liveStock.json";
+      const res = await fetch(url, { next: { revalidate: 60 } });
+      if (!res.ok) throw new Error("Firebase REST failed");
+      const data = await res.json();
+      return data || {};
     } catch (e) {
-      console.error("Failed to fetch liveStock:", e);
+      console.error("Failed to fetch liveStock via REST:", e);
       return {};
     }
   },
