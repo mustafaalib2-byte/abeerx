@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
     
     // Clean filename
     let rawName = file.name;
-    if (rawName.includes("/")) rawName = rawName.split("/").pop();
-    if (rawName.includes("\\")) rawName = rawName.split("\\").pop();
+    if (rawName.includes("/")) rawName = rawName.split("/").pop() as string;
+    if (rawName.includes("\\")) rawName = rawName.split("\\").pop() as string;
     const safeName = rawName.replace(/[^a-zA-Z0-9.\-_]/g, "_").toLowerCase();
     const key = `${prefix}/${safeName}`;
 
