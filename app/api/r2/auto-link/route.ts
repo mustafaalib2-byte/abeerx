@@ -64,6 +64,8 @@ export async function POST(req: NextRequest) {
       if (urls && urls.length > 0) {
         prod.images = urls;
         updatedCount++;
+      } else {
+        prod.images = [];
       }
     }
 

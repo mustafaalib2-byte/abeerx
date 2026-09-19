@@ -17,6 +17,16 @@ import catalogData from '../public/catalog.json';
 // --- STATIC CATALOG (0 BANDWIDTH) via CLOUDFLARE R2 ---
 const CATALOG_URL = 'https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog.json';
 
+
+function getPriority(p: any) {
+    const hasStock = (p.totalStock || 0) > 0;
+    const hasImage = p.images && p.images.length > 0;
+    if (hasStock && hasImage) return 3;
+    if (hasStock && !hasImage) return 2;
+    if (!hasStock && hasImage) return 1;
+    return 0;
+}
+
 export const ProductService = {
   async getAllProducts(): Promise<Product[]> {
     try {
@@ -56,9 +66,9 @@ export const ProductService = {
   async getFeaturedProducts(): Promise<Product[]> {
     const products = await this.getAllProducts();
     products.sort((a, b) => {
-        const stockA = (a.totalStock || 0) > 0 ? 1 : 0;
-        const stockB = (b.totalStock || 0) > 0 ? 1 : 0;
-        return stockB - stockA;
+        const pA = getPriority(a);
+        const pB = getPriority(b);
+        return pB - pA;
     });
     return products.slice(0, 8);
   }

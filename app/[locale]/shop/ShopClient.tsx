@@ -1,5 +1,14 @@
 "use client";
 
+function getPriority(p: any) {
+    const hasStock = (p.totalStock || 0) > 0;
+    const hasImage = p.images && p.images.length > 0;
+    if (hasStock && hasImage) return 3;
+    if (hasStock && !hasImage) return 2;
+    if (!hasStock && hasImage) return 1;
+    return 0;
+}
+
 import { useState, useMemo, useEffect, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -162,9 +171,9 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
       });
       
       let sorted = scored.sort((a, b) => {
-        const stockA = (a.product.totalStock || 0) > 0 ? 1 : 0;
-        const stockB = (b.product.totalStock || 0) > 0 ? 1 : 0;
-        if (stockA !== stockB) return stockB - stockA;
+        const pA = getPriority(a.product);
+        const pB = getPriority(b.product);
+        if (pA !== pB) return pB - pA;
         return b.score - a.score;
       }).map(s => s.product);
       if (sortBy === 'price-low') sorted = sorted.sort((a, b) => a.price - b.price);
