@@ -2946,6 +2946,9 @@ let isAdmin = false;
 let isStaff = false;
 let currentStaff = null; // { uid, name, email } — set once a staff login is verified against staffAccounts/{uid}
 const ADMIN_EMAIL = "mustafaalib2@gmail.com";
+// Sent as the x-admin-key header on every call to the /api/r2/* endpoints below.
+// Must match the ADMIN_API_KEY env var set on the Vercel project.
+const ADMIN_API_KEY = "a127df916e828b3e321633cf9f5f53497041cae321fb866b";
 localStorage.setItem('shop_is_admin', 'false'); 
 
 // Who's doing the saving right now — stamped onto every record so the Admin can see
@@ -3628,10 +3631,10 @@ async function cleanUpOldR2Images() {
     log("<br/><b>Scanning Cloudflare for misnamed timestamped images...</b>");
     
     try {
-        const listRes = await fetch('https://abeerx.vercel.app/api/r2/list');
+        const listRes = await fetch('https://abeerx.vercel.app/api/r2/list', { headers: { 'x-admin-key': ADMIN_API_KEY } });
         const listData = await listRes.json();
         if (!listRes.ok) throw new Error(listData.error || "Failed to list files");
-        
+
         // Find files that start with products/17..._
         const timestampedFiles = listData.files.filter(f => /^products\/\d{13}_/.test(f.key) || f.key.startsWith("products/perfume_images_"));
         
@@ -3655,7 +3658,7 @@ async function cleanUpOldR2Images() {
                     try {
                         const delRes = await fetch('https://abeerx.vercel.app/api/r2/delete', {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: { "Content-Type": "application/json", "x-admin-key": ADMIN_API_KEY },
                             body: JSON.stringify({ key: file.key })
                         });
                         if (delRes.ok) {
@@ -3771,7 +3774,7 @@ async function saveProductToWeb(sku, images) {
     try {
         const res = await fetch('https://abeerx.vercel.app/api/r2/update-images', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
             body: JSON.stringify({ sku: sku, images: images })
         });
         if (!res.ok) throw new Error("Failed to sync database");
@@ -8739,9 +8742,19 @@ window.deleteFirebaseNode = async function(path) {
     if(confirm(`Are you SURE you want to delete ${path}? This will instantly remove it from the database to save space.`)) {
         try {
             await db.ref(path).remove();
-            alert("Deleted successfully! Run the scan again to see your new database size.");
+            // Verify it's actually gone — a rejected write from Security Rules doesn't
+            // always throw client-side, so trust a re-read over the resolved promise.
+            const check = await db.ref(path).once('value');
+            if (check.exists()) {
+                console.error('Delete appeared to succeed but data is still present at', path, check.val());
+                alert("⚠️ Delete request completed, but the data is STILL THERE at " + path + ".\nThis usually means your Firebase Security Rules allow writing to this path but block deleting it. Check the Rules tab in the Firebase console for a rule like \".write\": \"newData.exists()\" on this path — that pattern allows updates but silently rejects deletes.");
+            } else {
+                alert("Deleted successfully! Re-scanning now...");
+                runDatabaseAnalysis();
+            }
         } catch(e) {
-            alert("Error deleting: " + e.message);
+            console.error('Delete failed for', path, e);
+            alert("Error deleting " + path + ": " + e.message + (e.code ? " (" + e.code + ")" : ""));
         }
     }
 };
@@ -8755,7 +8768,11 @@ async function runDatabaseAnalysis() {
   res.innerHTML = "Connecting to Firebase and downloading snapshot...";
 
   try {
-    const abeerxKeys = ['content', 'invoices', 'itemDetails', 'itemRates', 'items', 'liveStock', 'partiesList', 'payments', 'productImages', 'purchases', 'settings', 'staffDesignations'];
+    const abeerxKeys = ['content', 'invoices', 'itemDetails', 'itemRates', 'items', 'liveStock', 'partiesList', 'payments', 'productImages', 'purchases', 'settings', 'staffDesignations',
+      // Added: these are all read with a live .on('value') listener every time admin.html
+      // loads (see attachPublicListeners/attachPrivateListeners), but the analyzer never
+      // measured them, so they were invisible in earlier scans.
+      'quotations', 'webOrders', 'expenseCats', 'expenses', 'purchaseOrders', 'staffAccounts', 'tasks', 'labelTemplates', 'coupons'];
     const promises = abeerxKeys.map(k => db.ref(`abeerx/${k}`).once('value').catch((e) => ({ val: () => null })));
     promises.push(db.ref('perfumes').once('value').catch((e) => ({ val: () => null })));
     
@@ -8829,7 +8846,7 @@ async function uploadWebImage(event, prodIdx) {
     formData.append("file", file);
     formData.append("prefix", "products");
     try {
-        const res = await fetch('https://abeerx.vercel.app/api/r2/upload', { method: "POST", body: formData });
+        const res = await fetch('https://abeerx.vercel.app/api/r2/upload', { method: "POST", headers: { 'x-admin-key': ADMIN_API_KEY }, body: formData });
         const data = await res.json();
         if (res.ok && data.success) {
             prod.images = prod.images || [];
@@ -8850,13 +8867,13 @@ async function deleteWebImage(prodIdx, imgIdx) {
     await saveProductToWeb(prod.sku, prod.images);
     try {
         const key = removedUrl.split('.r2.dev/')[1];
-        if (key) await fetch('https://abeerx.vercel.app/api/r2/delete', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: key }) });
+        if (key) await fetch('https://abeerx.vercel.app/api/r2/delete', { method: "POST", headers: { "Content-Type": "application/json", "x-admin-key": ADMIN_API_KEY }, body: JSON.stringify({ key: key }) });
     } catch(e) {}
 }
 
 async function saveProductToWeb(sku, images) {
     try {
-        const res = await fetch('https://abeerx.vercel.app/api/r2/update-images', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sku: sku, images: images }) });
+        const res = await fetch('https://abeerx.vercel.app/api/r2/update-images', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY }, body: JSON.stringify({ sku: sku, images: images }) });
         if (!res.ok) throw new Error("Failed to sync database");
     } catch (e) { alert("Warning: Saved locally, but failed to sync to live website. " + e.message); }
 }
@@ -8868,7 +8885,7 @@ async function autoLinkWebImages() {
     btn.innerText = "⏳ Linking & Saving...";
     btn.disabled = true;
     try {
-        const res = await fetch('https://abeerx.vercel.app/api/r2/auto-link', { method: 'POST' });
+        const res = await fetch('https://abeerx.vercel.app/api/r2/auto-link', { method: 'POST', headers: { 'x-admin-key': ADMIN_API_KEY } });
         const data = await res.json();
         if (res.ok && data.success) { alert(`Success! Successfully auto-linked images for ${data.updatedCount} products.`); loadWebCatalog(); }
         else alert("Auto-Link failed: " + (data.error || "Unknown error"));
@@ -8888,7 +8905,7 @@ async function runCloudflareBulkUpload(e) {
     const apiUrl = 'https://abeerx.vercel.app/api/r2/upload';
     let existingKeys = new Set();
     try {
-        const listRes = await fetch('https://abeerx.vercel.app/api/r2/list');
+        const listRes = await fetch('https://abeerx.vercel.app/api/r2/list', { headers: { 'x-admin-key': ADMIN_API_KEY } });
         const listData = await listRes.json();
         if (listRes.ok && listData.files) {
             listData.files.forEach(f => existingKeys.add(f.key));
@@ -8908,7 +8925,7 @@ async function runCloudflareBulkUpload(e) {
                 if (existingKeys.has(expectedKey)) { log(`<span style="color:gray">Skipped (Already Exists): ${safeName}</span>`); skipped++; resolve(); return; }
                 const formData = new FormData(); formData.append("file", file); formData.append("prefix", "products");
                 try {
-                    const res = await fetch(apiUrl, { method: "POST", body: formData });
+                    const res = await fetch(apiUrl, { method: "POST", headers: { 'x-admin-key': ADMIN_API_KEY }, body: formData });
                     const data = await res.json();
                     if (res.ok && data.success) { log(`Success: ${safeName}`); uploaded++; }
                     else log(`<span style="color:red">Failed: ${safeName} - ${data.error}</span>`);

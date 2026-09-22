@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { S3Client, ListObjectsV2Command, PutObjectCommand } from "@aws-sdk/client-s3";
+import { isAuthorizedAdminRequest, CORS_HEADERS } from "@/lib/adminAuth";
 
 const s3Client = new S3Client({
   region: "auto",
   endpoint: `https://2604e12a7f799efe440edaaba8db3d20.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID || "762534b8472c635b562556734a5a3b58",
-    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY || "2397ba96b3235b86776e6c694204906220f384c3db03acf62bffce8696119e8a",
+    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY || "",
   },
   forcePathStyle: true,
 });
 
 export async function POST(req: NextRequest) {
+  if (!isAuthorizedAdminRequest(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: CORS_HEADERS });
+  }
+
   try {
     // 1. Fetch current catalog
     const catalogUrl = 'https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog.json?t=' + Date.now();
@@ -23,11 +28,11 @@ export async function POST(req: NextRequest) {
     let isTruncated = true;
     let continuationToken = undefined;
     let allFiles: string[] = [];
-    
+
     while (isTruncated) {
       const commandArgs: any = { Bucket: process.env.CLOUDFLARE_BUCKET_NAME || "abeerx", Prefix: "products/" };
       if (continuationToken) commandArgs.ContinuationToken = continuationToken;
-      
+
       const data = await s3Client.send(new ListObjectsV2Command(commandArgs));
       if (data.Contents) {
         allFiles = allFiles.concat(data.Contents.map(file => file.Key as string));
@@ -42,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     for (const key of allFiles) {
       if (!key.match(/\.(png|jpg|jpeg|webp)$/i)) continue;
-      
+
       // Match SKU in filename (e.g., ..._8411061869376.png or ..._8411061869376_2.png)
       const match = key.match(/_(\d{8,14})(?:_.*)?\.\w+$/);
       if (match) {
@@ -82,20 +87,16 @@ export async function POST(req: NextRequest) {
       })
     );
 
-    return NextResponse.json({ success: true, updatedCount }, { headers: { 'Access-Control-Allow-Origin': '*' } });
+    return NextResponse.json({ success: true, updatedCount }, { headers: CORS_HEADERS });
   } catch (error: any) {
     console.error("R2 Auto-Link Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500, headers: { 'Access-Control-Allow-Origin': '*' } });
+    return NextResponse.json({ error: error.message }, { status: 500, headers: CORS_HEADERS });
   }
 }
 
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
+    headers: CORS_HEADERS,
   });
 }

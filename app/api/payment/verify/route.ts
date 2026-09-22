@@ -17,8 +17,11 @@ export async function GET(request: Request) {
   try {
     let isSuccess = false;
 
-    if (paymentId.startsWith('mock_')) {
-      // Handle mock payment for development
+    if (paymentId.startsWith('mock_') && !MYFATOORAH_TOKEN) {
+      // Dev-only fallback: only trusted when no real gateway token is configured.
+      // Once MYFATOORAH_TOKEN is set (production), a "mock_" paymentId is
+      // treated as a real one below and will fail verification, instead of
+      // silently marking an unpaid order as Completed.
       isSuccess = true;
     } else {
       // Verify real payment securely server-to-server
