@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/features/cart/CartContext";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { db } from "@/firebase/clientApp";
 import { ref, push, set } from "firebase/database";
@@ -23,6 +23,49 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string, type: string, value: number, min: number} | null>(null);
+
+  // ---- Precise delivery location (ticked by default) ----
+  // Saved on the order as a Google Maps link; the POS prints it as a QR code on the delivery label.
+  type GeoFix = { lat: number; lng: number; accuracy: number };
+  const [shareLocation, setShareLocation] = useState(true);
+  const [geo, setGeo] = useState<GeoFix | null>(null);
+  const [geoStatus, setGeoStatus] = useState<'idle' | 'fetching' | 'ok' | 'denied' | 'error' | 'unsupported'>('idle');
+  const geoRequest = useRef<Promise<GeoFix | null> | null>(null);
+
+  const requestLocation = (): Promise<GeoFix | null> => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setGeoStatus('unsupported');
+      return Promise.resolve(null);
+    }
+    if (geoRequest.current) return geoRequest.current; // one request at a time
+    setGeoStatus('fetching');
+    geoRequest.current = new Promise<GeoFix | null>((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const fix = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: Math.round(pos.coords.accuracy) };
+          setGeo(fix);
+          setGeoStatus('ok');
+          geoRequest.current = null;
+          resolve(fix);
+        },
+        (err) => {
+          setGeoStatus(err.code === err.PERMISSION_DENIED ? 'denied' : 'error');
+          geoRequest.current = null;
+          resolve(null);
+        },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+      );
+    });
+    return geoRequest.current;
+  };
+
+  // Box is ticked by default, so ask for the location as soon as checkout opens.
+  useEffect(() => {
+    if (shareLocation && !geo) requestLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const mapsUrlFor = (fix: GeoFix) => `https://www.google.com/maps?q=${fix.lat.toFixed(6)},${fix.lng.toFixed(6)}`;
 
   const applyCoupon = async () => {
     setCouponError('');
@@ -76,6 +119,14 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
     setIsSubmitting(true);
     
     try {
+      let fix = shareLocation ? geo : null;
+      if (shareLocation && !fix) {
+        fix = await Promise.race([
+          requestLocation(),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000)),
+        ]);
+      }
+
       // Create the exact schema the POS expects for "Web Orders"
       const orderRef = push(ref(db, 'abeerx/webOrders'));
       const orderId = Date.now(); // We use timestamp for the numeric ID just like the POS does internally
@@ -94,7 +145,9 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
           email: formData.email,
           area: formData.area,
           address: `Block ${formData.block}, St ${formData.street}, House/Bldg ${formData.house}`,
-          notes: formData.notes
+          notes: formData.notes,
+          // Only present when the customer shared their location (Firebase rejects undefined values)
+          ...(fix ? { locationUrl: mapsUrlFor(fix), location: fix } : {})
         },
         items: items.map(i => ({
           item: i.product.name,
@@ -171,6 +224,46 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
               <input required name="street" onChange={handleInputChange} placeholder={isArabic ? "شارع" : "Street"} className="w-full p-4 border border-border bg-background text-foreground focus:outline-none focus:border-ring" />
               <input required name="house" onChange={handleInputChange} placeholder={isArabic ? "منزل / مبنى" : "House/Bldg"} className="w-full p-4 border border-border bg-background text-foreground focus:outline-none focus:border-ring" />
               <textarea name="notes" onChange={handleInputChange} placeholder={isArabic ? "ملاحظات التوصيل (اختياري)" : "Additional Directions (Optional)"} className="w-full p-4 border border-border bg-background text-foreground focus:outline-none focus:border-ring md:col-span-3 resize-none h-24" />
+            </div>
+
+            <div className="mt-4 p-4 border border-border bg-secondary">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={shareLocation}
+                  onChange={(e) => { setShareLocation(e.target.checked); if (e.target.checked && !geo) requestLocation(); }}
+                  className="mt-1 accent-ring w-4 h-4"
+                />
+                <span className="text-sm text-foreground">
+                  {isArabic ? "📍 مشاركة موقعي الدقيق لتوصيل أسرع (موصى به)" : "📍 Share my exact location for faster delivery (recommended)"}
+                  <span className="block text-xs text-muted-foreground mt-1">
+                    {isArabic ? "يُستخدم فقط لمساعدة السائق في الوصول إليك." : "Only used to help our driver find you."}
+                  </span>
+                </span>
+              </label>
+              {shareLocation && (
+                <div className="mt-2 text-xs pl-7">
+                  {geoStatus === 'fetching' && <span className="text-muted-foreground">{isArabic ? "جارٍ تحديد موقعك…" : "Getting your location…"}</span>}
+                  {geoStatus === 'ok' && geo && (
+                    <span className={geo.accuracy > 100 ? "text-amber-700" : "text-green-700"}>
+                      {isArabic ? `✓ تم تحديد الموقع (±${geo.accuracy} م)` : `✓ Location captured (±${geo.accuracy} m)`}{" · "}
+                      <a href={mapsUrlFor(geo)} target="_blank" rel="noopener noreferrer" className="underline">{isArabic ? "عرض على الخريطة" : "View on map"}</a>
+                      {geo.accuracy > 100 && (
+                        <span className="block mt-1">{isArabic ? "الموقع تقريبي. للحصول على موقع دقيق، اطلب من هاتفك مع تشغيل GPS." : "This looks approximate. For a precise pin, order from your phone with location/GPS on."}</span>
+                      )}
+                    </span>
+                  )}
+                  {(geoStatus === 'denied' || geoStatus === 'error') && (
+                    <span className="text-red-600">
+                      {geoStatus === 'denied'
+                        ? (isArabic ? "تم رفض إذن الموقع. اسمح بالوصول إلى الموقع لهذا الموقع من إعدادات المتصفح، أو ألغِ تحديد هذا الخيار." : "Location permission is blocked. Allow location for this site in your browser settings, or untick this box.")
+                        : (isArabic ? "تعذر تحديد موقعك." : "Couldn't get your location.")}{" "}
+                      <button type="button" onClick={() => requestLocation()} className="underline font-bold">{isArabic ? "حاول مرة أخرى" : "Try again"}</button>
+                    </span>
+                  )}
+                  {geoStatus === 'unsupported' && <span className="text-muted-foreground">{isArabic ? "متصفحك لا يدعم تحديد الموقع." : "Your browser doesn't support location sharing."}</span>}
+                </div>
+              )}
             </div>
           </section>
 

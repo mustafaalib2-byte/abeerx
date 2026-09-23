@@ -15,6 +15,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <!-- Barcode Generator Library -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 
 <style>
   :root {
@@ -466,6 +467,11 @@
           <div style="margin-top:10px;">
             <label style="margin:0 0 4px; font-size:0.9rem; display:block;">Delivery Address:</label>
             <textarea id="sale-delivery-address" placeholder="Area, block, street, building/house, floor, notes..." rows="2" style="width:100%; padding:8px; resize:vertical; font-family:inherit;"></textarea>
+          </div>
+          <div style="margin-top:10px;">
+            <label style="margin:0 0 4px; font-size:0.9rem; display:block;">📍 Customer Location (Google Maps link):</label>
+            <input type="url" id="sale-delivery-location" placeholder="https://www.google.com/maps?q=..." style="width:100%; padding:8px;">
+            <div style="font-size:0.75rem; color:var(--muted); margin-top:3px;">Filled automatically from website orders (or paste a link). Prints as a QR code on the delivery label.</div>
           </div>
           <div style="margin-top:10px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
             <label style="margin:0; font-size:0.9rem;">Payment Status:</label>
@@ -1960,6 +1966,22 @@ function applyDeliverySettings(del) {
     // Don't overwrite what the admin is typing right now
     if (feeInput && document.activeElement !== feeInput) feeInput.value = DEFAULT_DELIVERY_CHARGE;
     if (minInput && document.activeElement !== minInput) minInput.value = FREE_DELIVERY_THRESHOLD;
+}
+
+// Only real web links go into QR codes / clickable map links.
+function isSafeMapUrl(u) {
+    return typeof u === 'string' && /^https?:\/\/\S+$/i.test(u.trim());
+}
+
+// QR code as a GIF data URL (prints reliably and works in the image/PDF export). Needs qrcode-generator.
+function makeQrDataUrl(text) {
+    try {
+        if (typeof qrcode !== 'function') return '';
+        const qr = qrcode(0, 'M');
+        qr.addData(String(text).trim());
+        qr.make();
+        return qr.createDataURL(4, 2);
+    } catch (e) { console.warn('QR generation failed', e); return ''; }
 }
 
 function saveDeliverySettings() {
@@ -3906,6 +3928,7 @@ function renderWebOrders() {
                 <strong>Customer:</strong> ${escH(c.name || 'Web Customer')} <br>
                 <strong>Mobile:</strong> ${escH(c.mobile || '--')} <br>
                 <strong>Address:</strong> ${escH(c.area || '')}, ${escH(c.address || '')}
+                ${isSafeMapUrl(c.locationUrl) ? `<br><a href="${escH(c.locationUrl)}" target="_blank" rel="noopener" style="color:var(--brand-pink); font-weight:bold;">📍 Open exact location</a>${c.location && c.location.accuracy ? ` <span style="color:var(--muted); font-size:0.75rem;">(±${escH(String(c.location.accuracy))} m)</span>` : ''}` : `<br><span style="color:var(--muted); font-size:0.8rem;">📍 No location shared</span>`}
                 ${c.notes ? `<br><em style="color:var(--muted)">Notes: ${escH(c.notes)}</em>` : ''}
                 <br><strong style="color:var(--sage); margin-top:5px; display:inline-block;">Payment Preference: ${escH(order.paymentMethod || 'Cash on Delivery')}</strong>
               </div>
@@ -3989,6 +4012,8 @@ function acceptAndInvoiceWebOrder(firebaseKey) {
   setCustomerType('sale', 'parcel');
   const addrEl = document.getElementById('sale-delivery-address');
   if (addrEl) addrEl.value = [c.area, c.address].filter(Boolean).join(', ');
+  const locEl = document.getElementById('sale-delivery-location');
+  if (locEl) locEl.value = c.locationUrl || '';
   // Default the Payment Status tick from the web order's own payment method — staff can still
   // flip it manually before saving if it's actually wrong.
   setCollectStatus('sale', order.paymentMethod === 'Cash on Delivery' ? 'cod' : 'paid');
@@ -4624,7 +4649,7 @@ function saveTransaction(type, postAction = null) {
   // when the customer pays it, it's a pass-through to the 3rd-party courier and must stay out of
   // accounts; when the shop bears it (manually, or automatically above the free-delivery
   // threshold), it's booked separately as an expense (see below) instead.
-  let custType = 'walkin', deliveryCharge = 0, deliveryBorneBy = 'customer', deliveryAutoFree = false, deliverySelectedBorneBy = 'customer', deliveryAddress = '', deliveryForceCharge = false;
+  let custType = 'walkin', deliveryCharge = 0, deliveryBorneBy = 'customer', deliveryAutoFree = false, deliverySelectedBorneBy = 'customer', deliveryAddress = '', deliveryForceCharge = false, deliveryLocation = '';
   if (isSale || isQuote) {
       custType = customerType[type] || 'walkin';
       if (custType === 'parcel') {
@@ -4639,6 +4664,8 @@ function saveTransaction(type, postAction = null) {
           deliveryBorneBy = deliveryAutoFree ? 'shop' : deliverySelectedBorneBy;
           const addrEl = document.getElementById(`${type}-delivery-address`);
           deliveryAddress = addrEl ? addrEl.value.trim() : '';
+          const locEl = document.getElementById(`${type}-delivery-location`);
+          deliveryLocation = locEl ? locEl.value.trim() : '';
       }
   }
 
@@ -4676,7 +4703,7 @@ function saveTransaction(type, postAction = null) {
       id: finalId, type, num, date, party, mobile, exRate, currency, note, logistics, 
       subtotal, discountVal, discountType, discountAmt, payMethod, total, rows,
       priceMode, wholesaleDiscPct,
-      custType, deliveryCharge, deliveryBorneBy, deliveryAutoFree, deliverySelectedBorneBy, deliveryAddress, deliveryForceCharge,
+      custType, deliveryCharge, deliveryBorneBy, deliveryAutoFree, deliverySelectedBorneBy, deliveryAddress, deliveryForceCharge, deliveryLocation,
       isWebOrder, webOrderPaymentMethod, collectOnDelivery,
       prevDueIncluded, prevDueAmt, paidAmt,
       createdAt, updatedAt,
@@ -5305,6 +5332,8 @@ function setCustomerType(type, mode) {
         document.getElementById(`${type}-delivery-amt`).value = '';
         const addrEl = document.getElementById(`${type}-delivery-address`);
         if (addrEl) addrEl.value = '';
+        const locEl = document.getElementById(`${type}-delivery-location`);
+        if (locEl) locEl.value = '';
         setDeliveryBorneBy(type, 'customer');
         if (document.getElementById(`${type}-collect-paid-btn`)) setCollectStatus(type, 'paid');
     }
@@ -6076,6 +6105,8 @@ function editEntry(id, type) {
             if (forceChargeEl) forceChargeEl.checked = !!t.deliveryForceCharge;
             const addrEl = document.getElementById(`${type}-delivery-address`);
             if (addrEl) addrEl.value = t.deliveryAddress || '';
+            const locEl = document.getElementById(`${type}-delivery-location`);
+            if (locEl) locEl.value = t.deliveryLocation || '';
             if (type === 'sale') setCollectStatus('sale', t.collectOnDelivery ? 'cod' : 'paid');
         }
         if (type === 'sale') {
@@ -6900,6 +6931,15 @@ function buildPrintHtml(bill, type, isAnonymous = false, isImage = false) {
   let deliverySlipHtml = '';
   if (isSale && bill.custType === 'parcel') {
       const codLine = bill.collectOnDelivery ? `<strong>Amount of KD ${fmt(printGrandTotal)} to be collected.</strong><br>` : '';
+      // Customer's exact location as a scannable QR (driver scans → Google Maps opens with the pin).
+      // If the QR library didn't load, fall back to printing the link itself.
+      let locationQrHtml = '';
+      if (isSafeMapUrl(bill.deliveryLocation)) {
+          const qrSrc = makeQrDataUrl(bill.deliveryLocation);
+          locationQrHtml = qrSrc
+              ? `<div style="text-align:center; flex-shrink:0;"><img src="${qrSrc}" alt="Location QR" style="width:110px; height:110px; image-rendering:pixelated; display:block;"><div style="font-size:10px; font-weight:bold; color:#3e200c; margin-top:2px;">📍 SCAN FOR LOCATION</div></div>`
+              : `<div style="font-size:10px; max-width:180px; word-break:break-all; color:#3e200c;">📍 ${escH(bill.deliveryLocation)}</div>`;
+      }
       deliverySlipHtml = `
       <div style="margin-top:20px; page-break-inside: avoid;">
         <div style="text-align:center; font-size:11px; color:#999; letter-spacing:2px; margin-bottom:10px; border-top:2px dashed #999; padding-top:10px;">✂️ — — — — — — — — — TEAR HERE — — — — — — — — — ✂️</div>
@@ -6907,11 +6947,14 @@ function buildPrintHtml(bill, type, isAnonymous = false, isImage = false) {
           <div style="font-weight:800; font-size:15px; color:#3e200c; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
             <span>📦 DELIVERY LABEL</span><span style="font-family:'DM Mono',monospace; font-size:13px;">${escH(bill.num || '')}</span>
           </div>
-          <div style="font-size:14px; line-height:1.8; color:#222;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px;">
+          <div style="font-size:14px; line-height:1.8; color:#222; flex:1; min-width:0;">
             <strong>Deliver To:</strong> ${escH(bill.party || '')}<br>
             <strong>Mobile:</strong> ${escH(bill.mobile || '—')}<br>
             <strong>Address:</strong> ${escH(bill.deliveryAddress || '—')}<br>
             ${codLine}
+          </div>
+          ${locationQrHtml}
           </div>
         </div>
       </div>`;
