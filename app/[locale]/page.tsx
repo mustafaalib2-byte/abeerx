@@ -115,7 +115,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredProducts.map(product => (
               <div key={product.id} className="group flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
-                <div className="relative aspect-square bg-secondary mb-4 overflow-hidden">
+                <Link href={`/${locale}/product/${product.slug}`} className="relative block aspect-square bg-secondary mb-4 overflow-hidden">
                   <Image 
                   src={product.images[0] || '/placeholder.jpg'} 
                   alt={product.name} 
@@ -128,7 +128,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                       New
                     </span>
                   )}
-                </div>
+                </Link>
                 <div className="flex-grow flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{product.brand}</span>
                   <Link href={`/${locale}/product/${product.slug}`} className="text-lg font-serif mb-2 group-hover:text-ring transition-colors line-clamp-1 text-foreground">

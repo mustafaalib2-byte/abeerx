@@ -434,7 +434,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.slice(0, visibleCount).map(product => (
-              <div key={product.id} className="group flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
+              <Link key={product.id} href={`/${locale}/product/${product.slug}`} className="group flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
                 <div className="relative aspect-square bg-secondary mb-4 overflow-hidden border border-border/50">
                   <Image 
                     src={product.images[0] || '/placeholder.jpg'} 
@@ -451,9 +451,9 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                 </div>
                 <div className="flex-grow flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{product.brand}</span>
-                  <Link href={`/${locale}/product/${product.slug}`} className="text-lg font-serif mb-2 group-hover:text-ring transition-colors line-clamp-1 text-foreground">
+                  <span className="text-lg font-serif mb-2 group-hover:text-ring transition-colors line-clamp-1 text-foreground">
                     {product.name}
-                  </Link>
+                  </span>
                   <div className="mt-auto flex items-center justify-between text-foreground">
                     <div>
                       {product.salePrice ? (
@@ -467,7 +467,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
