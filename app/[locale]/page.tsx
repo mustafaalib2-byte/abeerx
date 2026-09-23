@@ -2,6 +2,7 @@ export const revalidate = 60;
 import { ProductService } from "@/services/ProductService";
 import Link from "next/link";
 import Image from "next/image";
+import { AddToCartButton } from "@/features/cart/AddToCartButton";
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -136,9 +137,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                   </Link>
                   <div className="mt-auto flex items-center justify-between text-foreground">
                     <span className="font-medium">{product.price.toFixed(2)} {product.currency}</span>
-                    <button className="text-xs uppercase tracking-wider font-bold hover:text-ring transition-colors">
-                      {isArabic ? "أضف للسلة" : "Add to Cart"}
-                    </button>
+                    <AddToCartButton product={product} locale={locale} />
                   </div>
                 </div>
               </div>
