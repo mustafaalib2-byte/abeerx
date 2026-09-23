@@ -11,7 +11,7 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, variant?: ProductVariant, quantity?: number) => void;
+  addToCart: (product: Product, variant?: ProductVariant, quantity?: number, openCart?: boolean) => void;
   removeFromCart: (sku: string) => void;
   updateQuantity: (sku: string, quantity: number) => void;
   clearCart: () => void;
@@ -47,7 +47,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, isMounted]);
 
-  const addToCart = (product: Product, variant?: ProductVariant, quantity = 1) => {
+  // openCart=false lets product cards add silently (they show their own − qty + control instead)
+  const addToCart = (product: Product, variant?: ProductVariant, quantity = 1, openCart = true) => {
     setItems(prev => {
       const sku = variant ? variant.sku : product.sku;
       const existing = prev.find(item => (item.variant ? item.variant.sku : item.product.sku) === sku);
@@ -61,7 +62,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { product, variant, quantity }];
     });
-    setIsCartOpen(true);
+    if (openCart) setIsCartOpen(true);
   };
 
   const removeFromCart = (sku: string) => {
