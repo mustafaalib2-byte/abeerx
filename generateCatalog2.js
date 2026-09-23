@@ -25,9 +25,15 @@ async function run() {
       let basePrice = 0;
       let isDiscounted = false;
       
-      if (itemRates[key]) {
-          basePrice = parseFloat(itemRates[key].rate) || 0;
-          isDiscounted = itemRates[key].isDiscounted || false;
+      const rateVal = itemRates[key];
+      if (rateVal !== undefined && rateVal !== null) {
+          // The admin panel saves itemRates as plain numbers; older data used { rate, isDiscounted }.
+          if (typeof rateVal === 'object') {
+              basePrice = parseFloat(rateVal.rate) || 0;
+              isDiscounted = rateVal.isDiscounted || false;
+          } else {
+              basePrice = parseFloat(rateVal) || 0;
+          }
       } else if (item.price) {
           basePrice = parseFloat(item.price) || 0;
       }

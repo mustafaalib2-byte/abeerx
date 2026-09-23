@@ -1,8 +1,4 @@
 import { Product } from "@/types/product";
-import { db } from "@/firebase/clientApp";
-import fs from 'fs';
-import path from 'path';
-import { ref, get, child, set } from "firebase/database";
 
 function hashString(str: string): number {
   let hash = 0;
@@ -12,11 +8,34 @@ function hashString(str: string): number {
   return hash;
 }
 
-import catalogData from '../public/catalog.json';
-
 // --- STATIC CATALOG (0 BANDWIDTH) via CLOUDFLARE R2 ---
 const CATALOG_URL = 'https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog.json';
 
+// Live selling prices, edited in the admin panel (Item Catalog). Each value is a plain
+// number keyed by the item's full name, e.g. { "212 NYC EDT 100 ML": 36 }. ~0.25 MB.
+const RATES_URL = 'https://abeerx-a9260-default-rtdb.firebaseio.com/abeerx/itemRates.json';
+
+// Must match the grouping in generateCatalog.js exactly: the catalog merges items that
+// only differ by a trailing size ("X 50 ML" / "X 100 ML") into one product whose slug
+// comes from the name with the size removed, and one variant per size.
+const SIZE_RE = /\s*[-()]*\s*(\d+)\s*(ml|oz)\s*[-()]*\s*$/i;
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+function buildRateLookup(rates: Record<string, unknown>): Map<string, number> {
+  const lookup = new Map<string, number>(); // "<product slug>|<size>" -> price
+  for (const [key, val] of Object.entries(rates)) {
+    let base = key;
+    let size = '100ml';
+    const m = key.match(SIZE_RE);
+    if (m) {
+      base = key.substring(0, m.index).trim();
+      size = m[1] + m[2].toLowerCase();
+    }
+    const k = `${slugify(base)}|${size}`;
+    if (!lookup.has(k)) lookup.set(k, Number(val) || 0); // first wins, same as the generator
+  }
+  return lookup;
+}
 
 function getPriority(p: any) {
     const hasStock = (p.totalStock || 0) > 0;
@@ -33,16 +52,59 @@ export const ProductService = {
       const res = await fetch(CATALOG_URL, { next: { revalidate: 60 } });
       if (!res.ok) throw new Error("Failed to fetch catalog from R2");
       const products = await res.json();
-      
-      const liveStock = await this.getLiveStock();
+
+      const [liveStock, liveRates] = await Promise.all([this.getLiveStock(), this.getLiveRates()]);
       products.forEach((p: any) => {
           p.totalStock = liveStock[p.name] || 0;
       });
-      
-      return products;
+
+      // If the price feed is unavailable, don't wipe the shop — keep catalog prices
+      // (still hiding anything priced at zero below).
+      const rateLookup = liveRates ? buildRateLookup(liveRates) : null;
+
+      const priced: Product[] = [];
+      for (const p of products) {
+        const variants = Array.isArray(p.variants) ? p.variants : [];
+
+        if (rateLookup) {
+          for (const v of variants) {
+            const live = rateLookup.get(`${p.slug}|${v.size}`);
+            if (live !== undefined) {
+              v.price = live;
+              v.salePrice = undefined; // discounts aren't stored anywhere live, so never show a stale one
+            }
+          }
+        }
+
+        // Never show a size (or a product) whose selling price is zero.
+        const sellable = variants.filter((v: any) => Number(v.price) > 0);
+        if (variants.length > 0) {
+          if (sellable.length === 0) continue;
+          p.variants = sellable;
+          p.price = sellable[0].price;
+          p.salePrice = sellable[0].salePrice;
+        } else if (!(Number(p.price) > 0)) {
+          continue;
+        }
+        priced.push(p);
+      }
+
+      return priced;
     } catch (e) {
       console.error("Failed to load R2 catalog, falling back to empty:", e);
       return [];
+    }
+  },
+
+  async getLiveRates(): Promise<Record<string, unknown> | null> {
+    try {
+      const res = await fetch(RATES_URL, { next: { revalidate: 60 } });
+      if (!res.ok) throw new Error("Firebase REST failed");
+      const data = await res.json();
+      return data && typeof data === 'object' ? data : null;
+    } catch (e) {
+      console.error("Failed to fetch itemRates via REST:", e);
+      return null;
     }
   },
 
