@@ -21,6 +21,8 @@ export async function generateStaticParams() {
 import { CartProvider } from "@/features/cart/CartContext";
 import { CartDrawer } from "@/features/cart/CartDrawer";
 import { Analytics } from "@/components/Analytics";
+import { DeliveryProvider } from "@/features/delivery/DeliveryContext";
+import { getDeliverySettings } from "@/services/DeliveryService";
 
 export default async function RootLayout({
   children,
@@ -30,6 +32,7 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }>) {
   const { locale } = await params;
+  const delivery = await getDeliverySettings();
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
   const fontVariables = `${inter.variable} ${playfair.variable} ${locale === 'ar' ? kufiArabic.variable : ''}`;
 
@@ -37,6 +40,7 @@ export default async function RootLayout({
     <html lang={locale} dir={dir} suppressHydrationWarning>
       <body className={`${fontVariables} antialiased min-h-screen flex flex-col`}>
         <Analytics />
+        <DeliveryProvider value={delivery}>
         <CartProvider>
           <Header locale={locale} />
           <CartDrawer locale={locale} />
@@ -45,6 +49,7 @@ export default async function RootLayout({
           </main>
           <Footer />
         </CartProvider>
+        </DeliveryProvider>
       </body>
     </html>
   );

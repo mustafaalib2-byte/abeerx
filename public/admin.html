@@ -461,7 +461,7 @@
           </div>
           <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-size:0.85rem; cursor:pointer;">
             <input type="checkbox" id="sale-delivery-force-charge" onchange="calcTotal('sale')" style="width:16px; height:16px; cursor:pointer;">
-            <span>Still charge delivery even if order is KD 29 or more (overrides free delivery)</span>
+            <span>Still charge delivery even if order is KD <span class="free-delivery-threshold-label">19</span> or more (overrides free delivery)</span>
           </label>
           <div style="margin-top:10px;">
             <label style="margin:0 0 4px; font-size:0.9rem; display:block;">Delivery Address:</label>
@@ -703,7 +703,7 @@
           </div>
           <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-size:0.85rem; cursor:pointer;">
             <input type="checkbox" id="quote-delivery-force-charge" onchange="calcTotal('quote')" style="width:16px; height:16px; cursor:pointer;">
-            <span>Still charge delivery even if order is KD 29 or more (overrides free delivery)</span>
+            <span>Still charge delivery even if order is KD <span class="free-delivery-threshold-label">19</span> or more (overrides free delivery)</span>
           </label>
         </div>
         <div id="quote-prevdue-wrap" style="display:none; margin-top:14px; padding:12px 16px; background:#eef7f1; border:1px dashed var(--sage); border-radius:8px;">
@@ -1655,6 +1655,18 @@
         </div>
       </div>
 
+      <div class="card" style="border-left: 5px solid var(--sage);">
+        <div class="card-title">🚚 Delivery Charges (Website + POS)</div>
+        <p style="font-size:0.9rem; color:var(--muted); margin-bottom:15px; line-height:1.5;">
+          Used by the website checkout and by Parcel orders in the POS. Orders at or above the minimum get free delivery; orders below it pay the delivery charge. The website picks up changes within about a minute.
+        </p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+          <div style="flex:1; min-width:160px;"><label style="font-size:0.8rem; display:block; margin-bottom:4px;">Delivery charge (KD)</label><input type="number" id="set-delivery-fee" min="0" step="0.001" placeholder="1.900" style="width:100%;"></div>
+          <div style="flex:1; min-width:160px;"><label style="font-size:0.8rem; display:block; margin-bottom:4px;">Free delivery from order of (KD)</label><input type="number" id="set-delivery-free-min" min="0" step="0.001" placeholder="19" style="width:100%;"></div>
+          <button class="btn btn-brown" onclick="saveDeliverySettings()">Save Delivery Settings</button>
+        </div>
+      </div>
+
       <div class="card" style="border-left: 5px solid var(--brand-brown);">
         <div class="card-title">🔐 Admin Password Reset</div>
         <p style="font-size:0.9rem; color:var(--muted); margin-bottom:15px; line-height:1.5;">
@@ -1932,8 +1944,34 @@ let pricingMode = { sale: 'retail', quote: 'retail' }; // Retail vs Wholesale pr
 let customerType = { sale: 'walkin', quote: 'walkin' }; // Walk-in vs Parcel(delivery) per tab
 let currentOpenPartyName = null; // Party currently shown in the Party Details ledger, if any (for live-refresh)
 let deliveryBearer = { sale: 'customer', quote: 'customer' }; // Who bears the delivery charge, per tab
-const FREE_DELIVERY_THRESHOLD = 29; // KD — orders at/above this value get automatic complimentary delivery
-const DEFAULT_DELIVERY_CHARGE = '2.900'; // KD — prefilled whenever Parcel is selected
+// Delivery rules — editable in Data & Settings → 🚚 Delivery Charges, saved to abeerx/settings/delivery
+// ({ fee, freeThreshold }). The SAME values drive the website checkout, so POS and website always agree.
+let FREE_DELIVERY_THRESHOLD = 19; // KD — orders at/above this value get automatic complimentary delivery
+let DEFAULT_DELIVERY_CHARGE = '1.900'; // KD — prefilled whenever Parcel is selected
+
+function applyDeliverySettings(del) {
+    del = del || {};
+    const fee = parseFloat(del.fee), min = parseFloat(del.freeThreshold);
+    if (!isNaN(fee) && fee >= 0) DEFAULT_DELIVERY_CHARGE = fee.toFixed(3);
+    if (!isNaN(min) && min >= 0) FREE_DELIVERY_THRESHOLD = min;
+    document.querySelectorAll('.free-delivery-threshold-label').forEach(el => { el.textContent = FREE_DELIVERY_THRESHOLD; });
+    const feeInput = document.getElementById('set-delivery-fee');
+    const minInput = document.getElementById('set-delivery-free-min');
+    // Don't overwrite what the admin is typing right now
+    if (feeInput && document.activeElement !== feeInput) feeInput.value = DEFAULT_DELIVERY_CHARGE;
+    if (minInput && document.activeElement !== minInput) minInput.value = FREE_DELIVERY_THRESHOLD;
+}
+
+function saveDeliverySettings() {
+    if (!isAdmin) return toast('❌ Admin login required.');
+    const fee = parseFloat(document.getElementById('set-delivery-fee').value);
+    const min = parseFloat(document.getElementById('set-delivery-free-min').value);
+    if (isNaN(fee) || fee < 0) return toast('⚠️ Enter a valid delivery charge (0 or more).');
+    if (isNaN(min) || min < 0) return toast('⚠️ Enter a valid minimum order for free delivery (0 or more).');
+    dbRef.child('settings/delivery').set({ fee, freeThreshold: min, updatedAt: Date.now() })
+        .then(() => toast(`✅ Delivery saved: KD ${fee.toFixed(3)} below KD ${min}, free from KD ${min}. Website updates within ~1 minute.`))
+        .catch(err => { console.error(err); toast('❌ Could not save delivery settings.'); });
+}
 
 // ==========================================
 // UNIFIED TRUE 1:1 LIVE PREVIEW & HTML ENGINE
@@ -3232,6 +3270,7 @@ function attachPublicListeners() {
 
     db.ref('abeerx/settings').on('value', s => {
         appSettings = s.val() || { logo: '', stamp: '', seal: '' };
+        applyDeliverySettings(appSettings.delivery);
         if(appSettings.logo) {
             document.getElementById('sidebar-logo').src = appSettings.logo;
             document.getElementById('preview-logo').src = appSettings.logo;
@@ -3873,6 +3912,7 @@ function renderWebOrders() {
               <div style="text-align:right;">
                 <div style="font-size:0.8rem; color:var(--muted)">Order Total</div>
                 <div style="font-size:1.5rem; font-weight:bold; color:var(--brand-pink); font-family:'DM Mono'">KD ${fmt(order.total)}</div>
+                ${order.deliveryFee !== undefined ? `<div style="font-size:0.75rem; color:var(--muted)">${Number(order.deliveryFee) > 0 ? `incl. delivery KD ${fmt(order.deliveryFee)}` : 'free delivery'}</div>` : ''}
               </div>
             </div>
   

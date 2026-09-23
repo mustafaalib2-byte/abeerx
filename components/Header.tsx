@@ -5,10 +5,13 @@ import { useCart } from "@/features/cart/CartContext";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useDeliverySettings } from "@/features/delivery/DeliveryContext";
+import { formatAmount } from "@/lib/delivery";
 
 export default function Header({ locale }: { locale: string }) {
   const isArabic = locale === 'ar';
   const { items, setIsCartOpen } = useCart();
+  const { freeThreshold } = useDeliverySettings();
   const router = useRouter();
   
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -60,7 +63,9 @@ export default function Header({ locale }: { locale: string }) {
     <>
     <header className="w-full border-b border-border bg-background sticky top-0 z-50">
       <div className="bg-primary text-primary-foreground text-xs text-center py-2 uppercase tracking-widest font-medium">
-        {isArabic ? "توصيل مجاني في الكويت للطلبات فوق 20 دينار" : "Free Delivery in Kuwait for orders over 20 KWD"}
+        {isArabic
+          ? `توصيل مجاني في الكويت للطلبات بقيمة ${formatAmount(freeThreshold)} د.ك فأكثر`
+          : `Free Delivery in Kuwait on orders of ${formatAmount(freeThreshold)} KWD and above`}
       </div>
       
       <div className="container mx-auto px-4 h-32 flex items-center justify-between relative">

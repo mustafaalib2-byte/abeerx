@@ -6,10 +6,13 @@ import Link from "next/link";
 import { db } from "@/firebase/clientApp";
 import { ref, push, set } from "firebase/database";
 import { use } from "react";
+import { useDeliverySettings } from "@/features/delivery/DeliveryContext";
+import { deliveryFeeFor, formatAmount } from "@/lib/delivery";
 
 export default function CheckoutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = use(params);
   const { items, cartTotal, clearCart } = useCart();
+  const delivery = useDeliverySettings();
   const isArabic = locale === 'ar';
   
   const [formData, setFormData] = useState({
@@ -56,6 +59,10 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
   };
   
   const finalTotal = calculateFinalTotal();
+  // Free delivery is judged on what the customer pays for the goods (after any coupon).
+  const deliveryFee = deliveryFeeFor(finalTotal, delivery);
+  const grandTotal = finalTotal + deliveryFee;
+  const amountToFreeDelivery = deliveryFee > 0 ? delivery.freeThreshold - finalTotal : 0;
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -80,7 +87,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
         date: new Date().toISOString().split('T')[0],
         status: 'Pending',
         paymentMethod: paymentMethod === 'Cash on Delivery' ? 'Cash on Delivery' : 'Online Payment',
-        total: finalTotal, discount: appliedCoupon ? { code: appliedCoupon.code, value: cartTotal - finalTotal } : null, subtotal: cartTotal,
+        total: grandTotal, deliveryFee, discount: appliedCoupon ? { code: appliedCoupon.code, value: cartTotal - finalTotal } : null, subtotal: cartTotal,
         customer: {
           name: formData.name,
           mobile: formData.mobile,
@@ -187,7 +194,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
             disabled={isSubmitting}
             className="w-full bg-ring text-white py-4 text-sm tracking-widest uppercase font-bold hover:bg-black transition-colors disabled:opacity-50"
           >
-            {isSubmitting ? "Processing..." : (isArabic ? `دفع ${(finalTotal + (finalTotal >= 20 ? 0 : 2.90)).toFixed(2)} د.ك` : `Pay ${(finalTotal + (finalTotal >= 20 ? 0 : 2.90)).toFixed(2)} KWD`)}
+            {isSubmitting ? "Processing..." : (isArabic ? `دفع ${grandTotal.toFixed(2)} د.ك` : `Pay ${grandTotal.toFixed(2)} KWD`)}
           </button>
         </form>
       </div>
@@ -224,8 +231,15 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>{isArabic ? "التوصيل" : "Delivery"}</span>
-              <span>{cartTotal >= 20 ? "Free" : "2.90 KWD"}</span>
+              <span>{deliveryFee === 0 ? (isArabic ? "مجاني" : "Free") : `${deliveryFee.toFixed(2)} KWD`}</span>
             </div>
+            {amountToFreeDelivery > 0 && (
+              <p className="text-xs text-ring">
+                {isArabic
+                  ? `أضف ${amountToFreeDelivery.toFixed(2)} د.ك للحصول على توصيل مجاني (للطلبات بقيمة ${formatAmount(delivery.freeThreshold)} د.ك فأكثر)`
+                  : `Add ${amountToFreeDelivery.toFixed(2)} KWD more for free delivery (orders of ${formatAmount(delivery.freeThreshold)} KWD and above)`}
+              </p>
+            )}
           </div>
 
           
@@ -247,8 +261,8 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
             <div className="border-t border-black mt-4 pt-4 flex justify-between items-end font-bold text-foreground">
               <span className="uppercase tracking-wider">{isArabic ? "الإجمالي" : "Total"}</span>
               <div className="text-right">
-                {appliedCoupon && <div className="text-sm line-through text-muted-foreground font-normal">{(cartTotal + (cartTotal >= 20 ? 0 : 2.90)).toFixed(2)} KWD</div>}
-                <span className="text-xl">{(finalTotal + (finalTotal >= 20 ? 0 : 2.90)).toFixed(2)} KWD</span>
+                {appliedCoupon && <div className="text-sm line-through text-muted-foreground font-normal">{(cartTotal + deliveryFeeFor(cartTotal, delivery)).toFixed(2)} KWD</div>}
+                <span className="text-xl">{grandTotal.toFixed(2)} KWD</span>
               </div>
             </div>
 
