@@ -1,0 +1,1754 @@
+[
+  {
+    "row": 4756,
+    "sku": "3700578506009",
+    "product_name": "MARLY PEAGASUS EDP 125ML OLD",
+    "brand_in_sheet": "MARLY",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 4770,
+    "sku": "3700578505767",
+    "product_name": "MARLY VALAYA EXCLUSIF 75 ML",
+    "brand_in_sheet": "MARLY",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4771,
+    "sku": "3357550520012",
+    "product_name": "MAROUSSIA SLAVA ZAITSEV MOSCOU EDT 100 ML",
+    "brand_in_sheet": "MOSCOU",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 4782,
+    "sku": "5011321830356",
+    "product_name": "Maxi (Just Call Me) Eau De Cologne 100Ml",
+    "brand_in_sheet": "LONDON",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 4783,
+    "sku": "6298084015155",
+    "product_name": "MAYSON COLLECTION BLEND AMBRE EDP 80ML",
+    "brand_in_sheet": "MAYSON LEGEND",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4784,
+    "sku": "6291108735480",
+    "product_name": "MEGARA EDP 50 ML",
+    "brand_in_sheet": "MAISON ALHAMBRA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4786,
+    "sku": "3700066700827",
+    "product_name": "MELLE ELSATYS EDP 100 ml",
+    "brand_in_sheet": "REYANE TRADITION",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4798,
+    "sku": "3700458602999",
+    "product_name": "MEMO AFRICAN LEATHER EDP 100ML",
+    "brand_in_sheet": "MEMO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4802,
+    "sku": "3700458602982",
+    "product_name": "MEMO IRISH LEATHER EDP 100 ML",
+    "brand_in_sheet": "MEMO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4809,
+    "sku": "3700458618617",
+    "product_name": "MEMO TIGER NEST EDP 75ML",
+    "brand_in_sheet": "MEMO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4812,
+    "sku": "3595471041197",
+    "product_name": "MERCEDES BENZ CLUB BLACK EDT 100 ML",
+    "brand_in_sheet": "MERCEDES BENZ",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4814,
+    "sku": "3595471024749",
+    "product_name": "MERCEDES BENZ FOR MAN EDT TESTER",
+    "brand_in_sheet": "MERCEDES BENZ",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4817,
+    "sku": "3595471022066",
+    "product_name": "MERCEDES BENZ INTENSE EDT TESTER",
+    "brand_in_sheet": "MERCEDES BENZ",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4818,
+    "sku": "3595471024794",
+    "product_name": "MERCEDES BENZ INTENSE MEN TESTER",
+    "brand_in_sheet": "MERCEDES BENZ",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4819,
+    "sku": "3595471024817",
+    "product_name": "MERCEDES BENZ LE PARFUM EDP TESTER",
+    "brand_in_sheet": "MERCEDES BENZ",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4822,
+    "sku": "3595472061262",
+    "product_name": "MERCEDES BENZ MAN BRIGHT EDP 100ML",
+    "brand_in_sheet": "MERCEDES",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4824,
+    "sku": "3595471061096",
+    "product_name": "MERCEDES BENZ MAN PRIVET EDP 100ML",
+    "brand_in_sheet": "MERCEDES",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4827,
+    "sku": "3595471023407",
+    "product_name": "MERCEDES BENZ ULTIMATE EDP TESTER",
+    "brand_in_sheet": "MERCEDES BENZ",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4831,
+    "sku": "3595471024787",
+    "product_name": "MERCEDES-BENZ INTENSE EDT 120 ML",
+    "brand_in_sheet": "MERCEDES BENZ",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4834,
+    "sku": "3595471041012",
+    "product_name": "MERCEDEZ-BENZ CLUB SILVER EDT 100 ML FOR MEN",
+    "brand_in_sheet": "MERCEDES BENZ",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4837,
+    "sku": "3700559618219",
+    "product_name": "MFK GENTLE FLUIDITY EDP 70 ML",
+    "brand_in_sheet": "MFK",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4844,
+    "sku": "022548419953",
+    "product_name": "MICHAEL KORS GORGEOUS EDP 100ML",
+    "brand_in_sheet": "MICHAEL KORS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4845,
+    "sku": "022548289655",
+    "product_name": "MICHAEL KORS SEXY AMBER EDP 100ML",
+    "brand_in_sheet": "MICHAEL KORS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4849,
+    "sku": "3700134410047",
+    "product_name": "MIDNIGHT IN PARIS FOR MEN EDT 85 ML",
+    "brand_in_sheet": "GEPRALYS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4852,
+    "sku": "6294019031474",
+    "product_name": "MILANO 22 EDP 100ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4856,
+    "sku": "WG29852",
+    "product_name": "MINI PERFUME",
+    "brand_in_sheet": "SELECTIVE COLLECTION",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4860,
+    "sku": "6085010047058",
+    "product_name": "MISS CUTE NOIR ESTIARA FOR WOMEN 90 ML",
+    "brand_in_sheet": "BIN DARWESH",
+    "previous_status": "Needs check: concentration",
+    "previous_sources": "https://www.fragrantica.com/perfume/Estiara/Miss-Cute-Noir-27753.html"
+  },
+  {
+    "row": 4861,
+    "sku": "6085010047140",
+    "product_name": "MISS DARLING ESTIARA EDP 100 ML",
+    "brand_in_sheet": "ESTIARA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4869,
+    "sku": "3348900142312",
+    "product_name": "MISS DIOR WHITE EDT ORIGINALE 100 ML",
+    "brand_in_sheet": "CHRISTIAN DIOR",
+    "previous_status": "Needs check: confirm 'White' in product name (no separate 'Miss Dior White' product found; identified as Miss Dior Eau de Toilette Originale, 2011 relaunch of the original)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dior/Miss-Dior-Eau-de-Toilette-Originale-23282.html"
+  },
+  {
+    "row": 4871,
+    "sku": "6292626189731",
+    "product_name": "MISSELLES EDP 100 ML",
+    "brand_in_sheet": "FAAN",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4872,
+    "sku": "8011003826841",
+    "product_name": "MISSONI EDP 100 ML",
+    "brand_in_sheet": "MISSONI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4874,
+    "sku": "8011003838493",
+    "product_name": "MISSONI PARFUM POUR HOMME EDP 100ML",
+    "brand_in_sheet": "MISSONI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4877,
+    "sku": "8011003858156",
+    "product_name": "MISSONI WAVE EDT 100ML",
+    "brand_in_sheet": "MISSONI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4880,
+    "sku": "3614220322575",
+    "product_name": "MIU MIU EDP WOMEN 100ML.",
+    "brand_in_sheet": "MIU MIU",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4881,
+    "sku": "WC64830",
+    "product_name": "MIX PARFUME",
+    "brand_in_sheet": "",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 4894,
+    "sku": "",
+    "product_name": "MOHRA MEN EDP 100 ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4895,
+    "sku": "6291108735572",
+    "product_name": "MOHRA SILK ROSE EDP 100 ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4897,
+    "sku": "008080153456",
+    "product_name": "MOLTON BROWN EDT 100ML (WHITE)",
+    "brand_in_sheet": "MOLTON BROWN",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4901,
+    "sku": "6291108327937",
+    "product_name": "MON PARADISE EDP 100ML",
+    "brand_in_sheet": "PARADISE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 4910,
+    "sku": "3386460085823",
+    "product_name": "MONT BLANC EMBLEM ABSOLU EDT 100ML",
+    "brand_in_sheet": "MONT BLANC",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4914,
+    "sku": "3386460058759",
+    "product_name": "MONT BLANC EMBLEM MAN EDT 100 ML TESTER",
+    "brand_in_sheet": "MONT BLANC",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4915,
+    "sku": "3386460101035",
+    "product_name": "MONT BLANC Explorer EDP 100 ML",
+    "brand_in_sheet": "MONT BLANC",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4917,
+    "sku": "3386460101264",
+    "product_name": "MONT BLANC EXPLORER EDP MEN TESTER",
+    "brand_in_sheet": "MONT BLANC",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4918,
+    "sku": "3386460153720",
+    "product_name": "MONT BLANC EXPLORER EXTREME PARFUM 100 ML",
+    "brand_in_sheet": "MONT BLANC",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 4989,
+    "sku": "3439669480156",
+    "product_name": "MONTANA WOMEN BLUE EDT 100 ML",
+    "brand_in_sheet": "MONTANA",
+    "previous_status": "Needs check: top_notes; Fragrantica page (Montana Blu) does not list top notes in the official pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Montana/Montana-Blu-2373.html"
+  },
+  {
+    "row": 5024,
+    "sku": "8011003826711",
+    "product_name": "MOSHINO FOR MAN EDT 100 ML",
+    "brand_in_sheet": "MOSCHINO",
+    "previous_status": "Needs check: product name says 'For Man' but SKU 8011003826711 identifies this as Moschino Fresh Couture EDT (Women); gender and fragrance identity based on barcode verification",
+    "previous_sources": "https://www.fragrantica.com/perfume/Moschino/Fresh-Couture-32393.html ; https://www.upcitemdb.com/upc/8011003826711"
+  },
+  {
+    "row": 5028,
+    "sku": "6295199796078",
+    "product_name": "MOUSUF RAMADI BLACK EDP 100 ML",
+    "brand_in_sheet": "MOUSUF",
+    "previous_status": "Needs check: 'Mousuf Ramadi Black' variant not confirmed on Fragrantica; notes and profile based on Mousuf Ramadi — Black variant may differ",
+    "previous_sources": "https://www.fragrantica.com/perfume/Ard-Al-Zaafaran/Mousuf-Ramadi-107717.html"
+  },
+  {
+    "row": 5029,
+    "sku": "6437842514039",
+    "product_name": "MOUSUF {BROWN} EDP 100 ML",
+    "brand_in_sheet": "MOUSUF",
+    "previous_status": "Needs check: scent_family; product identified via barcode 6437842514039 as Mousuf (Brown/Men's edition) by Ard Al Zaafaran; scent family not confirmed from Fragrantica page fetch",
+    "previous_sources": "https://www.fragrantica.com/perfume/Ard-Al-Zaafaran/Mousuf-88518.html ; https://www.ebay.com/itm/386561771577"
+  },
+  {
+    "row": 5033,
+    "sku": "6290361916773",
+    "product_name": "MPF DYNASTY ELIXIR EDP 100ML",
+    "brand_in_sheet": "MPF",
+    "previous_status": "Needs check: could not identify fragrance; MPF Dynasty Elixir not found on Fragrantica or brand website (myperfumes.ae)",
+    "previous_sources": ""
+  },
+  {
+    "row": 5034,
+    "sku": "6290361916780",
+    "product_name": "MPF DYNASTY INTENSE EDP 100ML",
+    "brand_in_sheet": "MPF",
+    "previous_status": "Needs check: could not identify fragrance; MPF Dynasty Intense not found on Fragrantica or brand website (myperfumes.ae)",
+    "previous_sources": ""
+  },
+  {
+    "row": 5036,
+    "sku": "6290361910276",
+    "product_name": "MPF HER DYNASTY EDP 100ML",
+    "brand_in_sheet": "MPF",
+    "previous_status": "Needs check: scent_family, main_accord; not found on Fragrantica; notes from retailer",
+    "previous_sources": "https://arabianscents.net/product/apa-de-parfum-mpf-her-dynasty-femei/"
+  },
+  {
+    "row": 5037,
+    "sku": "6290361910269",
+    "product_name": "MPF HIS DYNASTY EDP 100ML",
+    "brand_in_sheet": "MPF",
+    "previous_status": "Needs check: scent_family, main_accord; not found on Fragrantica; notes from retailer",
+    "previous_sources": "https://dubaicollection.eu/product/apa-de-parfum-mpf-his-dynasty-barbatii/"
+  },
+  {
+    "row": 5054,
+    "sku": "6294015116359",
+    "product_name": "MUATTAR OUD MUBARAK 40 GM",
+    "brand_in_sheet": "HAMIDI",
+    "previous_status": "Needs check: scent_family, main_accord; notes described in general terms (Ambery/Rosy/Woody) on official site rather than specific ingredients",
+    "previous_sources": "https://hamidi.ae/products/muattar-oud-mubarak-40gm-hamidi-series ; https://www.vperfumes.com/products/product-detail/muattar-oud-mubarak-40g/HAMIDI-MUBARAK-40g"
+  },
+  {
+    "row": 5088,
+    "sku": "5280270032627",
+    "product_name": "MUSK AL TAHARA 6 ML",
+    "brand_in_sheet": "ALATAR",
+    "previous_status": "Needs check: could not identify fragrance; sheet brand 'ALATAR' unverified",
+    "previous_sources": ""
+  },
+  {
+    "row": 5089,
+    "sku": "6291107456430",
+    "product_name": "MUSK CODE WHTIE EDP 100 ML",
+    "brand_in_sheet": "ASDAAF",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; barcode 6291107456430 matches Asdaaf (Lattafa) Musk Code EDP 100 ml, but no Fragrantica page or reliable notes source",
+    "previous_sources": "https://www.nandansons.com/lattafa456430/"
+  },
+  {
+    "row": 5090,
+    "sku": "6291108526460",
+    "product_name": "MUSK KHUSUSI EDP 80 ML",
+    "brand_in_sheet": "MAHMOOD SAEED",
+    "previous_status": "Needs check: scent_family, main_accord (not on Fragrantica); brand on bottle is Al Fares (Emper), not Mahmood Saeed as listed in sheet",
+    "previous_sources": "https://fragrancewholesale.co.uk/collections/al-wataniah-perfumes/products/al-fares-musk-khususi-unisex-80ml-edp"
+  },
+  {
+    "row": 5093,
+    "sku": "6432521423091",
+    "product_name": "MUSK SHAKIMAR OUDREE 70 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; likely 'Shalimar Musk Poudree' but retailers give conflicting notes and gender",
+    "previous_sources": ""
+  },
+  {
+    "row": 5115,
+    "sku": "6290360599458",
+    "product_name": "NAJDIA INTENSE EDP 100ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: scent_family (Fragrantica page did not show a single olfactory family label)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Najdia-Intense-100128.html"
+  },
+  {
+    "row": 5139,
+    "sku": "3423222055677",
+    "product_name": "NARCISO MUSC NOIR ROSE EDP WOMEN TESTER",
+    "brand_in_sheet": "NARCISO RODRIGUEZ",
+    "previous_status": "Needs check: size (not stated in product name); tester unit",
+    "previous_sources": "https://www.fragrantica.com/perfume/Narciso-Rodriguez/Musc-Noir-Rose-For-Her-71596.html"
+  },
+  {
+    "row": 5160,
+    "sku": "3423478920064",
+    "product_name": "NARCISO RODRIGUES FOR HER AMBER MUSC TESTER",
+    "brand_in_sheet": "NARCISO RODRIGUEZ",
+    "previous_status": "Needs check: size (not stated in product name); concentration EDP confirmed via retailer listings; tester unit",
+    "previous_sources": "https://www.fragrantica.com/perfume/Narciso-Rodriguez/Amber-Musc-18712.html ; https://www.amazon.com/Narciso-Rodriguez-Amber-Parfum-Women/dp/B00W51O684"
+  },
+  {
+    "row": 5179,
+    "sku": "3423476880414",
+    "product_name": "NARCISO RODRIGUEZ FOR HIM EDP 100 ML TESTER",
+    "brand_in_sheet": "NARCISO RODRIGUEZ",
+    "previous_status": "Needs check: scent_family",
+    "previous_sources": "https://www.fragrantica.com/perfume/Narciso-Rodriguez/Narciso-Rodriguez-for-Him-Musk-6576.html ; https://www.ebay.com/itm/275140536725"
+  },
+  {
+    "row": 5234,
+    "sku": "3289659869566",
+    "product_name": "NIGHT OUD EDP 80 ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: scent_family, main_accord; no Fragrantica page found, notes sourced from retailer only",
+    "previous_sources": "https://tripletraders.com/products/night-oud-eau-de-parfum-by-fragrance-world-80ml-2-72-fl-oz"
+  },
+  {
+    "row": 5249,
+    "sku": "3137370340461",
+    "product_name": "NINA RICCI PREMIER JOUR EDP TESTER",
+    "brand_in_sheet": "NINA RICCI",
+    "previous_status": "Needs check: size; size not specified in product name",
+    "previous_sources": "https://www.fragrantica.com/perfume/Nina-Ricci/Premier-Jour-520.html"
+  },
+  {
+    "row": 5263,
+    "sku": "8681008055999",
+    "product_name": "NISHANE FAN YOUR FLAM EXTRAITDEPARFUM100ML(T)",
+    "brand_in_sheet": "NISHANE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5269,
+    "sku": "8683608070914",
+    "product_name": "NISHANE HACIVAT OUD EXTRAIT DE PARFUM 50 ML",
+    "brand_in_sheet": "NISHANE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5276,
+    "sku": "8683608070747",
+    "product_name": "NISHANE HUNDRED SILENT WAYS 50 ML TESTER",
+    "brand_in_sheet": "NISHANE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5278,
+    "sku": "8681008055173",
+    "product_name": "NISHANE HUNDRED SILENT WAYS PARFUM 100 ML",
+    "brand_in_sheet": "NISHANE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5288,
+    "sku": "8681008055487",
+    "product_name": "NISHANE SULTAN VETIVER EXTRAIT DE PARFUM 50ML",
+    "brand_in_sheet": "NISHANE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5290,
+    "sku": "8683608070532",
+    "product_name": "NISHANE TERO EXTRAIT DE PARFUM 50 ML",
+    "brand_in_sheet": "NISHANE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5291,
+    "sku": "8681008055227",
+    "product_name": "NISHANE WULONG CHA EDP 100 ML",
+    "brand_in_sheet": "NISHANE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5303,
+    "sku": "603531633503",
+    "product_name": "NUDE BIJAN MEN EDT 75 ML (D)",
+    "brand_in_sheet": "BIJAN",
+    "previous_status": "Needs check: top_notes, base_notes; notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Bijan/Bijan-Nude-Men-3560.html"
+  },
+  {
+    "row": 5304,
+    "sku": "827669019361",
+    "product_name": "NUDE COLOGNE BILL BLASS WOMEN 100 ML",
+    "brand_in_sheet": "NUDE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 5305,
+    "sku": "6295151505830",
+    "product_name": "NUSUK GLADIUS EDP 100ML",
+    "brand_in_sheet": "NUSUK PERFUM",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5308,
+    "sku": "6295540236482",
+    "product_name": "OFFICIAL EDP 90ML",
+    "brand_in_sheet": "OFFICIAL",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 5314,
+    "sku": "6291108320822",
+    "product_name": "OLYVIA POUR FEMME EDP 100 ML",
+    "brand_in_sheet": "PARADISE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 5315,
+    "sku": "6074000141463",
+    "product_name": "OMANLUXURY CADEN EDP 100 ML",
+    "brand_in_sheet": "OMANLUXURY",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5317,
+    "sku": "6074000141098",
+    "product_name": "OMANLUXURY KHANJAR EDP 100 ML",
+    "brand_in_sheet": "OMANLUXURY",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5318,
+    "sku": "6074000141487",
+    "product_name": "OMANLUXURY NASAJ EDP 100 ML",
+    "brand_in_sheet": "OMANLUXURY",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5327,
+    "sku": "3355991000230",
+    "product_name": "ONE MAN SHOW (O) EDT 100 ML",
+    "brand_in_sheet": "JACQUES BOGART",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5334,
+    "sku": "3252550115025",
+    "product_name": "OPEN ROGER & GALLET (O) EDT 100 ML",
+    "brand_in_sheet": "ROGER&GALLET",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5336,
+    "sku": "6291108730256",
+    "product_name": "OPERA NOIR EDP 100 ML",
+    "brand_in_sheet": "MAISON ALHAMBRA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5339,
+    "sku": "6291107450445",
+    "product_name": "OPULENT MUSK EDP 100 ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5340,
+    "sku": "6291108737095",
+    "product_name": "OPULENT RED EDP 100 ML LATTAFA",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5344,
+    "sku": "3700134409577",
+    "product_name": "ORIENTAL GENTLEMAN EDT 100 ML",
+    "brand_in_sheet": "GEPRALYS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5371,
+    "sku": "5060238286367",
+    "product_name": "ORMONDE JAYNE NAWAB OF OUDH INTENSIVO 88 ML",
+    "brand_in_sheet": "ORMONDE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5375,
+    "sku": "8717774840849",
+    "product_name": "ORTO PARISI BOCCANERA PARFUM 50ML",
+    "brand_in_sheet": "ORTO PARISI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5380,
+    "sku": "8717774840856",
+    "product_name": "ORTO PARISI SEMINALIS PARFUM 50ML",
+    "brand_in_sheet": "ORTO PARISI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5381,
+    "sku": "8717774840818",
+    "product_name": "ORTO PARISI STERCUS PARFUM 50 ML",
+    "brand_in_sheet": "ORTO PARISI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5382,
+    "sku": "8717774840863",
+    "product_name": "ORTO PARISI TERRONI PARFUM 50 ML",
+    "brand_in_sheet": "ORTO PARISI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5384,
+    "sku": "085715583161",
+    "product_name": "OSCAN DE LA RENTA VOLUPTE EDT 100 ML",
+    "brand_in_sheet": "OSCARDELARENTA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5386,
+    "sku": "085715401007",
+    "product_name": "OSCARDELARENTA INTRUSION EDP 100 ML",
+    "brand_in_sheet": "OSCARDELARENTA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5389,
+    "sku": "6426185651037",
+    "product_name": "OUD AL ABIYAD SPECIAL EDITION EDP 100 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: gender, scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; product confirmed by barcode (Oud Abiyed Special Edition EDP) but no Fragrantica page, gender conflicts between retailers",
+    "previous_sources": "https://www.jomashop.com/ard-al-zaafaran-ladies-oud-abiyed-special-edition-edp-spray-3-4-oz-fragrances-6426185651037.html"
+  },
+  {
+    "row": 5390,
+    "sku": "6291108523407",
+    "product_name": "OUD AL FARES EDP 100 ML",
+    "brand_in_sheet": "EMPER",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5407,
+    "sku": "6291106068184",
+    "product_name": "OUD MOOD REMINISCCNCE SILVER EDP 100 ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5408,
+    "sku": "6291106065114",
+    "product_name": "OUD MOOD(YELLOW) EDP 100 ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5415,
+    "sku": "6206414546828",
+    "product_name": "OUD ROMANCEA GOLD EDP 100 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; Fragrantica lists only 'Oud Romancea' with no Gold/Silver versions",
+    "previous_sources": ""
+  },
+  {
+    "row": 5416,
+    "sku": "6423080616796",
+    "product_name": "OUD ROMANCEA SILVER EDP 100 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; Fragrantica lists only 'Oud Romancea' with no Gold/Silver versions",
+    "previous_sources": ""
+  },
+  {
+    "row": 5417,
+    "sku": "3390545044483",
+    "product_name": "OUD SAFFRON NICHE EDP 100 ML",
+    "brand_in_sheet": "FRAGRANCE DELUXE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5418,
+    "sku": "8901360257917",
+    "product_name": "OUD SENSE GOLD EDP 100 ML",
+    "brand_in_sheet": "",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 5424,
+    "sku": "6291108326657",
+    "product_name": "OUD WONDER EDP 100 ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5432,
+    "sku": "3349666007921",
+    "product_name": "PACO RABANNE 1 MILLION EDT 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5437,
+    "sku": "3349668581955",
+    "product_name": "PACO RABANNE 1 MILLION PARFUM MEN TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5440,
+    "sku": "3349668161362",
+    "product_name": "PACO RABANNE BLACK XS MEN EDT 100 ML TESTER.",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5445,
+    "sku": "3349668576180",
+    "product_name": "PACO RABANNE BLACK XS PURE(OLD)EDT 100ML (T)",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5446,
+    "sku": "3349666005330",
+    "product_name": "PACO RABANNE BLACK XS W EDT 80 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5447,
+    "sku": "3349666009840",
+    "product_name": "PACO RABANNE BLACK XS WOMEN EDT 80 ML TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5449,
+    "sku": "3349668606740",
+    "product_name": "PACO RABANNE FAME EDP 80ML (T)",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5450,
+    "sku": "3349668021369",
+    "product_name": "PACO RABANNE GREEN EDT 100 ML TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5451,
+    "sku": "3349668536504",
+    "product_name": "PACO RABANNE INVICTUS AQUA EDT 100M",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5452,
+    "sku": "3349668515660",
+    "product_name": "PACO RABANNE INVICTUS EDT 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5453,
+    "sku": "3349668515677",
+    "product_name": "PACO RABANNE INVICTUS EDT 100 ML TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5455,
+    "sku": "3349668589678",
+    "product_name": "PACO RABANNE INVICTUS EDT 200 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5457,
+    "sku": "3349668543502",
+    "product_name": "PACO RABANNE INVICTUS INTENSE EDT 100 ML TEST",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5461,
+    "sku": "3349668627547",
+    "product_name": "PACO RABANNE INVICTUS PARFUM 200 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5463,
+    "sku": "3349668627530",
+    "product_name": "PACO RABANNE INVICTUS PARFUMM 100ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5465,
+    "sku": "3349668614554",
+    "product_name": "PACO RABANNE INVICTUS VICTORY ELIXER TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5468,
+    "sku": "3349668588732",
+    "product_name": "PACO RABANNE INVICTUS VICTRORY EDP MEN 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5470,
+    "sku": "3349668588695",
+    "product_name": "PACO RABANNE INVIUCTUS VICTORY EDT 100M TESTR",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5472,
+    "sku": "3349668508556",
+    "product_name": "PACO RABANNE LADY MILLION EDP 80 ML TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5476,
+    "sku": "3349668630370",
+    "product_name": "PACO RABANNE MILLION GOLD EDP MEN TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5477,
+    "sku": "3349668612635",
+    "product_name": "PACO RABANNE OLYMPEA EDP 80ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5478,
+    "sku": "3349668528684",
+    "product_name": "PACO RABANNE OLYMPEA EDP WOMEN TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5482,
+    "sku": "3349668627516",
+    "product_name": "PACO RABANNE OLYMPEA PARFUM TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5486,
+    "sku": "3349668562671",
+    "product_name": "PACO RABANNE ONE MILLION LUCKY EDT 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5487,
+    "sku": "3349668566211",
+    "product_name": "PACO RABANNE ONE MILLION LUCKY EDT 200 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5491,
+    "sku": "3349668609024",
+    "product_name": "PACO RABANNE PACO EDT TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5492,
+    "sku": "3349668582297",
+    "product_name": "PACO RABANNE PHANTOM EDT 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5493,
+    "sku": "3349668582341",
+    "product_name": "PACO RABANNE PHANTOM EDT 100 ML TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5494,
+    "sku": "3349668021345",
+    "product_name": "PACO RABANNE POUR HOMME EDT 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5498,
+    "sku": "3349668576159",
+    "product_name": "PACO RABANNE PURE XS EDT MAN TESTER 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5499,
+    "sku": "3349668576173",
+    "product_name": "PACO RABANNE PURE XS MEN EDT 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5501,
+    "sku": "3349666010532",
+    "product_name": "PACO RABANNE ULTRAVIOLET EDP WOMAN 80 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5502,
+    "sku": "3349666011355",
+    "product_name": "PACO RABANNE ULTRAVIOLET MAN EDT 100 ML T",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5503,
+    "sku": "3349666010518",
+    "product_name": "PACO RABANNE ULTRAVIOLET MEN EDT 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5506,
+    "sku": "3349668576104",
+    "product_name": "PACO RABANNE XS MAN EDT 100 ML TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5509,
+    "sku": "3349668111343",
+    "product_name": "PACO RABANNE XS WHITE 100 ML",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5511,
+    "sku": "3349668617081",
+    "product_name": "PACO RABNNE 1 MILLION ROYAL PARFUM TESTER",
+    "brand_in_sheet": "PACO RABANNE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5514,
+    "sku": "3360370600192",
+    "product_name": "PALAMA PICASSO EDP 100 ML",
+    "brand_in_sheet": "PALOMA PICASSO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5515,
+    "sku": "3360373054749",
+    "product_name": "PALAMA PICASSO EDT 100 ML",
+    "brand_in_sheet": "PALOMA PICASSO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5518,
+    "sku": "6423080611692",
+    "product_name": "PANIER MON EDP 100ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5519,
+    "sku": "6299650478084",
+    "product_name": "PANIER VIVACE EDP 100ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5527,
+    "sku": "608940517482",
+    "product_name": "PARIS HILTON EDP 100 ML",
+    "brand_in_sheet": "PARIS HILTON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5528,
+    "sku": "608940580295",
+    "product_name": "PARIS HILTON ELECTRIFY EDP 100 ML",
+    "brand_in_sheet": "PARIS HILTON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5530,
+    "sku": "608940566947",
+    "product_name": "PARIS HILTON GOLD RUSH EDT MAN 100 ML",
+    "brand_in_sheet": "PARIS HILTON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5532,
+    "sku": "608940580554",
+    "product_name": "PARIS HILTON LUXE RUSH EDP 100 ML",
+    "brand_in_sheet": "PARIS HILTON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5533,
+    "sku": "608940580561",
+    "product_name": "PARIS HILTON PINK RUSH EDP 100 ML",
+    "brand_in_sheet": "PARIS HILTON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5534,
+    "sku": "608940575307",
+    "product_name": "PARIS HILTON PLATINUM RUSH EDP 100 ML",
+    "brand_in_sheet": "PARIS HILTON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5535,
+    "sku": "608940573341",
+    "product_name": "PARIS HILTON ROSE RUSH EDP 100 ML",
+    "brand_in_sheet": "PARIS HILTON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5551,
+    "sku": "5056245035784",
+    "product_name": "PENHALIGON'S EMPRESSA EDP 100ML",
+    "brand_in_sheet": "PENHALIGONS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5558,
+    "sku": "5056245035807",
+    "product_name": "PENHALIGONS HALFETI EDP 100ML",
+    "brand_in_sheet": "PENHALIGONS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5575,
+    "sku": "5056245021190",
+    "product_name": "PENHALIGONS YASMINE EDP 75 ML",
+    "brand_in_sheet": "PENHALIGONS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5576,
+    "sku": "5056245021275",
+    "product_name": "PENHLIGONS MISTER SAM EDP 75 ML",
+    "brand_in_sheet": "PENHALIGONS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5581,
+    "sku": "6295685229820",
+    "product_name": "PERSONAL PROMISE POUR HOMME EDP 100 ML",
+    "brand_in_sheet": "MARC ANTOINE",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5582,
+    "sku": "844061000551",
+    "product_name": "PERY ELLIS 360 MEN EDT 100ML",
+    "brand_in_sheet": "PERRY ELLIS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5592,
+    "sku": "5902012651032",
+    "product_name": "PLATINUM POUR HOOME EDP 100 ML",
+    "brand_in_sheet": "JACQUES BATTINI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5593,
+    "sku": "3755421666881",
+    "product_name": "PLEASURE EDP 100ML",
+    "brand_in_sheet": "ANGEL PERFUME",
+    "previous_status": "Needs check: could not identify fragrance; 'Angel Perfume' Pleasure not found, barcode unmatched",
+    "previous_sources": ""
+  },
+  {
+    "row": 5595,
+    "sku": "3360377032767",
+    "product_name": "POLO BLACK EDT 125 ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5598,
+    "sku": "3360377022928",
+    "product_name": "POLO BLUE EDT 125 ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5600,
+    "sku": "3605975047240",
+    "product_name": "POLO BLUE EDT 200ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5604,
+    "sku": "3605972454614",
+    "product_name": "POLO COLOGNE INTENSE MEN TESTER",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5607,
+    "sku": "3605972910240",
+    "product_name": "POLO EST 67 EDT 125 ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5609,
+    "sku": "3360372012818",
+    "product_name": "POLO GREEN EDT 59 ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5610,
+    "sku": "3605972793317",
+    "product_name": "POLO GREEN EDT MEN 125ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5622,
+    "sku": "3605972321794",
+    "product_name": "POLO RED EDP MEN 125 ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5623,
+    "sku": "3605972331908",
+    "product_name": "POLO RED EDP TESTER 125 ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5624,
+    "sku": "3605970416003",
+    "product_name": "POLO RED EDT 125 ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5625,
+    "sku": "3605970416126",
+    "product_name": "POLO RED EDT 125 ML TESTER",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5629,
+    "sku": "3605971671210",
+    "product_name": "POLO RED RUSH EDT 125 ML TESTER",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5630,
+    "sku": "3360372055402",
+    "product_name": "POLO SPORT EDT 125 ML",
+    "brand_in_sheet": "POLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5634,
+    "sku": "6291108727683",
+    "product_name": "POSH DE ARANIE EDP 100 ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5635,
+    "sku": "6291108727706",
+    "product_name": "POSH IN PARADISE EDP 100 ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5636,
+    "sku": "6291108727690",
+    "product_name": "POSH POWDERY EDP 100 ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5643,
+    "sku": "3614273544924",
+    "product_name": "PRADA AMBER EDP W 80 ML",
+    "brand_in_sheet": "PRADA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5648,
+    "sku": "3614273478298",
+    "product_name": "PRADA AMBER POUR HOMME EDT 100ML",
+    "brand_in_sheet": "PRADA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5650,
+    "sku": "8435137727087",
+    "product_name": "PRADA CANDY EDP 80 ML",
+    "brand_in_sheet": "PRADA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 5686,
+    "sku": "3614274137941",
+    "product_name": "PRADA OCEAN LUNA ROSSA LE PARFUM TESTER",
+    "brand_in_sheet": "PRADA",
+    "previous_status": "Needs check: size; Fragrantica page shows limited notes — full pyramid may be more extensive",
+    "previous_sources": "https://www.fragrantica.com/perfume/Prada/Luna-Rossa-Ocean-Le-Parfum-91693.html"
+  },
+  {
+    "row": 5697,
+    "sku": "3616305064394",
+    "product_name": "PRET A PORTER BERLIN EDP 100ML",
+    "brand_in_sheet": "PRET A PORTER",
+    "previous_status": "Needs check: main_accord; no Fragrantica page found — notes sourced from retailer",
+    "previous_sources": "https://www.walmart.com/ip/Pr-t-Porter-Berlin-Eau-de-Parfum-For-Men-An-Intriguing-Ambery-Foug-re-Fragrance-Black-Pepper-Cardamom-and-Dry-Amber-100ml-3-3oz/10209358462"
+  },
+  {
+    "row": 5698,
+    "sku": "3616305064370",
+    "product_name": "PRET A PORTER LONDON EDP 100ML",
+    "brand_in_sheet": "PRET A PORTER",
+    "previous_status": "Needs check: scent_family, main_accord; no Fragrantica page found — notes sourced from retailer",
+    "previous_sources": "https://www.bloompharmacy.com/products/pret-a-porter-fashion-london-collection-edp-for-men-100ml ; https://www.amazon.ae/Porter-London-Aromatic-Foug%C3%A8re-Vetiver/dp/B0DDXVL53X"
+  },
+  {
+    "row": 5700,
+    "sku": "3616305064387",
+    "product_name": "PRET A PORTER NEW YORK EDP 100ML",
+    "brand_in_sheet": "PRET A PORTER",
+    "previous_status": "Needs check: scent_family, main_accord; no Fragrantica page found — notes sourced from retailer",
+    "previous_sources": "https://www.walmart.com/ip/Pr-t-Porter-New-York-Eau-de-Parfum-For-Men-A-Suave-Woody-Foug-re-Fragrance-Juniper-Berries-Sage-and-Cedarwood-100ml-3-3oz/10223424897"
+  },
+  {
+    "row": 5711,
+    "sku": "6281056175704",
+    "product_name": "PROPHECY PARFUM COLONGE MIST 100 ML",
+    "brand_in_sheet": "MAHMOOD SAEED",
+    "previous_status": "Needs check: brand; product sold under Mahmood Saeed barcode (6281056175704) but multiple retailers list brand as Prince Matchabelli; notes are from Fragrantica page for original Prophecy EDT and may differ for Cologne Mist concentration",
+    "previous_sources": "https://www.fragrantica.com/perfume/Prince-Matchabelli/Prophecy-38397.html ; https://alfatah.pk/products/prophecy-cologne-spray-mist-100-ml"
+  },
+  {
+    "row": 5714,
+    "sku": "5414666002288",
+    "product_name": "PURE BLACK EDT 100 ML",
+    "brand_in_sheet": "BENDI",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 5727,
+    "sku": "6291108739020",
+    "product_name": "QAED AL FURSAN WHITE",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: scent_family, main_accord; no dedicated Fragrantica page found for 'Qaed Al Fursan White' — data matched to Qaed Al Fursan Unlimited (Fragrantica) based on nearly identical notes profile",
+    "previous_sources": "https://www.fragrantica.com/perfume/Lattafa-Perfumes/Qaed-Al-Fursan-Unlimited-82590.html ; https://labelleperfumes.com/products/new-qaed-al-fursan-white-3-04-oz-edp"
+  },
+  {
+    "row": 5730,
+    "sku": "3658845451586",
+    "product_name": "QISSAH EMPERROR VALLEY EDP 100ML",
+    "brand_in_sheet": "CAVALLO",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; brand corrected from sheet's 'CAVALLO' to actual maker Wadi Al Khaleej Perfumes",
+    "previous_sources": "https://tuzzut.com/products/qissa-emperor-valley-100ml-edp-by-wadi-al-khaleej-perfumes ; https://www.rioperfumes.co.za/products/wadi-al-khaleej-qissah-emperor-valley-100ml-eau-de-parfum"
+  },
+  {
+    "row": 5757,
+    "sku": "3360377015951",
+    "product_name": "RALPH LAUREN RALPH EDT TESTER",
+    "brand_in_sheet": "RALPH LAUREN",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Ralph-Lauren/Ralph-826.html"
+  },
+  {
+    "row": 5758,
+    "sku": "3605971512575",
+    "product_name": "RALPH LAUREN RALPH'S CLUB BLACK EDP 100 ML",
+    "brand_in_sheet": "RALPH LAUREN",
+    "previous_status": "Needs check: no 'Ralph's Club Black' variant found on Fragrantica or official Ralph Lauren site; SKU 3605971512575 matches Ralph's Club EDP (2021); notes and data reflect Ralph's Club EDP",
+    "previous_sources": "https://www.fragrantica.com/perfume/Ralph-Lauren/Ralph-s-Club-68282.html ; https://www.lojaglamourosa.com/us/en/ralph-lauren-ralphs-club-edp---100ml-3605971512575"
+  },
+  {
+    "row": 5761,
+    "sku": "3360377006133",
+    "product_name": "RALPH LAUREN ROMANCE EDP WOMEN TESTER",
+    "brand_in_sheet": "RALPH LAUREN",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Ralph-Lauren/Romance-825.html"
+  },
+  {
+    "row": 5844,
+    "sku": "6291104354722",
+    "product_name": "REAL IMAGE BROWN EDC 120 ML",
+    "brand_in_sheet": "",
+    "previous_status": "Needs check: scent_family, main_accord; notes without pyramid",
+    "previous_sources": "https://www.mansion.lk/product/brown-real-image-edc-120ml/ ; https://tudo.lk/product/brown-mens-120ml-edc-real-image-perfumes-uae-"
+  },
+  {
+    "row": 5852,
+    "sku": "3442151001388",
+    "product_name": "RED PEARL NEW PAC:EDP 100 ML",
+    "brand_in_sheet": "SHAYA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; Al Shaya Perfumes Red Pearl not found on Fragrantica; product page returned 403",
+    "previous_sources": "https://www.boutiqaat.com/en-ae/men/red-pearl-edp-100ml-by-al-shaya-perfumes/p/"
+  },
+  {
+    "row": 5867,
+    "sku": "3700082500043",
+    "product_name": "REMY FOR WOMAN GOLD EDP 100 ML",
+    "brand_in_sheet": "REMY MARQUIS",
+    "previous_status": "Needs check: Gold variant could not be verified as a distinct product; data used is for Remy (Women) by Remy Marquis on Fragrantica",
+    "previous_sources": "https://www.fragrantica.com/perfume/Remy-Marquis/Remy-20874.html"
+  },
+  {
+    "row": 5868,
+    "sku": "3700082500067",
+    "product_name": "REMY MARQUIS FOR MEN(O)Edt 100 Ml",
+    "brand_in_sheet": "REMY MARQUIS",
+    "previous_status": "Needs check: top_notes, heart_notes, base_notes are generic (Fragrantica notes not detailed); concentration taken from product name",
+    "previous_sources": "https://www.fragrantica.com/perfume/Remy-Marquis/Marquis-20851.html"
+  },
+  {
+    "row": 5894,
+    "sku": "6295151501757",
+    "product_name": "RIIFFS ELYSSIA AURA EDP 100ML",
+    "brand_in_sheet": "RIIFFS",
+    "previous_status": "Needs check: concentration (Fragrantica page indicates Extrait; product name says EDP)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Riiffs-Perfumes/Elyssia-Aura-132922.html"
+  },
+  {
+    "row": 5897,
+    "sku": "6295151506844",
+    "product_name": "RIIFFS GOLDEN ELIXIR CRIMSON 100ML",
+    "brand_in_sheet": "RIIFFS",
+    "previous_status": "Needs check: scent_family, main_accord (no Fragrantica page for Crimson variant; notes from retailer source only); concentration uncertain — product name says EDP, some retailers list Extrait de Parfum",
+    "previous_sources": "https://www.royalsperfume.com/products/golden-elixir-crimson-by-riiffs-edp-100ml"
+  },
+  {
+    "row": 5898,
+    "sku": "6295151502778",
+    "product_name": "RIIFFS TAHIRA EDP 100ML",
+    "brand_in_sheet": "RIIFFS",
+    "previous_status": "Needs check: concentration (Fragrantica reviewers indicate Extrait strength; product name says EDP)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Riiffs-Perfumes/Tahira-135283.html"
+  },
+  {
+    "row": 5899,
+    "sku": "6295151503782",
+    "product_name": "RIIFFS VELOCE EDP 100ML",
+    "brand_in_sheet": "RIIFFS",
+    "previous_status": "Needs check: scent_family, main_accord (no Fragrantica page; notes from retailer only); concentration uncertain — product name says EDP, multiple retailers list Extrait de Parfum",
+    "previous_sources": "https://www.royalsperfume.com/products/veloce-by-riiffs-edp-100ml"
+  },
+  {
+    "row": 5916,
+    "sku": "8052464897117",
+    "product_name": "ROBERTO CAVALLI EDP WOMEN TESTER NEW CODE",
+    "brand_in_sheet": "ROBERTO CAVALLI",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Roberto-Cavalli/Roberto-Cavalli-Eau-de-Parfum-13675.html"
+  },
+  {
+    "row": 5927,
+    "sku": "3614228960670",
+    "product_name": "ROBERTO CAVALLI PARADISE FOUND EDT TESTER",
+    "brand_in_sheet": "ROBERTO CAVALLI",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Roberto-Cavalli/Paradise-Found-For-Men-63092.html"
+  },
+  {
+    "row": 5937,
+    "sku": "3616303445133",
+    "product_name": "ROBERTO CAVALLI SIGNATURE EDP100ML (T)",
+    "brand_in_sheet": "ROBERTO CAVALLI",
+    "previous_status": "Needs check: no dedicated Fragrantica page for Signature EDP; data sourced from Roberto Cavalli Eau de Parfum (2012) Fragrantica page which shares the same composition structure; confirmed as women's EDP by retailer",
+    "previous_sources": "https://www.fragrantica.com/perfume/Roberto-Cavalli/Roberto-Cavalli-Eau-de-Parfum-13675.html ; https://www.superdrug.com/fragrance/perfume-for-women/womens-perfume/roberto-cavalli-signature-eau-de-parfum-100ml-spray/p/mp-00116818"
+  },
+  {
+    "row": 5940,
+    "sku": "3616303452254",
+    "product_name": "ROBERTO CAVALLI TOBACCOMORE EDP TESTER",
+    "brand_in_sheet": "ROBERTO CAVALLI",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Roberto-Cavalli/Tobaccomore-111640.html"
+  },
+  {
+    "row": 5941,
+    "sku": "3616303445171",
+    "product_name": "ROBERTO CAVALLI UMMO EDP 100ML (T)",
+    "brand_in_sheet": "ROBERTO CAVALLI",
+    "previous_status": "Needs check: could not identify fragrance; 'UMMO' appears to be a misspelling of 'Uomo' (men's) but the specific Uomo EDP variant cannot be confirmed from barcode 3616303445171",
+    "previous_sources": ""
+  },
+  {
+    "row": 5955,
+    "sku": "3386460078580",
+    "product_name": "ROCHAS MADAME ROCHAS EDT TESTER",
+    "brand_in_sheet": "ROCHAS",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Rochas/Madame-Rochas-2153.html"
+  },
+  {
+    "row": 5993,
+    "sku": "ROSEV TEA ATTAR",
+    "product_name": "ROSE TEA ATTAR 15 ML",
+    "brand_in_sheet": "",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 5994,
+    "sku": "3311899504874",
+    "product_name": "ROSE VANILLA EDP 100 ML",
+    "brand_in_sheet": "FRAGRANCE",
+    "previous_status": "Needs check: brand; identified as Maison Asrar Rose Vanilla EDP via Fragrantica and retailer listings, but barcode 3311899504874 not directly confirmed on brand site",
+    "previous_sources": "https://www.fragrantica.com/perfume/MAISON-ASRAR/Rose-Vanilla-89550.html ; https://orioudh.com/products/arabian-perfume-maison-asrar-rose-vanilla-110ml-eau-de-parfum"
+  },
+  {
+    "row": 5998,
+    "sku": "8436603740272",
+    "product_name": "ROSENDO MATEU 8 EDP 100ML",
+    "brand_in_sheet": "ROSENDO MATEU",
+    "previous_status": "Needs check: scent_family; Fragrantica scent family not unambiguously confirmed for this 2024 release",
+    "previous_sources": "https://www.fragrantica.com/perfume/Rosendo-Mateu-Olfactive-Expressions/Rosendo-Mateu-No-8-Fruity-Amber-Exotic-Musk-91181.html"
+  },
+  {
+    "row": 6005,
+    "sku": "WJ35193",
+    "product_name": "ROUGE ROYAL RED EDP 100 ML TESTER",
+    "brand_in_sheet": "MARINA DE BOURBON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6008,
+    "sku": "3360125632010",
+    "product_name": "ROYAL BOUQUET WOMEN EDP 100 ML",
+    "brand_in_sheet": "LE.ROBINSON",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6015,
+    "sku": "3575070000238",
+    "product_name": "ROYAL OUD EDP WOMEN 100 ML",
+    "brand_in_sheet": "REGINES",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6024,
+    "sku": "3355992004596",
+    "product_name": "RUMBA TED LAPIDUS EDT 100 ML (O)",
+    "brand_in_sheet": "RUBMA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6027,
+    "sku": "3386460072151",
+    "product_name": "S T DUPONT SAINT GERMAIN INTENSE EDT 50 ML",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6028,
+    "sku": "3386460098106",
+    "product_name": "S T DUPONT SPECIAL EDITION EDP 100 ML",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6037,
+    "sku": "3386461011241",
+    "product_name": "S.T DUPONT ESSENCE PURE HOMME EDT 100 ML TST",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6042,
+    "sku": "3386461038323",
+    "product_name": "S.T DUPONT NOIR POUR HOMME EDT 100ML",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6044,
+    "sku": "3386460011679",
+    "product_name": "S.T DUPONT PASSENGER POUR HOMME EDT 100 ML T",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6047,
+    "sku": "3386460078481",
+    "product_name": "S.T DUPONT ROYAL AMBER EDP 100 ML",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6052,
+    "sku": "3386461206692",
+    "product_name": "S.T DUPUNT FOR MEN EDT 100 ML TESTER",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6056,
+    "sku": "3386460101301",
+    "product_name": "S.T. DUPONT BE EXCEPTIONAL GOLD EDP 50ML",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6060,
+    "sku": "3386460002554",
+    "product_name": "S.T.DUPONT BLANC EDP 100ML",
+    "brand_in_sheet": "S.T DUPONT",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6067,
+    "sku": "3360372013648",
+    "product_name": "SAFARI MEN EDT 125 ML",
+    "brand_in_sheet": "RALPH LAUREN",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6074,
+    "sku": "3331430900033",
+    "product_name": "SALVADOR DALI DALI POUR HOMME EDT 100 ML",
+    "brand_in_sheet": "SALVADOR",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  },
+  {
+    "row": 6075,
+    "sku": "3331430890730",
+    "product_name": "SALVADOR DALI LAGUNA EDT 100 ML",
+    "brand_in_sheet": "SALVADOR",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": ""
+  }
+]

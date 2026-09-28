@@ -1,0 +1,1754 @@
+[
+  {
+    "row": 39,
+    "sku": "8411061906620",
+    "product_name": "212 VIP SEXY FALCON DEMONSTARTION EDP 100ML T",
+    "brand_in_sheet": "CH",
+    "previous_status": "Needs check: could not identify fragrance; product name (\"212 VIP Sexy Falcon Demonstration\") does not match any known Carolina Herrera 212 VIP flanker - only brand/line, concentration and size could be confirmed",
+    "previous_sources": ""
+  },
+  {
+    "row": 48,
+    "sku": "085715167385",
+    "product_name": "ABERCROMBIE &FITCH FIRST INSTINCT BLUE TESTER",
+    "brand_in_sheet": "Abercrombie & fitch",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Abercrombie-Fitch/First-Instinct-Blue-50034.html"
+  },
+  {
+    "row": 49,
+    "sku": "085715170422",
+    "product_name": "ABERCROMBIE FIERCE CONFIDENCE EDC 100ML",
+    "brand_in_sheet": "Abercrombie & fitch",
+    "previous_status": "Needs check: scent_family",
+    "previous_sources": "https://www.fragrantica.com/perfume/Abercrombie-Fitch/Fierce-Confidence-38011.html"
+  },
+  {
+    "row": 65,
+    "sku": "3700066702913",
+    "product_name": "ACQUA DI PARISIS AMBER & AMBER EDP 100 ML",
+    "brand_in_sheet": "REYANE TRADITION",
+    "previous_status": "Needs check: top_notes, heart_notes, base_notes — no Fragrantica page found; notes sourced from single retailer description only",
+    "previous_sources": "https://www.jomashop.com/reyane-tradition-ladies-acqua-di-parisis-amber-amber-edp-spray-3-3-oz-fragrances-3700066702913.html ; https://www.ecosmetics.com/product/acqua-di-parisis-amber-amber-eau-de-parfum/"
+  },
+  {
+    "row": 66,
+    "sku": "3700066702906",
+    "product_name": "ACQUA DI PARISIS MAGIC RED EDP 100 ML",
+    "brand_in_sheet": "REYANE TRADITION",
+    "previous_status": "Needs check: main_accord, top_notes, heart_notes, base_notes — no Fragrantica page found; note data from retailers is inconsistent and could not be verified",
+    "previous_sources": "https://www.walmart.com/ip/Reyane-Tradition-Ladies-Acqua-Di-Parisis-Magic-Red-EDP-Spray-3-3-oz-Fragrances-3700066702906/5076916692 ; https://www.scentinthecity.com/products/acqua-di-parisis-magic-red-by-reyane-tradition"
+  },
+  {
+    "row": 102,
+    "sku": "6295199795705",
+    "product_name": "AHLAM AL ARAB EDP 75 ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: brand in sheet is LATTAFA but product brand is Ard Al Zaafaran (Lattafa Group subsidiary); 75ml size not confirmed — product is available in 50ml and 80ml, not 75ml",
+    "previous_sources": "https://www.intenseoud.com/products/ahlam-al-arab-edp-spray-80ml-2-72-oz-with-deo-by-ard-al-zaafaran-long-lasting-luxurious-captivating-fragrance-1 ; https://www.parfumo.com/Perfumes/Ard_Al_Zaafaran/ahlam-al-arab-eau-de-parfum"
+  },
+  {
+    "row": 122,
+    "sku": "6423080727157",
+    "product_name": "AJEEB (BEACH) EDP 100 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; '(BEACH)' variant not found online, and Ajeeb sources conflict (official site: pineapple/lemon/bergamot, men; Parfumo: blackcurrant/peony, women)",
+    "previous_sources": "https://ardalzaafaranshop.com/products/ajeeb-100ml ; https://www.parfumo.com/Perfumes/Ard_Al_Zaafaran/ajeeb"
+  },
+  {
+    "row": 129,
+    "sku": "6290362344841",
+    "product_name": "AL IBDAA EDP 100 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: variant; matched to plain 'Al Ibdaa' (Fragrantica 2023, men) - confirm the bottle is not Al Ibdaa Men Silver or Women Gold, which have different notes",
+    "previous_sources": "https://www.fragrantica.com/perfume/Ard-Al-Zaafaran/Al-Ibdaa-104391.html ; https://ardalzaafaranshop.com/products/al-ibdaa-men-silver-100ml"
+  },
+  {
+    "row": 132,
+    "sku": "AL REHAB 35 ML",
+    "product_name": "AL REHAB BODY SPRAY 50 ML MIX",
+    "brand_in_sheet": "AL REHAB",
+    "previous_status": "Needs check: could not identify fragrance; 'MIX' = assorted scents, no single fragrance to research",
+    "previous_sources": ""
+  },
+  {
+    "row": 136,
+    "sku": "8059687060038",
+    "product_name": "AL SHARQV COKE 60 PC MADE IN JAPAN",
+    "brand_in_sheet": "",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 164,
+    "sku": "6291107456348",
+    "product_name": "AMEER AL ARAB BLACK EDP 100ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: brand corrected from LATTAFA to Asdaaf (Lattafa Group sub-brand); notes from single retailer — no Fragrantica page found; country of origin UAE per retailer",
+    "previous_sources": "https://www.o2morny.com/products/asdaaf-ameer-al-arab-black-eau-de-parfum-for-men-100ml ; https://www.oudnaroma.com/products/lattafa-ameer-al-arab-black-eau-de-parfum-100ml"
+  },
+  {
+    "row": 165,
+    "sku": "6291108320143",
+    "product_name": "AMEER AL OUD EDP 80 ML",
+    "brand_in_sheet": "FRAGRANCE WORLD",
+    "previous_status": "Needs check: product identified as Arabian Noir variant based on 80ml size match; SKU 6291108320143 not directly confirmed on Fragrantica",
+    "previous_sources": "https://www.fragrantica.com/perfume/Fragrance-World/Ameer-Al-Oud-Arabian-Noir-115474.html ; https://fragrances.com.ng/unisex-perfumes/fragrance-world-ameer-al-oud-arabian-noir-edp-100ml.html"
+  },
+  {
+    "row": 169,
+    "sku": "6325598741529",
+    "product_name": "AMEER AL QULOOB WHITE EDP 100 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; unclear whether 'White' is a separate version of Ameer Al Quloob - official/Fragrantica Ameer Al Quloob notes differ from a retailer's 'White Ameer Al Quloob' listing",
+    "previous_sources": "https://ardalzaafaranshop.com/products/ameer-al-quloob-100-ml ; https://www.fragrantica.com/perfume/Ard-Al-Zaafaran/AMEER-AL-QULOOB-113815.html ; https://tripletraders.com/products/copy-of-ahal-al-fakhar-asdaaf-by-lattafa-100ml-3-4-fl-oz-eau-de-parfum-1"
+  },
+  {
+    "row": 173,
+    "sku": "6302244587588",
+    "product_name": "AMEERAT AL QULOOB EDP 100 ML PINK",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; Ameerat Al Quloob exists (Al-Rashad listing) but no reliable notes pyramid or pink variant info found",
+    "previous_sources": "https://alrashad.com/products/ameerat-al-quloob-eau-de-parfum-100ml-spray-by-ard-al-zaafaran"
+  },
+  {
+    "row": 216,
+    "sku": "701666411048",
+    "product_name": "AMOUAGE REASONS EDP 100 ML",
+    "brand_in_sheet": "AMOUAGE",
+    "previous_status": "Needs check: concentration; Amouage labels Reasons as 'Essence de Parfum' (30%), not in allowed list; sheet and Jomashop say EDP",
+    "previous_sources": "https://amouage.com/products/new-reasons ; https://www.fragrantica.com/perfume/Amouage/Reasons-97925.html ; https://www.jomashop.com/amouage-unisex-reasons-edp-spray-3-4-oz-fragrances-701666411048.html"
+  },
+  {
+    "row": 234,
+    "sku": "6291001594092",
+    "product_name": "ANA ASWAD BROWN EDP 100ML",
+    "brand_in_sheet": "AL HABEEB",
+    "previous_status": "Needs check: gender, scent_family, main_accord, top_notes, heart_notes, base_notes (could not confidently verify this exact product online)",
+    "previous_sources": ""
+  },
+  {
+    "row": 237,
+    "sku": "",
+    "product_name": "ANGEL LONDON COLLECTION MIX",
+    "brand_in_sheet": "LONDON COLLECTION",
+    "previous_status": "Needs check: could not identify fragrance — no brand named 'London Collection' with a product 'Angel' found on any reliable source; no SKU provided",
+    "previous_sources": ""
+  },
+  {
+    "row": 253,
+    "sku": "6012492345150",
+    "product_name": "ANGLE JOVEN ESTILLO DIAMOND EDP 100 ML",
+    "brand_in_sheet": "MARC ANTOINE",
+    "previous_status": "Needs check: could not identify fragrance — 'Joven Estillo Diamond' by Marc Antoine not found on any reliable fragrance database or brand source",
+    "previous_sources": ""
+  },
+  {
+    "row": 273,
+    "sku": "6290102031123",
+    "product_name": "ARABIYAT AYYAN EDP 100ML",
+    "brand_in_sheet": "ARABIYAT PERFUM",
+    "previous_status": "Needs check: scent_family, main_accord; no Fragrantica page, notes from brand site (My Perfumes)",
+    "previous_sources": "https://myperfumes.ae/products/ayaan-edp-100ml"
+  },
+  {
+    "row": 274,
+    "sku": "6290102030638",
+    "product_name": "ARABIYAT ZUHUR EDP 100ML",
+    "brand_in_sheet": "ARABIYAT PERFUM",
+    "previous_status": "Needs check: gender, scent_family, main_accord; barcode = Zuhur Lak; brand site says Unisex but retailers/Parfumo say Women; Parfumo lists different notes, brand site notes used (FragranceX agrees)",
+    "previous_sources": "https://myperfumes.ae/products/arabiyat-zuhur-lak-edp-100ml ; https://www.fragrancex.com/products/my-perfumes/arabiyat-zuhur-lak-perfume ; https://www.parfumo.com/Perfumes/Arabiyat/zuhur-lak-eau-de-parfum"
+  },
+  {
+    "row": 309,
+    "sku": "6294015165029",
+    "product_name": "ARMAF CDN PRIVATE KEY TO LOVE 100ML",
+    "brand_in_sheet": "ARMAF",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; Club de Nuit Private Key To My Love confirmed as unisex Extrait de Parfum, but no reliable notes page could be fetched",
+    "previous_sources": "https://www.fragrancenet.com/fragrances/armaf/armaf-club-de-nuit-private-key-to-my-love/extrait-de-parfum"
+  },
+  {
+    "row": 310,
+    "sku": "6294015164992",
+    "product_name": "ARMAF CDN PRIVATE KEY TO MY DREAMS 100ML",
+    "brand_in_sheet": "ARMAF",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; Club de Nuit Private Key To My Dreams confirmed as unisex Extrait de Parfum, but no reliable notes page could be fetched",
+    "previous_sources": "https://www.fragrancenet.com/fragrances/armaf/armaf-club-de-nuit-private-key-to-my-dreams/extrait-de-parfum"
+  },
+  {
+    "row": 311,
+    "sku": "6294015175943",
+    "product_name": "ARMAF CDN PRIVATE KEY TO MY SOUL 100ML",
+    "brand_in_sheet": "ARMAF",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; Club de Nuit Private Key To My Soul confirmed as unisex Extrait de Parfum, but no reliable notes page could be fetched",
+    "previous_sources": "https://www.fragrancenet.com/fragrances/armaf/armaf-club-de-nuit-private-key-to-my-soul/extrait-de-parfum"
+  },
+  {
+    "row": 312,
+    "sku": "6294015165005",
+    "product_name": "ARMAF CDN PRIVATE KEY TO SUCCESS 100ML",
+    "brand_in_sheet": "ARMAF",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; Club de Nuit Private Key To My Success confirmed as unisex Extrait de Parfum, but no reliable notes page could be fetched",
+    "previous_sources": "https://www.fragrancenet.com/fragrances/armaf/armaf-club-de-nuit-private-key-to-my-success/extrait-de-parfum"
+  },
+  {
+    "row": 313,
+    "sku": "6294015165012",
+    "product_name": "ARMAF CDN PRIVATEN KEY TO MY LIFE 100ML",
+    "brand_in_sheet": "ARMAF",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; Club de Nuit Private Key To My Life confirmed as unisex Extrait de Parfum, but no reliable notes page could be fetched",
+    "previous_sources": "https://www.fragrancenet.com/fragrances/armaf/armaf-club-de-nuit-private-key-to-my-life/extrait-de-parfum"
+  },
+  {
+    "row": 314,
+    "sku": "6294015163513",
+    "product_name": "ARMAF CLUB DE NUIT URBAN MAN ELIXIR 105 ML",
+    "brand_in_sheet": "ARMAF",
+    "previous_status": "Needs check: scent_family; Fragrantica shows no olfactory family for this perfume; brand site lists it as Eau de Parfum",
+    "previous_sources": "https://www.fragrantica.com/perfume/Armaf/Club-De-Nuit-Urban-Elixir-77860.html ; https://armaf.com/products/club-de-nuit-urban-elixir-100ml ; https://www.jomashop.com/armaf-mens-club-de-nuit-urban-elixir-edp-spray-3-55-oz-fragrances-6294015163513.html"
+  },
+  {
+    "row": 325,
+    "sku": "6295199800959",
+    "product_name": "ARMAF YUMYUM EDP 100ML",
+    "brand_in_sheet": "ARMAF",
+    "previous_status": "Needs check: gender; Fragrantica lists it for women, Armaf site tags it Unisex",
+    "previous_sources": "https://www.fragrantica.com/perfume/Armaf/Yum-Yum-98717.html ; https://armaf.com/products/yum-yum-spr"
+  },
+  {
+    "row": 336,
+    "sku": "3614274644463",
+    "product_name": "ARMANI ACQUA DI GIO EDP INTENSE TESTER",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: size; size not in product name",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Acqua-di-Gio-Eau-de-Parfum-Intense-122311.html"
+  },
+  {
+    "row": 342,
+    "sku": "3614274143751",
+    "product_name": "ARMANI ACQUA DI GIO ELIXIR 50 ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: concentration; taken from product name, printed concentration on bottle not confirmed",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Acqua-di-Gio-Elixir-101438.html"
+  },
+  {
+    "row": 349,
+    "sku": "3614273953849",
+    "product_name": "ARMANI ACQUA DI GIO PROFONDO EDP 100 ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes; barcode is the refillable 100 ML Profondo EDP, data taken from the 2024 EDP version (the 2020 original has a different pyramid) - confirm version",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Acqua-di-Gio-Profondo-Eau-de-Parfum-2024-105624.html ; https://www.upcitemdb.com/upc/3614273953849"
+  },
+  {
+    "row": 353,
+    "sku": "3614273953641",
+    "product_name": "ARMANI ACQUA DI GIO PROFONDO PARFUM TESTER 10",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: size; product name truncated (\"TESTER 10\"), size unclear; tester",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Acqua-di-Gio-Profondo-Parfum-90451.html"
+  },
+  {
+    "row": 370,
+    "sku": "3614273636391",
+    "product_name": "ARMANI CODE EDP MEN TESTER NEW CODE",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; SKU 3614273636391 = Armani Code EDP 75 ml tester, but Armani sells two different formulas under the same Code EDP name/EAN range (2021: lavender-lemon-tonka-suede; 2024: green mandarin-nutmeg-tonka) - confirm which one 'NEW CODE' is",
+    "previous_sources": "https://www.jomashop.com/giorgio-armani-mens-armani-code-edp-2-5-oz-tester-fragrances-3614273636391.html ; https://www.fragrantica.com/perfume/Giorgio-Armani/Armani-Code-Eau-de-Parfum-65581.html ; https://www.fragrantica.com/perfume/Giorgio-Armani/Armani-Code-Eau-de-Parfum-2024-96540.html"
+  },
+  {
+    "row": 393,
+    "sku": "3614273235297",
+    "product_name": "ARMANI INDIGO TANZANITE EDP 100ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; could not reach a Fragrantica/official product page for Indigo Tanzanite",
+    "previous_sources": "https://www.fragrantica.com/designers/Giorgio-Armani.html"
+  },
+  {
+    "row": 405,
+    "sku": "3605521695178",
+    "product_name": "ARMANI POUR HOMME MAN EDT 100 ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: could not identify fragrance, scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; name suggests Armani Eau Pour Homme but SKU 3605521695178 is sold everywhere as Armani Eau de Nuit EDT 100 ml - confirm the actual bottle",
+    "previous_sources": "https://www.trendyol.com/giorgio-armani/eau-de-nuit-edt-100-ml-erkek-parfumu-3605521695178-p-192421 ; https://debenhams.com.mt/products/che-3605521695178"
+  },
+  {
+    "row": 418,
+    "sku": "3614273313162",
+    "product_name": "ARMANI SI EDP INTENSE 100 ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; barcode 3614273313162 appears to be the 2021 Sì Intense relaunch (not the 2014 or 2023 version) - confirm box",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Si-Intense-2021-64853.html ; https://www.giftexpress.com/armani-si-intense-gxp-5355.html"
+  },
+  {
+    "row": 426,
+    "sku": "3614272703902",
+    "product_name": "ARMANI SI PASSIONE (RED) EDP 100 ML T",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes; barcode 3614272703902 not found online - assumed the standard red-bottle Sì Passione EDP, confirm it is not a limited/other flanker",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Si-Passione-48002.html"
+  },
+  {
+    "row": 442,
+    "sku": "3614273762120",
+    "product_name": "ARMANI STRONGER WITH YOU AMBER EDP 100ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Emporio-Armani-Stronger-With-You-Amber-79699.html"
+  },
+  {
+    "row": 443,
+    "sku": "3614274708417",
+    "product_name": "ARMANI STRONGER WITH YOU AMBER EDP TESTER",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: size, notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Emporio-Armani-Stronger-With-You-Amber-79699.html"
+  },
+  {
+    "row": 447,
+    "sku": "3614272225626",
+    "product_name": "ARMANI STRONGER WITH YOU INTENSELY EDP TESTER",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Emporio-Armani-Stronger-With-You-Intensely-52802.html"
+  },
+  {
+    "row": 452,
+    "sku": "3614273665018",
+    "product_name": "ARMANI STRONGER WITH YOU OUD EDP 100 ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Emporio-Armani-Stronger-With-You-Oud-76171.html"
+  },
+  {
+    "row": 457,
+    "sku": "3614274040050",
+    "product_name": "ARMANI STRONGER WITH YOU TOBACCO EDP TESTER",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Giorgio-Armani/Emporio-Armani-Stronger-With-You-Tobacco-90333.html"
+  },
+  {
+    "row": 461,
+    "sku": "3614271432971",
+    "product_name": "ARMANI/PRIVE BLEU LAZULI EAU DE PARFUM 100 ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; could not reach a Fragrantica/official product page for Bleu Lazuli",
+    "previous_sources": "https://www.fragrantica.com/designers/Giorgio-Armani.html"
+  },
+  {
+    "row": 464,
+    "sku": "3614271063717",
+    "product_name": "ARMANI/PRIVE ROUGE MALACHITE EDP 100 ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; could not reach the Fragrantica page for Rouge Malachite (official page gives no pyramid)",
+    "previous_sources": "https://www.fragrantica.com/designers/Giorgio-Armani.html ; https://www.giorgioarmanibeauty-usa.com/fragrances/armani-prive/les-terres-precieuses/armani-prive-rouge-malachite/A3452.html"
+  },
+  {
+    "row": 467,
+    "sku": "3614271063700",
+    "product_name": "ARMANI/PRIVE VERT MALACHITE EDP 100 ML",
+    "brand_in_sheet": "ARMANI",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; could not reach the Fragrantica page for Vert Malachite (official page lists only key notes: lily accord, ylang-ylang, jasmine sambac)",
+    "previous_sources": "https://www.fragrantica.com/designers/Giorgio-Armani.html ; https://www.giorgioarmanibeauty-usa.com/fragrances/armani-prive/les-terres-precieuses/armani-prive-vert-malachite/A3451.html"
+  },
+  {
+    "row": 469,
+    "sku": "3442151009681",
+    "product_name": "ARMATEUR PARIS EDT 100 ML",
+    "brand_in_sheet": "PARIS BLEU",
+    "previous_status": "Needs check: notes not verified — Armateur base EDT by Paris Bleu Parfums not found on Fragrantica; only limited-edition variants (Gold, White, Silver) are listed",
+    "previous_sources": "https://www.fragrantica.com/designers/Paris-Bleu-Parfums.html"
+  },
+  {
+    "row": 472,
+    "sku": "365779497803",
+    "product_name": "ARTEMIOS ADVENTUS EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; no Fragrantica page, only a small-retailer listing whose notes copy Creed Aventus",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 473,
+    "sku": "655469658295",
+    "product_name": "ARTEMIOS ADVENTUS INTENSE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 474,
+    "sku": "655469597631",
+    "product_name": "ARTEMIOS AQUA VIO GIOVANNI PROUM 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 476,
+    "sku": "655469575165",
+    "product_name": "ARTEMIOS ART HOMME EDT 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 477,
+    "sku": "655469675445",
+    "product_name": "ARTEMIOS ATLANTIS EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: occasion, country_of_origin; Fragrantica base tier is a duplicate of the heart, base notes taken from AZ Perfumery (matches Fragrantica description text); scent family from 'Oriental Woody' in both sources' text",
+    "previous_sources": "https://www.fragrantica.com/perfume/Artemios/Atlantis-111923.html ; https://azperfumery.com/products/artemios-atlantis-edp-100ml"
+  },
+  {
+    "row": 478,
+    "sku": "655469543034",
+    "product_name": "ARTEMIOS AZZARA NIGHT EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; listed on noon as 'Artemios Azara Night EDP 100ml' but no readable notes/specs, not on Fragrantica or AZ Perfumery",
+    "previous_sources": "https://www.noon.com/uae-en/artemios-azara-night-eau-de-parfum-100ml/Z9447EFDA189890AAED56Z/p/"
+  },
+  {
+    "row": 479,
+    "sku": "655469744233",
+    "product_name": "ARTEMIOS BALLERINA INTENSE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica; EDP from product name",
+    "previous_sources": "https://azperfumery.com/products/artemios-ballerina-intense-100ml"
+  },
+  {
+    "row": 480,
+    "sku": "655469512405",
+    "product_name": "ARTEMIOS BALLERINA PINK EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; listed on noon as 'Artemios Ballerina Pink EDP 100ml' but no readable notes/specs, not on Fragrantica or AZ Perfumery",
+    "previous_sources": "https://www.noon.com/uae-en/artemios-ballerina-pink-eau-de-perfume-100ml/ZCBD49901C0DEC908F75EZ/p/"
+  },
+  {
+    "row": 481,
+    "sku": "655469677456",
+    "product_name": "ARTEMIOS BELLE NUIT EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica; EDP from product name",
+    "previous_sources": "https://azperfumery.com/products/artemios-belle-nuit-edp-100ml"
+  },
+  {
+    "row": 482,
+    "sku": "655469733749",
+    "product_name": "ARTEMIOS BLACK DIAMOND EDP 100 ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica",
+    "previous_sources": "https://azperfumery.com/products/artemios-black-diamond-edp-100ml"
+  },
+  {
+    "row": 483,
+    "sku": "655469805217",
+    "product_name": "ARTEMIOS BLACKLIST EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: occasion, country_of_origin; no when-to-wear votes on Fragrantica",
+    "previous_sources": "https://www.fragrantica.com/perfume/Artemios/Blacklist-112068.html ; https://azperfumery.com/products/artemios-blacklist-edp-100ml"
+  },
+  {
+    "row": 485,
+    "sku": "365779498213",
+    "product_name": "ARTEMIOS BUKKARAT ROUGE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin, notes without pyramid; matched to AZ Perfumery 'Artemios Bukkurat Rouge 540 EDP 100ML' (single retailer, not on Fragrantica)",
+    "previous_sources": "https://azperfumery.com/products/artemios-bukkurat-rouge-540-edp-100ml"
+  },
+  {
+    "row": 486,
+    "sku": "655469731400",
+    "product_name": "ARTEMIOS CASPIAN EDP 100 ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica",
+    "previous_sources": "https://azperfumery.com/products/artemios-caspian-edp-100ml"
+  },
+  {
+    "row": 493,
+    "sku": "655469917873",
+    "product_name": "ARTEMIOS CRIME POUR FEMME EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica",
+    "previous_sources": "https://azperfumery.com/products/artemios-crime-pour-femme-edp-100ml"
+  },
+  {
+    "row": 494,
+    "sku": "655360156906",
+    "product_name": "ARTEMIOS DELIGHT BLUE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica",
+    "previous_sources": "https://azperfumery.com/products/artemios-deligth-blue-edp-100ml"
+  },
+  {
+    "row": 495,
+    "sku": "655360093003",
+    "product_name": "ARTEMIOS ERNEST DE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; no 'Ernest De' found in Artemios listings (Fragrantica, AZ Perfumery, web search)",
+    "previous_sources": ""
+  },
+  {
+    "row": 496,
+    "sku": "365779498145",
+    "product_name": "ARTEMIOS FARAWAY EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica",
+    "previous_sources": "https://azperfumery.com/products/artemios-faraway-edp-100ml"
+  },
+  {
+    "row": 497,
+    "sku": "655469939554",
+    "product_name": "ARTEMIOS FIRE EAGLE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica",
+    "previous_sources": "https://azperfumery.com/products/artemios-fire-eagle-edp-100ml"
+  },
+  {
+    "row": 498,
+    "sku": "655469821385",
+    "product_name": "ARTEMIOS FREASH WAVE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica; sheet spelling 'FREASH WAVE' = Fresh Wave",
+    "previous_sources": "https://azperfumery.com/products/artemios-fresh-wave-edp-100ml"
+  },
+  {
+    "row": 499,
+    "sku": "655469714052",
+    "product_name": "ARTEMIOS GOOD DEEP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; sheet name 'GOOD DEEP' matched to Artemios Good Deed EDP 100ML (please confirm bottle); notes/family from single retailer (AZ Perfumery)",
+    "previous_sources": "https://azperfumery.com/products/artemios-good-deed-edp-100ml"
+  },
+  {
+    "row": 500,
+    "sku": "655469690172",
+    "product_name": "ARTEMIOS HAUL EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family from single retailer (AZ Perfumery), not on Fragrantica",
+    "previous_sources": "https://azperfumery.com/products/artemios-haul-edp-100ml"
+  },
+  {
+    "row": 503,
+    "sku": "655466758585",
+    "product_name": "ARTEMIOS HOMME SPORT EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, occasion, country_of_origin, description; AZ Perfumery page lists notes credited to perfumer François Demachy (copied from the designer perfume), so not used; gender from 'Homme' in name",
+    "previous_sources": "https://azperfumery.com/products/artemios-homme-sport-edp-100ml-1"
+  },
+  {
+    "row": 504,
+    "sku": "655469683587",
+    "product_name": "ARTEMIOS ILLUSION EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: main_accord, occasion, country_of_origin; notes/family/gender from single retailer (AZ Perfumery), not on Fragrantica; old sheet said Unisex, retailer says Men",
+    "previous_sources": "https://azperfumery.com/products/artemios-illusion-edp-100ml"
+  },
+  {
+    "row": 506,
+    "sku": "655469731622",
+    "product_name": "ARTEMIOS INVINCIBLE NOIR EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: scent_family, main_accord, occasion, country_of_origin; notes/gender from single retailer (AZ Perfumery, 'crafted for the discerning gentleman'), not on Fragrantica; old sheet said Unisex",
+    "previous_sources": "https://azperfumery.com/products/artemios-invincible-noir-edp-100ml"
+  },
+  {
+    "row": 507,
+    "sku": "655469970373",
+    "product_name": "ARTEMIOS INVINCIBLE ULTRA EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 508,
+    "sku": "655360320550",
+    "product_name": "ARTEMIOS LEATHER D ARTEMIOS 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 509,
+    "sku": "655469877955",
+    "product_name": "ARTEMIOS LEO EDP 100 ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 510,
+    "sku": "655469898509",
+    "product_name": "ARTEMIOS LIBERTY EDP INTENSE 105ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 513,
+    "sku": "655469652743",
+    "product_name": "ARTEMIOS MAJESTY EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 514,
+    "sku": "655469503588",
+    "product_name": "ARTEMIOS MANIFEST EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 515,
+    "sku": "655469674615",
+    "product_name": "ARTEMIOS MONOGRAM 02 EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 516,
+    "sku": "655469765948",
+    "product_name": "ARTEMIOS MORNING SPLASH EDP 100 ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 517,
+    "sku": "655360056350",
+    "product_name": "ARTEMIOS NARNIA LOVER EDP 100 ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 518,
+    "sku": "655360019034",
+    "product_name": "ARTEMIOS NOBLE MAN INTENSE 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 520,
+    "sku": "655469897434",
+    "product_name": "ARTEMIOS PURO EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: scent_family; Fragrantica shows no olfactory family for Puro",
+    "previous_sources": "https://www.fragrantica.com/perfume/Artemios/Puro-111921.html"
+  },
+  {
+    "row": 521,
+    "sku": "365779498015",
+    "product_name": "ARTEMIOS ROSINO VANILLA EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 523,
+    "sku": "365779497506",
+    "product_name": "ARTEMIOS SOVAIGE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 524,
+    "sku": "655469674684",
+    "product_name": "ARTEMIOS STRANGER WITH YOU GREEN OAK 100 ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 525,
+    "sku": "655469689657",
+    "product_name": "ARTEMIOS STRANGER WITH YOU VELVET SMOKE 100 M",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used; size read from truncated name '100 M'",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 527,
+    "sku": "655469939783",
+    "product_name": "ARTEMIOS TAHER EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 528,
+    "sku": "655469828544",
+    "product_name": "ARTEMIOS WEALTH EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 529,
+    "sku": "655360331204",
+    "product_name": "ARTEMIOS Y EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 530,
+    "sku": "655469599482",
+    "product_name": "ARTEMIOS YES INTENSE EDP 75ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica/Parfumo, retailer (azperfumery) notes appear copied from the inspiration perfume so not used",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 531,
+    "sku": "655469785939",
+    "product_name": "ARTEMIOS YOU EXCLUSIVE EDP 100ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; no Fragrantica page for an Artemios 'You Exclusive' (possibly 'Stranger With You Exclusive', but retailer notes appear copied from the designer original)",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html ; https://azperfumery.com/products/artemios-stranger-with-you-exclusive-edp-100ml"
+  },
+  {
+    "row": 532,
+    "sku": "655469988507",
+    "product_name": "ARTEMIOS YOU PRIVAIT EDP 100 ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; no reliable page found for Artemios 'You Privait'",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html"
+  },
+  {
+    "row": 533,
+    "sku": "617285478853",
+    "product_name": "ARTIMOIS THE NIGHT TREASOR EDP 100 ML",
+    "brand_in_sheet": "ARTEMOIS",
+    "previous_status": "Needs check: could not identify fragrance; not on Fragrantica, only a retailer listing whose notes look borrowed from the designer original",
+    "previous_sources": "https://www.fragrantica.com/designers/Artemios.html ; https://azperfumery.com/products/artemios-the-nigth-treasor-edp-100ml"
+  },
+  {
+    "row": 537,
+    "sku": "6291110003355",
+    "product_name": "ASEEL AL REHAB EDP 35ML",
+    "brand_in_sheet": "AL REHAB",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; Fragrantica (oud/rose/saffron, concentration not stated, may be the oil) and Parfumo EDP page (cotton flower/bergamot/jasmine) give conflicting notes",
+    "previous_sources": "https://www.fragrantica.com/perfume/Al-Rehab/Aseel-20041.html ; https://www.parfumo.com/Perfumes/Al_Rehab/aseel-eau-de-parfum"
+  },
+  {
+    "row": 588,
+    "sku": "6291103666970",
+    "product_name": "ATELIER INTENSE POUR HOMME 80ML",
+    "brand_in_sheet": "-BLANK-",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": "https://www.thescentsstore.com/products/le-chameau-atelier-intense-edt-80ml-for-men ; https://lechameauperfumes.co.uk/products/atelier-intense-pour-homme-80ml-eau-de-parfum"
+  },
+  {
+    "row": 598,
+    "sku": "8011003867172",
+    "product_name": "ATKINSONS OUD SAVE THE KING EDP TESTER",
+    "brand_in_sheet": "ATKINSONS",
+    "previous_status": "Needs check: size; tester size not stated in product name",
+    "previous_sources": "https://www.fragrantica.com/perfume/Atkinsons/Oud-Save-The-King-22056.html"
+  },
+  {
+    "row": 673,
+    "sku": "WB46139",
+    "product_name": "BADEEL AL OUD WHITE EDP 100 ML",
+    "brand_in_sheet": "LATTAFA",
+    "previous_status": "Needs check: could not verify product identity — SKU WB46139 is a store-assigned barcode and does not match any official Lattafa barcode; cannot confirm which Bade'e Al Oud variant this is",
+    "previous_sources": ""
+  },
+  {
+    "row": 682,
+    "sku": "6824637102982",
+    "product_name": "BAKHOOR AL SAYAAD",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: gender, size, scent_family, main_accord, top_notes, heart_notes, base_notes; notes not published for this bakhoor (sold in 40 g and 80 g)",
+    "previous_sources": "https://www.oriental-style.de/en/products/bakhoor-al-sayaad-incense-ard-al-zaafaran"
+  },
+  {
+    "row": 686,
+    "sku": "6423080622810",
+    "product_name": "BAKHOOR ASAALAT AL OUD GOLD 50 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: gender, size, scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; 'Gold' version not found online and name gives 50 ML for a bakhoor",
+    "previous_sources": "https://www.bakkah.us/products/bukhoor-asaalat-al-oud-80g"
+  },
+  {
+    "row": 687,
+    "sku": "6287015120006",
+    "product_name": "BAKHOOR ASHEK AL AOUD 30 GM",
+    "brand_in_sheet": "ALMAS",
+    "previous_status": "Needs check: could not identify fragrance; sheet brand 'ALMAS' unverified; size is 30 g per product name",
+    "previous_sources": ""
+  },
+  {
+    "row": 693,
+    "sku": "6824637103941",
+    "product_name": "BAKHOOR DIRHAM WARDI 80 GM",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: gender, scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; product confirmed as Ard Al Zaafaran bakhoor but no notes published",
+    "previous_sources": "https://alrashad.com/collections/ard-al-zaafaran-bakhoor-incense"
+  },
+  {
+    "row": 695,
+    "sku": "6094564502920",
+    "product_name": "BAKHOOR FATIMA",
+    "brand_in_sheet": "SUROORI",
+    "previous_status": "Needs check: notes not verified — only general descriptor 'woody, smoky, herbal, oriental' found; no detailed fragrance pyramid available from brand or reliable retailer",
+    "previous_sources": "https://www.oriental-style.de/en/bakhoor-bukhoor-fatima-suroori.html"
+  },
+  {
+    "row": 696,
+    "sku": "333252500081",
+    "product_name": "BAKHOOR FENADAK 30 GM",
+    "brand_in_sheet": "ARABIA",
+    "previous_status": "Needs check: could not identify fragrance; size in grams",
+    "previous_sources": ""
+  },
+  {
+    "row": 697,
+    "sku": "6287015126329",
+    "product_name": "BAKHOOR KUWAITI",
+    "brand_in_sheet": "-BLANK-",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 699,
+    "sku": "WO15492",
+    "product_name": "BAKHOOR MOZA HOME MADE 200GM (O)",
+    "brand_in_sheet": "ARABIC",
+    "previous_status": "Needs check: could not identify fragrance; homemade bakhoor, size in grams",
+    "previous_sources": ""
+  },
+  {
+    "row": 701,
+    "sku": "6291100176892",
+    "product_name": "BAKHOOR NABEEL ORANGE 40 GM",
+    "brand_in_sheet": "NABEEL",
+    "previous_status": "Needs check: notes not verified — Bakhoor Nabeel Orange (Touch Me Orange) identified as a product by Nabeel but no fragrance pyramid found from brand or reliable retailer",
+    "previous_sources": "https://www.noon.com/uae-en/40g-nabeel-perfumes-incense-bakhoor-touch-me-orange-pack-of-12-pcs/ZE3B4E104AD414CD44993Z/p/"
+  },
+  {
+    "row": 702,
+    "sku": "6291100174409",
+    "product_name": "BAKHOOR NASAEM RED 40 GM",
+    "brand_in_sheet": "NABEEL",
+    "previous_status": "Needs check: product name states 'Nasaem Red' but barcode 6291100174409 matches standard Bakhoor Nasaem in all listings; no 'Red' variant confirmed; notes are from Nabeel official site for standard Nasaem",
+    "previous_sources": "https://www.nabeel.com/bakhoor-nasaem-incense/heritage-collection/incense/40gms ; https://www.vperfumes.com/products/product-detail/nabeel-bakhoor-nasaem-40gms-incense/6291100174409"
+  },
+  {
+    "row": 703,
+    "sku": "6295199796092",
+    "product_name": "BAKHOOR OUD ABIYEDH",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; brand kept from sheet",
+    "previous_sources": ""
+  },
+  {
+    "row": 704,
+    "sku": "6291100178827",
+    "product_name": "BAKHOOR OUD MAKH MIKH 60GM",
+    "brand_in_sheet": "NASEEM",
+    "previous_status": "Needs check: brand in sheet listed as NASEEM but barcode 6291100178827 and all retail listings confirm brand is NABEEL; notes sourced from retailer description, not Fragrantica",
+    "previous_sources": "https://www.intenseoud.com/products/bakhoor-oudh-makh-mikh-60-gms-by-nabeel ; https://shop.sa-usa.com/products/bakhoor-oudh-makh-mikh-60-gms-by-nabeel"
+  },
+  {
+    "row": 724,
+    "sku": "3534886897340",
+    "product_name": "BARACCAT 540 CAVALIER",
+    "brand_in_sheet": "CAVALLO",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 753,
+    "sku": "3700066700803",
+    "product_name": "BELLA BY LACAS STEN EDP 75 ML",
+    "brand_in_sheet": "ARMAF",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; product is Bella by Lucas Stendhal (Parisis Parfums), not Armaf; retailers give conflicting notes and no Fragrantica page was found",
+    "previous_sources": "https://www.nahdionline.com/en-sa/parisis-parfums-bella-by-lucas-stendhal-eau-de-parfum-for-women-75-ml/pdp/103196173 ; https://www.goldenscent.com/en/p/parisis-parfums-bella-by-lucas-stendhal-eau-de-parfum-for-women.html"
+  },
+  {
+    "row": 807,
+    "sku": "3534886898064",
+    "product_name": "BILLIONAIRE EDP 100ML",
+    "brand_in_sheet": "CAVALIER",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 808,
+    "sku": "5055810024567",
+    "product_name": "BINT AL EZZ EDP 100 ML",
+    "brand_in_sheet": "AL WATANIAH",
+    "previous_status": "Needs check: scent_family, main_accord; not on Fragrantica, notes confirmed by two secondary sources (Parfoom, retailer)",
+    "previous_sources": "https://parfoom.com/perfumes/al-wataniah/bint-al-ezz ; https://tripletraders.com/products/bint-al-ezz-eau-de-parfum-by-al-wataniah-100ml-3-4-fl-oz-oriental-perfume"
+  },
+  {
+    "row": 810,
+    "sku": "6290362343264",
+    "product_name": "BINT HOORAN EDP 100ML",
+    "brand_in_sheet": "ARABIC",
+    "previous_status": "Needs check: top_notes, heart_notes, base_notes; pyramid from brand shop, Fragrantica lists different notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Ard-Al-Zaafaran/Bint-Hooran-64211.html ; https://ardalzaafaranshop.com/products/bint-hooran-100-ml"
+  },
+  {
+    "row": 817,
+    "sku": "3297861235963",
+    "product_name": "BLACK COUTURE LOUI MATIN EDP 100ML",
+    "brand_in_sheet": "LOUI MARTIN",
+    "previous_status": "Needs check: no pyramid notes found on Fragrantica or brand website; accords only from official site; gender not confirmed",
+    "previous_sources": "https://www.louimartinperfumes.com/product-page/black-couture-loui-martin-100ml-edp"
+  },
+  {
+    "row": 818,
+    "sku": "6291100634378",
+    "product_name": "BLACK DOSE WOMAN EDP 100 ML",
+    "brand_in_sheet": "CAPORAL",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar (brand/gender/concentration/size confirmed via retailer listings, but no reliable source with fragrance notes was found)",
+    "previous_sources": "https://www.kanbkam.com/sa/en/caporal-perfumes-black-dose-for-women-eau-de-perfume-100ml-6291100634378-B08BKQQPPM"
+  },
+  {
+    "row": 841,
+    "sku": "6290422119853",
+    "product_name": "BLANC LATTE EDP 100ML",
+    "brand_in_sheet": "MAYSON LEGEND",
+    "previous_status": "Needs check: could not identify fragrance on Fragrantica or any major fragrance database; notes not verifiable",
+    "previous_sources": "https://www.amazon.ae/Mayson-Legend-Parfum-Attractive-Fragrance/dp/B0DTJHCGC5 ; https://www.kgrworld.com/catalog/products/wadi-mayson-legend-blanc-latte-edp-spray-100ml"
+  },
+  {
+    "row": 854,
+    "sku": "3700066700100",
+    "product_name": "BLOOM ELSATYS WOMEN EDP 75 ML",
+    "brand_in_sheet": "ELSATYS",
+    "previous_status": "Needs check: brand in sheet listed as ELSATYS but correct brand is Reyane Tradition (Elsatys is the line name); fragrance not found on Fragrantica; pyramid notes sourced from retail descriptions only",
+    "previous_sources": "https://www.albusthan.ae/uae-/product-detail/Bloom-Elsatys-75ml- ; https://labelleperfumes.com/products/bloom-elsatys-2-5-oz-edp-for-women/"
+  },
+  {
+    "row": 856,
+    "sku": "7426968203391",
+    "product_name": "BLOSSOM BRANDY EDP 100 ML",
+    "brand_in_sheet": "BRANDY",
+    "previous_status": "Needs check: main_accord (no Fragrantica page found; brand's own site lists this as an 85 ml product, size taken from item name)",
+    "previous_sources": "https://brandyperfumes.com/product/blossom-eau-de-parfum-for-women-100ml/"
+  },
+  {
+    "row": 866,
+    "sku": "8411061081556",
+    "product_name": "BLUE SEDUCTION EDT MEN TESTER",
+    "brand_in_sheet": "ANTONIO BANDERAS",
+    "previous_status": "Needs check: size; tester size not in name",
+    "previous_sources": "https://www.fragrantica.com/perfume/Antonio-Banderas/Blue-Seduction-1088.html"
+  },
+  {
+    "row": 916,
+    "sku": "3386460036535",
+    "product_name": "BOUCHERON JAIPUR HOME EDT TESTER",
+    "brand_in_sheet": "BOUCHERON",
+    "previous_status": "Needs check: size (tester listing does not state a bottle size)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Boucheron/Jaipur-Homme-137.html"
+  },
+  {
+    "row": 959,
+    "sku": "875990001340",
+    "product_name": "BRONZE AGE EXTREME EDP 100 ML",
+    "brand_in_sheet": "SHAYA",
+    "previous_status": "Needs check: brand in sheet listed as SHAYA but barcode 875990001340 is confirmed by Jomashop and multiple retailers as Nu Parfums; notes sourced from retailer description only, not Fragrantica",
+    "previous_sources": "https://www.jomashop.com/nuparfums-mens-bronze-age-extreme-edp-3-4-oz-fragrances-875990001340.html ; https://ramfabeauty.com/products/extreme-homme-edp-men-perfume-bronze-age-100ml"
+  },
+  {
+    "row": 960,
+    "sku": "875990001302",
+    "product_name": "BRONZE AGE MINERALE EDP MAN 100 ML",
+    "brand_in_sheet": "AL SHAYA",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar; barcode 875990001302 matches Nu Parfums Bronze Age EDP 3.4 oz (Jomashop); no Fragrantica page; Parfumo 'Bronze Age Homme' not confirmed to be the same 'Eau Minerale' version",
+    "previous_sources": "https://www.jomashop.com/nuparfums-mens-bronze-age-edp-spray-3-4-oz-fragrances-875990001302.html"
+  },
+  {
+    "row": 971,
+    "sku": "3616304967139",
+    "product_name": "BUBERRY GODESS EDP INTENSE TESTER",
+    "brand_in_sheet": "BURBERRY",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Burberry/Goddess-Intense-95883.html ; https://us.burberry.com/c/burberry-gold/"
+  },
+  {
+    "row": 1010,
+    "sku": "6291100131570",
+    "product_name": "BUKHOOR HARAMAIN 40GM",
+    "brand_in_sheet": "HARAMAIN",
+    "previous_status": "Needs check: notes unverified",
+    "previous_sources": "https://shop.alharamainperfumes.com/default/incense/bukhoor.html"
+  },
+  {
+    "row": 1011,
+    "sku": "6432452224255",
+    "product_name": "BUKHOOR KAMBODI 80 GM",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; brand kept from sheet",
+    "previous_sources": ""
+  },
+  {
+    "row": 1013,
+    "sku": "6285022001011",
+    "product_name": "BUKHOOR KHANJAR 50 GM",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; brand kept from sheet",
+    "previous_sources": ""
+  },
+  {
+    "row": 1014,
+    "sku": "6824637104412",
+    "product_name": "BUKHOOR LAIL MALAKI 80GRM",
+    "brand_in_sheet": "MEGA COLLECTION",
+    "previous_status": "Needs check: brand not found online; notes unverified",
+    "previous_sources": ""
+  },
+  {
+    "row": 1016,
+    "sku": "6285022005194",
+    "product_name": "BUKHOOR MABSUS 30 GM",
+    "brand_in_sheet": "ARABIC",
+    "previous_status": "Needs check: could not identify fragrance; size in grams",
+    "previous_sources": ""
+  },
+  {
+    "row": 1019,
+    "sku": "WB36735",
+    "product_name": "BUKHOOR MOOZA HOME MADE 200 GM",
+    "brand_in_sheet": "REEHA",
+    "previous_status": "Needs check: notes unverified; Mooza 200 GM bakhoor not found on brand website",
+    "previous_sources": "https://reehaperfumes.com"
+  },
+  {
+    "row": 1020,
+    "sku": "6824637103002",
+    "product_name": "BUKHOOR MOUSUF 80 GRM",
+    "brand_in_sheet": "ARABIA",
+    "previous_status": "Needs check: could not identify fragrance; size in grams; possibly Ard Al Zaafaran Mousuf 80g but barcode unconfirmed",
+    "previous_sources": ""
+  },
+  {
+    "row": 1027,
+    "sku": "6235621586181",
+    "product_name": "BUKHOOR OUD AL SAMOU 50 GM",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; brand kept from sheet",
+    "previous_sources": ""
+  },
+  {
+    "row": 1029,
+    "sku": "6291100170494",
+    "product_name": "BUKHOOR OUD KHAWATIR 60GM",
+    "brand_in_sheet": "NABEEL",
+    "previous_status": "Needs check: notes sourced from retailer (intenseoud.com), not brand official site",
+    "previous_sources": "https://www.intenseoud.com/products/bakhoor-oudh-khawatir-60-gms-by-nabeel"
+  },
+  {
+    "row": 1031,
+    "sku": "6824637102975",
+    "product_name": "BUKHOOR OUD MOOD GOLD 80GRM",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: could not identify fragrance; brand kept from sheet",
+    "previous_sources": ""
+  },
+  {
+    "row": 1037,
+    "sku": "",
+    "product_name": "BUKHOOR RANYA 100 GM",
+    "brand_in_sheet": "NASEEM",
+    "previous_status": "Needs check: notes unverified",
+    "previous_sources": "https://www.kanbkam.com/ae/en/naseem-perfume-incense-charcoal-bukhoor-ranya-black-B07NVPCC26"
+  },
+  {
+    "row": 1040,
+    "sku": "",
+    "product_name": "BUKHOOR SAKINA 20 GM",
+    "brand_in_sheet": "NASEEM",
+    "previous_status": "Needs check: notes unverified",
+    "previous_sources": "https://www.naseemperfume.com/collections/arabic-bakhoor"
+  },
+  {
+    "row": 1044,
+    "sku": "6791516166376",
+    "product_name": "BUKHOOR SHAMSUL EMARAT KHASOOSI 80 GM",
+    "brand_in_sheet": "ARABIA",
+    "previous_status": "Needs check: could not identify fragrance; size in grams; barcode unconfirmed",
+    "previous_sources": ""
+  },
+  {
+    "row": 1046,
+    "sku": "6295199793879",
+    "product_name": "BUKHOOR SHEIKH SHUKH 80GRM",
+    "brand_in_sheet": "ARABIA",
+    "previous_status": "Needs check: could not identify fragrance; size in grams",
+    "previous_sources": ""
+  },
+  {
+    "row": 1050,
+    "sku": "6598754116442",
+    "product_name": "BUKHOOR TEEF AL HUB",
+    "brand_in_sheet": "AMOUAGE",
+    "previous_status": "Needs check: could not identify fragrance; sheet brand 'AMOUAGE' doubtful (no Teef Al Hub bakhoor in Amouage's Fragrantica listing)",
+    "previous_sources": ""
+  },
+  {
+    "row": 1052,
+    "sku": "6295253047351",
+    "product_name": "BUKHOOR ZAINAB 30 GM",
+    "brand_in_sheet": "NASEEM",
+    "previous_status": "Needs check: notes unverified; 30 GM size not confirmed on brand website (brand lists 20 GM)",
+    "previous_sources": "https://www.naseemperfume.com/collections/arabic-bakhoor ; https://www.naseemperfume.in/products/zainab-1"
+  },
+  {
+    "row": 1094,
+    "sku": "3616305806109",
+    "product_name": "BURBERRY GOLD EDP W TESTER",
+    "brand_in_sheet": "BURBERRY",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Burberry/Goddess-83483.html ; https://us.burberry.com/c/burberry-gold/"
+  },
+  {
+    "row": 1111,
+    "sku": "3614226905246",
+    "product_name": "BURBERRY LONDON EDP 100ML (T)",
+    "brand_in_sheet": "BURBERRY",
+    "previous_status": "Needs check: gender (product name has no explicit gender marker; identified as Burberry London for Women because that is the only London variant sold as EDP, while London for Men is EDT-only)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Burberry/London-813.html"
+  },
+  {
+    "row": 1164,
+    "sku": "783320506505",
+    "product_name": "BVLGARI GOLDEA EDP WOMEN TESTER",
+    "brand_in_sheet": "BVLGARI",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Bvlgari/Goldea-31538.html"
+  },
+  {
+    "row": 1198,
+    "sku": "783320419492",
+    "product_name": "BVLGARI MAN RAIN ESSENCE EDP MEN TESTER",
+    "brand_in_sheet": "BVLGARI",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Bvlgari/Bvlgari-Man-Rain-Essence-79335.html"
+  },
+  {
+    "row": 1206,
+    "sku": "783320414770",
+    "product_name": "BVLGARI MEN IN BLACK EDP TESTER",
+    "brand_in_sheet": "BVLGARI",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Bvlgari/Bvlgari-Man-In-Black-26358.html"
+  },
+  {
+    "row": 1335,
+    "sku": "YC63588",
+    "product_name": "CAPRIOLE Y EDP 100ML",
+    "brand_in_sheet": "CAPRIOLE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1337,
+    "sku": "ZC62635",
+    "product_name": "CAPRIOLE FLORA 1966 EDP 100 ML",
+    "brand_in_sheet": "CAPRIOLE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1338,
+    "sku": "ZC60329",
+    "product_name": "CAPRIOLE FLORA EDP 100 ML",
+    "brand_in_sheet": "CAPRIOLE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1339,
+    "sku": "ZC21418",
+    "product_name": "CAPRIOLE FLORA GORGEOUS GARDENIA EDP 100 ML",
+    "brand_in_sheet": "CAPRIOLE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1340,
+    "sku": "YC58020",
+    "product_name": "CAPRIOLE LIBERTE EDP 100ML",
+    "brand_in_sheet": "CAPRIOLE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1342,
+    "sku": "9288208658457",
+    "product_name": "CAPRIOLE STRONGER WITH YOU ABSOLUTELY EDP 100",
+    "brand_in_sheet": "CAPORAL",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1343,
+    "sku": "",
+    "product_name": "CAPRIOLE STRONGER WITH YOU INTENSELY EDP 100",
+    "brand_in_sheet": "CAPRIOLE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1351,
+    "sku": "8411061088159",
+    "product_name": "CAROLINA HERRERA 212 VIP ROSE EDP TESTER",
+    "brand_in_sheet": "CAROLINA HERRERA",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Carolina-Herrera/212-VIP-Rose-22857.html"
+  },
+  {
+    "row": 1354,
+    "sku": "3387950512706",
+    "product_name": "CARON Muguet du bonheur EDT 100 ML",
+    "brand_in_sheet": "CARON",
+    "previous_status": "Needs check: main_accord (accord bars not available for the current official pyramid)",
+    "previous_sources": "https://www.parfumscaron.com/en/products/muguet-du-bonheur ; https://www.fragrantica.com/perfume/Caron/Muguet-du-Bonheur-3837.html"
+  },
+  {
+    "row": 1377,
+    "sku": "8276690200101",
+    "product_name": "CARRERA SPEED EDT 100ML",
+    "brand_in_sheet": "CARRERA",
+    "previous_status": "Needs check: could not confirm exact flanker; gender, scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar — retailers list several different, conflicting note pyramids for \"Carrera Speed\" (plain, Extreme Sport, Black, Oud) with no Fragrantica or brand page to confirm",
+    "previous_sources": "https://www.perfume24x7.com/products/carrera-speed-men-edt ; https://www.fragrancia.ae/product-page/carrera-speed-edt-women-100ml"
+  },
+  {
+    "row": 1378,
+    "sku": "8276690200118",
+    "product_name": "CARRERA SPEED EDT WOMEN 100ML",
+    "brand_in_sheet": "CARRERA",
+    "previous_status": "Needs check: could not confirm exact flanker; scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar — retailers list conflicting note pyramids for \"Carrera Speed\" women's editions with no Fragrantica or brand page to confirm",
+    "previous_sources": "https://www.vperfumes.com/ae-en/product/carrera-speed-pour-femme-edt-for-women-100ml ; https://www.fragrancia.ae/product-page/carrera-speed-edt-women-100ml"
+  },
+  {
+    "row": 1438,
+    "sku": "3432240040176",
+    "product_name": "CARTIER LA PANTHERE LIMITED EDITION TESTER",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: exact limited-edition year not identifiable from product name; notes based on La Panthère Eau de Parfum Édition Limitée profile",
+    "previous_sources": "https://www.fragrantica.com/perfume/Cartier/La-Panthere-Eau-de-Parfum-Edition-Limitee-38189.html"
+  },
+  {
+    "row": 1457,
+    "sku": "3432240055262",
+    "product_name": "CARTIER PASHA EDITION NOIR NEW COD TESTER",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Cartier/Pasha-de-Cartier-Edition-Noire-22861.html"
+  },
+  {
+    "row": 1472,
+    "sku": "3432240054579",
+    "product_name": "CARTIER PASHA NOIR ABSOLU EDP 100 ML TESTER",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Cartier/Pasha-de-Cartier-Noir-Absolu-82328.html ; https://www.neimanmarcus.com/p/cartier-pasha-de-cartier-noir-absolu-eau-de-parfum-3-3-oz-prod262200022"
+  },
+  {
+    "row": 1475,
+    "sku": "3432240053015",
+    "product_name": "CARTIER PASHA NOIR PARFUM ABSOLU TESTER",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: size; notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Cartier/Pasha-de-Cartier-Noir-Absolu-82328.html ; https://www.neimanmarcus.com/p/cartier-pasha-de-cartier-noir-absolu-eau-de-parfum-3-3-oz-prod262200022"
+  },
+  {
+    "row": 1477,
+    "sku": "3432240506283",
+    "product_name": "CARTIER PASHA PARFUM 100ML",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Cartier/Pasha-de-Cartier-Parfum-59418.html ; https://www.jomashop.com/cartier-mens-pasha-de-cartier-parfum-edp-3-4-oz-fragrances-3432240506283-116032.html"
+  },
+  {
+    "row": 1478,
+    "sku": "3432240506269",
+    "product_name": "CARTIER PASHA PARFUM 150ML",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Cartier/Pasha-de-Cartier-Parfum-59418.html"
+  },
+  {
+    "row": 1479,
+    "sku": "3432240507532",
+    "product_name": "CARTIER PASHA PARFUM BLUE 100ML",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": "https://www.alamode.me/Pasha-de-Cartier-Parfum-Limited-Edition"
+  },
+  {
+    "row": 1480,
+    "sku": "3432240052377",
+    "product_name": "CARTIER PASHA PARFUM LIMITEE 100 ML TESTER",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": "https://www.alamode.me/Pasha-de-Cartier-Parfum-Limited-Edition"
+  },
+  {
+    "row": 1482,
+    "sku": "3432240049971",
+    "product_name": "CARTIER PASHA PARFUM WITHOUTBOX TESTER",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: notes without pyramid",
+    "previous_sources": "https://www.fragrantica.com/perfume/Cartier/Pasha-de-Cartier-Parfum-59418.html ; https://venerafragrances.com/cartier-pasha-de-cartier-parfum-100ml-for-men-without-package"
+  },
+  {
+    "row": 1485,
+    "sku": "3432240049964",
+    "product_name": "CARTIER PASHA SPORT EDT MEN TESTER",
+    "brand_in_sheet": "CARTIER",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Cartier/Pasha-de-Cartier-Edition-Noire-Sport-34282.html ; https://www.amazon.com/CARTIER-Pasha-Tester-Fragrances-3432240049964/dp/B0HGN4FJBV"
+  },
+  {
+    "row": 1501,
+    "sku": "3534886897319",
+    "product_name": "CAVALIER ALTON EDP 100 ML",
+    "brand_in_sheet": "CAVALIER",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1502,
+    "sku": "3534886897890",
+    "product_name": "CAVALIER AMBER & LEATHER EDP 100 ML",
+    "brand_in_sheet": "CAVALIER",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1503,
+    "sku": "3534886896572",
+    "product_name": "CAVALIER BOMB SHELL EDP 100 ML",
+    "brand_in_sheet": "CAVALIER",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1505,
+    "sku": "3384544515419",
+    "product_name": "CAVALIER KEREK EDP 100 ML",
+    "brand_in_sheet": "CAVALIER",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1508,
+    "sku": "3534886898248",
+    "product_name": "CAVALIER MARCO BARBARA EDP 80 ML",
+    "brand_in_sheet": "CAVALIER",
+    "previous_status": "Needs check: could not verify composition; gender, scent_family, main_accord, top_notes, heart_notes, base_notes, description_en, description_ar",
+    "previous_sources": "https://www.pure-gaming.fr/en/soin-du-corps/1743252-cavalier-marco-barbara-ganimade-eau-de-parfum-80ml-3534886898248.html"
+  },
+  {
+    "row": 1510,
+    "sku": "3534886899788",
+    "product_name": "CAVALIER OUD MOROCCO EXTRAIT DE PARFUM 100 ML",
+    "brand_in_sheet": "CAVALIER",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1531,
+    "sku": "8411061027844",
+    "product_name": "CH BAD BOY COBLAT EDP MEN TESTER",
+    "brand_in_sheet": "CH",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Carolina-Herrera/Bad-Boy-Cobalt-Parfum-Electrique-71888.html ; https://www.sephora.com/product/carolina-herrera-bad-boy-cobalt-eau-de-parfum-P481961"
+  },
+  {
+    "row": 1544,
+    "sku": "8411061056806",
+    "product_name": "CH GOOD GIRL BLUSH EDPN TESTER",
+    "brand_in_sheet": "CH",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Carolina-Herrera/Good-Girl-Blush-78576.html"
+  },
+  {
+    "row": 1550,
+    "sku": "8411061026267",
+    "product_name": "CH GOOD GIRL EDP WOMEN TESTER",
+    "brand_in_sheet": "CH",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Carolina-Herrera/Good-Girl-39681.html"
+  },
+  {
+    "row": 1577,
+    "sku": "8411061067925",
+    "product_name": "CH MEN EDT 100ML NEW CODE",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; brand corrected from D&G to Carolina Herrera (barcode 8411061067925 = CH Men EDT 100 ml); notes from brand site (Fragrantica pyramid differs)",
+    "previous_sources": "https://www.carolinaherrera.com/us/en/p-fragrance/ch-men-edt-100ml ; https://www.fragrantica.com/perfume/Carolina-Herrera/CH-Men-6759.html ; https://hadeeqatalatoor.com/en/products/%D8%B9%D8%B7%D8%B1-%D9%83%D8%A7%D8%B1%D9%88%D9%84%D9%8A%D9%86%D8%A7-%D9%87%D9%8A%D8%B1%D9%8A%D8%B1%D8%A7-%D8%B3%D9%8A-%D8%A7%D8%AA%D8%B4-%D9%84%D9%84%D8%B1%D8%AC%D8%A7%D9%84-100-%D9%85%D9%84"
+  },
+  {
+    "row": 1646,
+    "sku": "3145890263238",
+    "product_name": "CHANEL CHANCE EAU TENDRE EDT TESTER",
+    "brand_in_sheet": "CHANEL",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Chanel/Chance-Eau-Tendre-8069.html"
+  },
+  {
+    "row": 1670,
+    "sku": "3145891168501",
+    "product_name": "CHANEL COCO MADMISELL FRESH MOISTURE MIST 100",
+    "brand_in_sheet": "CHANEL",
+    "previous_status": "Needs check: scent_family, main_accord, top_notes, heart_notes, base_notes",
+    "previous_sources": "https://www.chanel.com/us/fragrance/p/116850/coco-mademoiselle-fresh-moisture-mist/ ; https://www.harrods.com/en-us/p/chanel-coco-mademoiselle-fresh-moisture-mist-100ml-000000000001672055"
+  },
+  {
+    "row": 1673,
+    "sku": "3145890136631",
+    "product_name": "CHANEL COCO NOIR EDP WOMEN TESTER",
+    "brand_in_sheet": "CHANEL",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Chanel/Coco-Noir-15963.html"
+  },
+  {
+    "row": 1744,
+    "sku": "3349668820092",
+    "product_name": "CHIVAS EDP 100ML",
+    "brand_in_sheet": "-BLANK-",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": ""
+  },
+  {
+    "row": 1760,
+    "sku": "3614225944178",
+    "product_name": "CHLOE NOMADE EDT TESTER",
+    "brand_in_sheet": "CHLOE",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Chloe/Nomade-Eau-de-Toilette-53224.html"
+  },
+  {
+    "row": 1763,
+    "sku": "3616302038770",
+    "product_name": "CHOLE ROSE NATURELLE INTENSE TESTER",
+    "brand_in_sheet": "CHLOE",
+    "previous_status": "Needs check: size",
+    "previous_sources": "https://www.fragrantica.com/perfume/Chloe/Chloe-Rose-Naturelle-Intense-76287.html"
+  },
+  {
+    "row": 1792,
+    "sku": "7640177361127",
+    "product_name": "CHOPARD LEATHER MALAKI EDP 100ML",
+    "brand_in_sheet": "CHOPARD",
+    "previous_status": "Needs check: gender (sheet listed Unisex, Fragrantica lists this as a men's fragrance)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Chopard/Leather-Malaki-93521.html"
+  },
+  {
+    "row": 1799,
+    "sku": "7640177360083",
+    "product_name": "CHOPARD OUD MALAKI EDP 80 ML",
+    "brand_in_sheet": "CHOPARD",
+    "previous_status": "Needs check: gender (sheet listed Unisex, Fragrantica lists this as a men's fragrance)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Chopard/Oud-Malaki-17184.html"
+  },
+  {
+    "row": 1800,
+    "sku": "7640177360090",
+    "product_name": "CHOPARD OUD MALAKI EDP 80 ML TESTER",
+    "brand_in_sheet": "CHOPARD",
+    "previous_status": "Needs check: gender (sheet listed Unisex, Fragrantica lists this as a men's fragrance)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Chopard/Oud-Malaki-17184.html"
+  },
+  {
+    "row": 1811,
+    "sku": "3755421666850",
+    "product_name": "CHRIS WILLYS IMAGINATIVE EDP 100 ML",
+    "brand_in_sheet": "ANGEL PERFUME",
+    "previous_status": "Needs check: could not identify fragrance; brand taken from product name only",
+    "previous_sources": ""
+  },
+  {
+    "row": 1812,
+    "sku": "3755421666843",
+    "product_name": "CHRIS WILLYS SPELL OF LIFE EDP 100 ML",
+    "brand_in_sheet": "ANGEL PERFUME",
+    "previous_status": "Needs check: could not identify fragrance; brand taken from product name only",
+    "previous_sources": ""
+  },
+  {
+    "row": 1830,
+    "sku": "3348900015050",
+    "product_name": "CHRISTIAN DIOR DIORISSIMO EAU DE COLON 112 ML",
+    "brand_in_sheet": "CHRISTIAN DIOR",
+    "previous_status": "Needs check: concentration (no dedicated Eau de Cologne page found on Fragrantica; notes taken from the core Diorissimo fragrance, shared across its concentrations)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dior/Diorissimo-224.html"
+  },
+  {
+    "row": 1919,
+    "sku": "3348901250146",
+    "product_name": "CHRISTIAN DIOR SAUVAGE BLACK EDT 100 ML",
+    "brand_in_sheet": "CHRISTIAN DIOR",
+    "previous_status": "Needs check: could not identify fragrance; no official Dior product named 'Sauvage Black' EDT could be confirmed (only unrelated 'Sauvage Black Charcoal Soap' and unverified gray-market listings were found)",
+    "previous_sources": ""
+  },
+  {
+    "row": 1974,
+    "sku": "088300104437",
+    "product_name": "CK BE MAN BLACK EDT 200 ML",
+    "brand_in_sheet": "CK",
+    "previous_status": "Needs check: gender (product name says 'Man Black' but the only matching Calvin Klein product, CK Be, is marketed unisex with no confirmed 'Black' variant)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Calvin-Klein/CK-be-275.html"
+  },
+  {
+    "row": 1978,
+    "sku": "088300000319",
+    "product_name": "CK CONTRADICTION MAN EDP 100 ML",
+    "brand_in_sheet": "CK",
+    "previous_status": "Needs check: concentration (only an Eau de Toilette version of Contradiction for Men is documented on Fragrantica/retailers; product labeled EDP not independently confirmed)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Calvin-Klein/Contradiction-256.html"
+  },
+  {
+    "row": 2000,
+    "sku": "3616303429621",
+    "product_name": "CK ETERNITY MEN PARFUM 100ML (T)",
+    "brand_in_sheet": "CK",
+    "previous_status": "Needs check: scent_family",
+    "previous_sources": "https://www.fragrantica.com/perfume/Calvin-Klein/Eternity-Parfum-For-Men-75798.html"
+  },
+  {
+    "row": 2081,
+    "sku": "3430750001007",
+    "product_name": "COBRA EDP WOMEN PERFUME 100 ML",
+    "brand_in_sheet": "COBRA",
+    "previous_status": "Needs check: brand unverifiable — multiple unrelated products named Cobra exist (Jeanne Arthes, generic brands); no SKU to confirm identity",
+    "previous_sources": "https://www.fragrantica.com/perfume/Jeanne-Arthes/Cobra-5134.html"
+  },
+  {
+    "row": 2093,
+    "sku": "025929209358",
+    "product_name": "COLOUR ME DARK RED EDP 100 ML",
+    "brand_in_sheet": "COLOUR ME",
+    "previous_status": "Needs check: scent_family, main_accord",
+    "previous_sources": "https://uk.milton-lloyd.com/product/colour-me-dark-red-edp"
+  },
+  {
+    "row": 2100,
+    "sku": "025929203257",
+    "product_name": "COLOUR ME NEON PINK EDP 100 ML",
+    "brand_in_sheet": "COLOUR ME",
+    "previous_status": "Needs check: scent_family, main_accord",
+    "previous_sources": "https://us.milton-lloyd.com/fragrances/fragrances-for-her/colour-me-for-her/product/colour-me-neon-pink"
+  },
+  {
+    "row": 2105,
+    "sku": "025929205176",
+    "product_name": "COLOUR ME POP ART EDP 100 ML",
+    "brand_in_sheet": "COLOUR ME",
+    "previous_status": "Needs check: scent_family, main_accord",
+    "previous_sources": "https://us.milton-lloyd.com/fragrances/fragrances-for-her/colour-me-for-her/product/colour-me-pop-art"
+  },
+  {
+    "row": 2164,
+    "sku": "6354145841023",
+    "product_name": "CREATION POUR FEMME EDP 100 ML",
+    "brand_in_sheet": "MP",
+    "previous_status": "Needs check: notes for Creation Pour Femme variant could not be verified",
+    "previous_sources": "https://daarulkitab.com/shop/fragrances/perfumes/womens/baug-sons-by-my-perfumes-creation-pour-femme-eau-de-parfum-100ml"
+  },
+  {
+    "row": 2165,
+    "sku": "6354145841016",
+    "product_name": "CREATION POUR HOMME(WHITE) EDP 100 ML",
+    "brand_in_sheet": "MP",
+    "previous_status": "Needs check: notes for Creation Pour Homme White variant could not be verified",
+    "previous_sources": "https://www.fragrantica.com/perfume/Baug-Sons/Creation-37033.html ; https://www.parfumo.com/Perfumes/Baug_Sons/Creation_pour_Homme"
+  },
+  {
+    "row": 2201,
+    "sku": "6298844040441",
+    "product_name": "CRIS MOUNTAIN EDP 100 ML",
+    "brand_in_sheet": "NICHE DELUXE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": "https://www.fragrantica.com/designers/Niche.html"
+  },
+  {
+    "row": 2211,
+    "sku": "6291106064889",
+    "product_name": "CRYSTAL WHITE EDP 100 ML",
+    "brand_in_sheet": "ARD AL ZAFARAN",
+    "previous_status": "Needs check: gender, scent_family, main_accord; notes from official brand shop, no Fragrantica entry found",
+    "previous_sources": "https://ardalzaafaranshop.com/products/crystal-white-100ml"
+  },
+  {
+    "row": 2216,
+    "sku": "6298804408083",
+    "product_name": "CUTE GIRL EDP 100 ML",
+    "brand_in_sheet": "NICHE DELUXE",
+    "previous_status": "Needs check: could not identify fragrance",
+    "previous_sources": "https://www.fragrantica.com/designers/Niche.html"
+  },
+  {
+    "row": 2224,
+    "sku": "737052667218",
+    "product_name": "D&G DESIRE THE ONE WOMEN EDP 75ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/The-One-Desire-17124.html ; https://www.ebay.com/itm/325734152964"
+  },
+  {
+    "row": 2225,
+    "sku": "8057971183739",
+    "product_name": "D&G DEVOTION EDP 100 ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Devotion-84951.html ; https://www.dolcegabbana.com/en-us/beauty/perfumes-for-her/devotion/devotion-eau-de-parfum---VT0063VT0009V000.html ; https://www.jomashop.com/dolce-and-gabbana-ladies-devotion-edp-spray-3-4-oz-fragrances-8057971183739.html"
+  },
+  {
+    "row": 2228,
+    "sku": "8054754401066",
+    "product_name": "D&G DEVOTION POUR HOME EDP 100 ML TESTER",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; barcode 8054754401066 = Devotion men EDP 100 ml tester",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Devotion-Pour-Homme-101353.html ; https://www.dolcegabbana.com/en-us/beauty/perfumes-for-him/devotion-for-men/devotion-for-men-eau-de-parfum---VT00PCVT0009V000.html ; https://www.jomashop.com/dolce-and-gabbana-mens-devotion-edp-spray-3-4-oz-tester-fragrances-8054754401066.html"
+  },
+  {
+    "row": 2230,
+    "sku": "8057971185870",
+    "product_name": "D&G DG VIB3 EDP 100 ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/DGVIB3-Eau-de-Parfum-87434.html ; https://www.dolcegabbana.com/en-us/beauty/perfumes-for-him/dgvib3/eau-de-parfum---158057971185870.html"
+  },
+  {
+    "row": 2234,
+    "sku": "8057971184606",
+    "product_name": "D&G DOLCE GARDEN EDP 75 ML TESTER",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Dolce-Garden-48151.html ; https://www.jomashop.com/dolce-and-gabbana-ladies-dolce-garden-edp-2-5-oz-tester-fragrances-8057971184606.html"
+  },
+  {
+    "row": 2237,
+    "sku": "3423478642065",
+    "product_name": "D&G DOLCE PEONY EDP WOMEN TESTER",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; size taken from barcode 3423478642065 (75 ml tester), not in product name",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Dolce-Peony-53803.html ; https://www.yourperfumewarehouse.co.uk/product/dolce-gabbana-dolce-peony-eau-de-parfum-75ml-tester/ ; https://www.simplestore.ro/apa-de-toaleta-3?product_id=21205"
+  },
+  {
+    "row": 2242,
+    "sku": "8057971180462",
+    "product_name": "D&G INTENSO POUR HOME EDP 200 ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Dolce-Gabbana-Pour-Homme-Intenso-28935.html ; https://www.dolcegabbana.com/en-us/beauty/perfumes-for-him/classic/intenso-eau-de-parfum---VP2929VP2449V000.html ; https://www.jomashop.com/dolce-and-gabbana-mens-intenso-edp-spray-6-7-oz-fragrances-8057971180462.html"
+  },
+  {
+    "row": 2243,
+    "sku": "8057971180929",
+    "product_name": "D&G INTENSO POUR HOME EDP NEW CODE TESTER 125",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; barcode 8057971180929 = Intenso EDP 125 ml (4.2 oz) tester",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Dolce-Gabbana-Pour-Homme-Intenso-28935.html ; https://www.jomashop.com/dolce-and-gabbana-mens-intenso-edp-spray-4-2-oz-tester-fragrances-8057971180929.html"
+  },
+  {
+    "row": 2247,
+    "sku": "8057971187928",
+    "product_name": "D&G KING EDP INTENSE TESTER",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: scent_family, occasion, country_of_origin; Fragrantica shows no family (brand site says Woody Leathery); size from barcode 8057971187928 (100 ml tester)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/K-by-Dolce-Gabbana-Eau-de-Parfum-Intense-89373.html ; https://www.dolcegabbana.com/en-us/beauty/perfumes-for-him/k-by-dolceandgabbana/k-by-dolceandgabbana-eau-de-parfum-intense---VT00KBVT0009V000.html ; https://www.jomashop.com/dolce-and-gabbana-mens-k-intense-edp-spray-3-3-oz-tester-fragrances-8057971187928.html"
+  },
+  {
+    "row": 2248,
+    "sku": "3423473101260",
+    "product_name": "D&G KING EDP MAN 100 ML TESTER",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/K-by-Dolce-Gabbana-Eau-de-Parfum-62311.html ; https://www.jomashop.com/dolce-gabbana-mens-k-edp-spray-3-4-oz-tester-fragrances-3423473101260.html"
+  },
+  {
+    "row": 2250,
+    "sku": "3423473049456",
+    "product_name": "D&G KING EDT 100 ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/K-by-Dolce-Gabbana-56358.html ; https://www.boots.com/dolce-gabbana-k-eau-de-toilette-100ml-10266192 ; https://www.upcitemdb.com/upc/3423473049456"
+  },
+  {
+    "row": 2251,
+    "sku": "8057971181551",
+    "product_name": "D&G KING EDT 100 ML TESTER",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/K-by-Dolce-Gabbana-56358.html ; https://ideaprofumi.it/en/perfume-tester/62993-dolce--gabbana-k-pour-homme-eau-de-toilette---tester-100-ml-man-8057971181551.html"
+  },
+  {
+    "row": 2254,
+    "sku": "8057971181544",
+    "product_name": "D&G KING EDT NEW BARCODE 100 ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/K-by-Dolce-Gabbana-56358.html ; https://www.upcitemdb.com/upc/8057971181544"
+  },
+  {
+    "row": 2256,
+    "sku": "8056669922285",
+    "product_name": "D&G KING POUR HOME EDP GIFT SET",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: size, occasion, country_of_origin; barcode 8056669922285 confirmed as K EDP set but set contents/sizes not found",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/K-by-Dolce-Gabbana-Eau-de-Parfum-62311.html ; https://www.fuschia.com.py/k-eau-de-parfum-estuche-p20126"
+  },
+  {
+    "row": 2257,
+    "sku": "8054754403442",
+    "product_name": "D&G KING POUR HOME EDT GIFT SET",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; set = EDT 100 ml + shower gel 50 ml + deodorant stick 75 g",
+    "previous_sources": "https://fathyibrahim.com/en/products/dolce-gabbana-k-set-for-men-eau-de-toilette-100-ml-shower-gel-50-ml-deodorant-stick-75-g ; https://www.fragrantica.com/perfume/Dolce-Gabbana/K-by-Dolce-Gabbana-56358.html"
+  },
+  {
+    "row": 2258,
+    "sku": "8057971187911",
+    "product_name": "D&G KING POUR HOMME EDP INTENSE 100ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: scent_family, occasion, country_of_origin; Fragrantica shows no family (brand site says Woody Leathery)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/K-by-Dolce-Gabbana-Eau-de-Parfum-Intense-89373.html ; https://www.dolcegabbana.com/en-us/beauty/perfumes-for-him/k-by-dolceandgabbana/k-by-dolceandgabbana-eau-de-parfum-intense---VT00KBVT0009V000.html ; https://www.jomashop.com/dolce-and-gabbana-mens-k-intense-edp-spray-3-4-oz-fragrances-8057971187911.html"
+  },
+  {
+    "row": 2259,
+    "sku": "3423222015565",
+    "product_name": "D&G L'IMPERATRICE NO.3 EDT 100 ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; Fragrantica lists it as D&G Anthology L'Imperatrice 3 (now sold as L'Imperatrice)",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/D-G-Anthology-L-Imperatrice-3-6086.html ; https://www.jomashop.com/dolce-and-gabbana-limperatrice-dolce-and-gabbana-edt-spray-3-3-oz-100-ml-w-3423222015565.html"
+  },
+  {
+    "row": 2273,
+    "sku": "8057971181391",
+    "product_name": "D&G LIGHT BLUE INTENSE MAN EDP 100 ML",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; barcode 8057971181391 = Light Blue Eau Intense Pour Homme EDP 100 ml",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Light-Blue-Eau-Intense-Pour-Homme-44035.html ; https://www.jomashop.com/dolce-and-gabbana-mens-light-blue-eau-intense-edp-3-4-oz-fragrances-8057971181391.html"
+  },
+  {
+    "row": 2274,
+    "sku": "8057971181414",
+    "product_name": "D&G LIGHT BLUE INTENSE MEN TESTER",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; size and EDP from barcode 8057971181414 (100 ml tester), not in product name",
+    "previous_sources": "https://www.fragrantica.com/perfume/Dolce-Gabbana/Light-Blue-Eau-Intense-Pour-Homme-44035.html ; https://www.jomashop.com/dolce-and-gabbana-mens-light-blue-intense-edp-spray-3-38-oz-tester-fragrances-8057971181414.html"
+  },
+  {
+    "row": 2278,
+    "sku": "8056669924234",
+    "product_name": "D&G LIGHT BLUE MAN CAPRI IN LOVE GIFT SET",
+    "brand_in_sheet": "D&G",
+    "previous_status": "Needs check: occasion, country_of_origin; set = Capri In Love Pour Homme EDP 100 ml + Light Blue Pour Homme EDT 10 ml; fragrance data is for the EDP",
+    "previous_sources": "https://www.notino.pl/dolce-gabbana/light-blue-capri-in-love-pour-homme-gift-set-zestaw-upominkowy-dla-mezczyzn/ ; https://www.fragrantica.com/perfume/Dolce-Gabbana/Light-Blue-Capri-In-Love-Pour-Homme-Eau-de-Parfum-104639.html ; https://www.dolcegabbana.com/en-us/beauty/perfumes-for-him/light-blue-pour-homme/light-blue-capri-in-love-pour-homme-eau-de-parfum---VT01HPVT0009V000.html"
+  }
+]

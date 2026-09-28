@@ -1,0 +1,497 @@
+You are filling in verified perfume product data for a shop in Kuwait (ABEERX). Rule #1: every piece of information must be correct. A blank field is fine; a wrong field is not. Never invent, guess, or trust the "existing_unverified" data without independently confirming it on a real source — that old data is known to be full of mistakes (wrong notes, wrong flanker, wrong country).
+
+INPUT: a JSON list of items below. Each item has: row (echo back unchanged), sku, product_name, brand_in_sheet (often abbreviated/wrong), existing_unverified (old data — hints only, do not trust). Several rows can be the same fragrance in different sizes/tester — research each distinct fragrance once and reuse the result for all matching rows.
+
+HOW TO RESEARCH:
+1. Identify the EXACT product: brand + line + flanker + concentration. "The Only One EDP Intense" is NOT the same as "The Only One EDP". "Bleu de Chanel Parfum" is NOT the same as the EDT. Name hints: TESTER = tester unit; (G)/(O)/(T) = shop codes, not fragrance info; W/WOMEN/FEMME = women, M/MAN/HOMME = men.
+2. Use real web search. Priority sources: the brand's own official site; Fragrantica.com product pages (fragrantica.com/perfume/...); major retailers with spec tables (Sephora, Notino, Boots, Douglas, Harrods, Macy's, Nykaa, Faces, Ounass, Namshi). Do NOT use Parfumo.com — it is known to return corrupted or fabricated data. Verify the page you land on is actually the exact product (matching name, brand, concentration) before using it — search results occasionally point to the wrong product.
+3. If you cannot identify the product with real confidence (obscure local brand, ambiguous name, no reliable source found), fill in ONLY what the product name itself proves (size, concentration if written, gender if written, category, tester status) and leave everything else blank, with status "Needs check: could not identify fragrance". Do NOT guess.
+4. If a name is genuinely ambiguous between several real flankers/editions of the same brand (this happens a lot — e.g. a generic "BRAND MEN EDT 200ML" could be several different real fragrances), do not just pick the first search result. Only fill fields you're actually confident about; leave the disputed fields blank with status "Needs check: could not confirm exact flanker".
+5. Do NOT borrow notes/description from the designer perfume that a clone/dupe brand imitates. Only use verified data about this exact product, from a source actually about this exact product.
+
+OUTPUT FIELDS (one JSON object per input row, keys EXACTLY as below, empty string "" for any blank):
+- row: same number as input, unchanged.
+- brand: official brand name as printed on the bottle, proper case (e.g. Carolina Herrera, Dolce & Gabbana, Yves Saint Laurent, Calvin Klein, Giorgio Armani vs Emporio Armani vs Armani Privé — use whichever the actual line is, Christian Dior -> just "Dior"). Fix junk/wrong brand_in_sheet values using the actual product. Blank only if truly unidentifiable.
+- gender: "Men" | "Women" | "Unisex" (Fragrantica's "for women and men" = Unisex). Blank if not verifiable.
+- concentration: "EDP" | "EDT" | "EDC" | "Parfum" | "Extrait de Parfum" | "Elixir" | "Cologne" | "Perfume Oil" | "Body Mist" | "Hair Mist" | "" (blank for non-fragrance items). "Intense"/"Absolu"/"Le Parfum" in a name are usually part of the PRODUCT NAME, not the concentration — report the actual concentration printed on the real product.
+- size: like "100 ML" (number + space + ML). From the product name. For sets: "100 ML + 10 ML". Blank if unknown.
+- category (= product TYPE, not scent): "Perfume" | "Body Spray" | "Body Mist" | "Hair Mist" | "Perfume Oil" | "Deodorant" | "Gift Set" | "Home Fragrance" | "Bakhoor" | "Charcoal" | "Body Lotion" | "Shower Gel" | "Other".
+- scent_family: the olfactory family as Fragrantica shows it, EXCEPT write "Amber" instead of "Oriental" (e.g. "Oriental Floral" -> "Amber Floral"). Title Case.
+- main_accord: top 3 accords from the source's accord bars, Title Case, comma-separated.
+- top_notes, heart_notes, base_notes: from the OFFICIAL pyramid (brand site or Fragrantica), Title Case, comma-separated, in the source's own order. If the source lists notes as a flat list with NO top/heart/base split, put ALL of them in heart_notes, leave top_notes and base_notes blank, and add "notes without pyramid" to status.
+- occasion: always leave this "" — it's computed afterward by a fixed rule from the scent family. Do NOT research or fill this.
+- country_of_origin (= "Made in" country, i.e. where physically manufactured): this is rarely published anywhere. Do NOT search for it separately, and do NOT infer it from the brand's general home country (e.g. do not write "France" for a French luxury house just because the brand is French — that is guessing, not verifying, and is exactly the mistake this project exists to fix). Fill it ONLY if a page you already used for identifying this exact product explicitly states "Made in X" / "Country of origin: X" (use the full country name, e.g. France, Spain, Italy, United Arab Emirates). Otherwise leave it "". Never mention it in status.
+- description_en: 2-3 sentences, elegant but strictly factual, describing the character using the verified notes/family only. No invented claims (no "best-seller", no awards, no longevity claims, no launch year unless verified, no prices, don't mention "tester").
+- description_ar: a faithful Modern Standard Arabic translation of description_en, using natural Arabic perfume vocabulary (عود، عنبر، مسك، فانيليا، برغموت، ياسمين، ورد، باتشولي، خشب الصندل، إلخ).
+- status: "Verified" when brand/gender/concentration/size/category/scent_family/main_accord/notes/descriptions are all genuinely confirmed; otherwise "Needs check: <comma-separated list of the specific blank/doubtful fields>" (e.g. "Needs check: main_accord, size"). NEVER mention occasion or country_of_origin in status. You can add a short remark after a semicolon if useful.
+- sources: the actual URL(s) you used to verify this row, separated by " ; ".
+
+OUTPUT FORMAT: Reply with ONLY a single valid JSON array, one object per input row (same row numbers, all rows present), using exactly the keys listed above in that order. No markdown code fences, no commentary before or after — just the raw JSON array, so it can be copy-pasted directly into a file. Double-check it's valid JSON (all strings properly quoted/escaped) before finishing.
+
+
+ITEMS TO RESEARCH (batch_031, 22 rows):
+
+[
+ {
+  "row": 1979,
+  "sku": "088300602513",
+  "product_name": "CK CONTRADICTION WOMEN EDP 100ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Women",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Floral Woody Musk",
+   "Main Accord": "Floral, Fresh, Woody",
+   "Top Notes": "Lily, Peony, Orchid, Lily-of-the-Valley",
+   "Heart Notes": "Eucalyptus, Lilac, Jasmine, Blackberry",
+   "Base Notes": "Sandalwood, Musk, Tonka Bean",
+   "Occasion": "Daytime, Spring",
+   "Country of Origin": "United States",
+   "Description": "Calvin Klein Contradiction is a unique and refreshing floral woody musk fragrance that balances delicate blossoms with cool herbal notes. Highlighting unexpected eucalyptus, lily, and warm sandalwood, it is designed for the complex, multifaceted woman who embraces her individuality. This clean and intriguing scent is ideal for daily office wear and casual daytime outings during spring."
+  }
+ },
+ {
+  "row": 1980,
+  "sku": "3607342627338",
+  "product_name": "CK DARK OBSESSION FOR MEN EDT 125 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "EDT",
+   "Size": "125 ML",
+   "Category": "",
+   "Scent Family": "Woody Floral Musk",
+   "Main Accord": "Citrus Woody Floral",
+   "Top Notes": "Bergamot, Lemon, Pink Pepper",
+   "Heart Notes": "Rose, Jasmine, Lavender",
+   "Base Notes": "Vanilla, Amber, Musk, Sandalwood",
+   "Occasion": "Versatile for Day and Evening",
+   "Country of Origin": "France",
+   "Description": "CK CK DARK OBSESSION is a masterfully crafted fragrance that captivates from the first spritz with its vibrant top notes. The heart reveals a sophisticated blend of florals, seamlessly transitioning into a warm and enduring base. Perfect for the discerning wearer, this scent leaves a memorable trail that is both elegant and timeless, making it an essential addition to any collection."
+  }
+ },
+ {
+  "row": 1985,
+  "sku": "3616304183645",
+  "product_name": "CK DEFY PARFUM 100ML (T)",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Unisex",
+   "Concentration": "PARFUM",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Woody Aromatic",
+   "Main Accord": "Fresh Woody",
+   "Top Notes": "['Bergamot', 'Lavender']",
+   "Heart Notes": "['Vetiver']",
+   "Base Notes": "['Amber']",
+   "Occasion": "Casual & Everyday",
+   "Country of Origin": "USA",
+   "Description": "Embrace authentic modernity with Calvin Klein Defy, a daring contrast of invigorating freshness and powerful woods. Highlighting crisp bergamot and lavender layered over rugged, responsibly sourced vetiver, it is crafted for the courageous man who carves his own path. Highly versatile and effortlessly masculine, this scent is perfect for everyday wear, gym sessions, and casual meetups."
+  }
+ },
+ {
+  "row": 1986,
+  "sku": "3616304183638",
+  "product_name": "CK DEFY PARFUM 200 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Unisex",
+   "Concentration": "PARFUM",
+   "Size": "200 ML",
+   "Category": "",
+   "Scent Family": "Woody Floral Musk",
+   "Main Accord": "Citrus Woody Floral",
+   "Top Notes": "Bergamot, Lemon, Pink Pepper",
+   "Heart Notes": "Rose, Jasmine, Lavender",
+   "Base Notes": "Vanilla, Amber, Musk, Sandalwood",
+   "Occasion": "Versatile for Day and Evening",
+   "Country of Origin": "France",
+   "Description": "CK CK DEFY is a masterfully crafted fragrance that captivates from the first spritz with its vibrant top notes. The heart reveals a sophisticated blend of florals, seamlessly transitioning into a warm and enduring base. Perfect for the discerning wearer, this scent leaves a memorable trail that is both elegant and timeless, making it an essential addition to any collection."
+  }
+ },
+ {
+  "row": 1991,
+  "sku": "088300608409",
+  "product_name": "CK ESCAPE EDP WOMEN 100 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Women",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Woody Floral",
+   "Main Accord": "Fresh, Floral, Woody",
+   "Top Notes": "Bergamot, Citrus, Pink Pepper",
+   "Heart Notes": "Rose, Jasmine, Floral Accords",
+   "Base Notes": "Musk, Vanilla, Sandalwood",
+   "Occasion": "Everyday Wear, Spring/Summer",
+   "Country of Origin": "France",
+   "Description": "Discover the captivating allure of CK CK ESCAPE, a masterfully blended woody floral fragrance. It opens with vibrant bergamot, citrus, pink pepper, leading into a sophisticated heart of rose, jasmine, floral accords that perfectly balances the composition. Anchored by a warm base of musk, vanilla, sandalwood, this scent is ideal for everyday wear, spring/summer and offers an unforgettable olfactory experience for the modern enthusiast."
+  }
+ },
+ {
+  "row": 1992,
+  "sku": "3607342107977",
+  "product_name": "CK ETERNITY FOR MEN AQUA EDT 100 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "EDT",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Woody Aquatic",
+   "Main Accord": "Fresh Aquatic",
+   "Top Notes": "['Cucumber', 'Citrus', 'Lotus', 'Green Leaves']",
+   "Heart Notes": "['Plum', 'Lavender', 'Sichuan Pepper', 'Virginia Cedar']",
+   "Base Notes": "['Sandalwood', 'Musk', 'Patchouli', 'Guaiac Wood']",
+   "Occasion": "Summer & Casual",
+   "Country of Origin": "USA",
+   "Description": "Dive into refreshing clarity with Calvin Klein Eternity Aqua, an effortlessly cool fragrance that captures the essence of a modern ocean breeze. Featuring crisp cucumber, chilled citrus, and a smooth, aquatic lotus heart, it is designed for the relaxed, easy-going man. Highly recommended for hot summer days and casual weekends, it delivers a clean, revitalizing freshness that lasts."
+  }
+ },
+ {
+  "row": 1993,
+  "sku": "088300605514",
+  "product_name": "CK ETERNITY FOR MEN EDT 100 ML NEW BARCODE",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "EDT",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Aromatic Fougere",
+   "Main Accord": "Aromatic, Fresh Spicy",
+   "Top Notes": "Lavender, Lemon, Bergamot",
+   "Heart Notes": "Sage, Coriander, Geranium",
+   "Base Notes": "Sandalwood, Vetiver, Musk",
+   "Occasion": "Office, Spring",
+   "Country of Origin": "USA",
+   "Description": "Calvin Klein Eternity for Men is a legendary aromatic fougere that defines crisp, timeless masculinity. Featuring ultra-fresh lavender, sage, and a clean sandalwood base, it caters to the classic, reliable gentleman. A quintessential barbershop fragrance that remains an absolute staple for professional office environments."
+  }
+ },
+ {
+  "row": 1995,
+  "sku": "088300601400",
+  "product_name": "CK ETERNITY FOR WOMEN EDP 100 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Women",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Aromatic Fougere",
+   "Main Accord": "Aromatic, Fresh Spicy",
+   "Top Notes": "Lavender, Lemon, Bergamot, Mandarin",
+   "Heart Notes": "Sage, Juniper Berries, Basil, Geranium",
+   "Base Notes": "Sandalwood, Vetiver, Musk, Amber",
+   "Occasion": "Office, Everyday, Spring/Summer",
+   "Country of Origin": "United States",
+   "Description": "Calvin Klein Eternity for Men is an incredibly iconic and timeless aromatic fougère that greets the wearer with an exceptionally clean blast of lavender and lemon. A highly crisp, herbaceous heart of sage and juniper berries embodies the absolute essence of classic 90s freshness and masculinity. The profoundly reliable base of sandalwood and vetiver makes this a notably versatile and famously complimented everyday signature."
+  }
+ },
+ {
+  "row": 1996,
+  "sku": "3614229135107",
+  "product_name": "CK ETERNITY MEN EDP 100 ML TESTER",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Aromatic Fougere",
+   "Main Accord": "Aromatic, Fresh Spicy",
+   "Top Notes": "Lavender, Lemon, Bergamot, Mandarin",
+   "Heart Notes": "Sage, Juniper Berries, Basil, Geranium",
+   "Base Notes": "Sandalwood, Vetiver, Musk, Amber",
+   "Occasion": "Office, Everyday, Spring/Summer",
+   "Country of Origin": "United States",
+   "Description": "Calvin Klein Eternity for Men is an incredibly iconic and timeless aromatic fougère that greets the wearer with an exceptionally clean blast of lavender and lemon. A highly crisp, herbaceous heart of sage and juniper berries embodies the absolute essence of classic 90s freshness and masculinity. The profoundly reliable base of sandalwood and vetiver makes this a notably versatile and famously complimented everyday signature."
+  }
+ },
+ {
+  "row": 1998,
+  "sku": "088300695515",
+  "product_name": "CK ETERNITY MEN EDT 100 ML TESTER",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "EDT",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Aromatic Fougere",
+   "Main Accord": "Aromatic, Fresh Spicy",
+   "Top Notes": "Lavender, Lemon, Bergamot, Mandarin",
+   "Heart Notes": "Sage, Juniper Berries, Basil, Geranium",
+   "Base Notes": "Sandalwood, Vetiver, Musk, Amber",
+   "Occasion": "Office, Everyday, Spring/Summer",
+   "Country of Origin": "United States",
+   "Description": "Calvin Klein Eternity for Men is an incredibly iconic and timeless aromatic fougère that greets the wearer with an exceptionally clean blast of lavender and lemon. A highly crisp, herbaceous heart of sage and juniper berries embodies the absolute essence of classic 90s freshness and masculinity. The profoundly reliable base of sandalwood and vetiver makes this a notably versatile and famously complimented everyday signature."
+  }
+ },
+ {
+  "row": 2000,
+  "sku": "3616303429621",
+  "product_name": "CK ETERNITY MEN PARFUM 100ML (T)",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "PARFUM",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Aromatic Fougere",
+   "Main Accord": "Aromatic, Fresh Spicy",
+   "Top Notes": "Lavender, Lemon, Bergamot, Mandarin",
+   "Heart Notes": "Sage, Juniper Berries, Basil, Geranium",
+   "Base Notes": "Sandalwood, Vetiver, Musk, Rosewood",
+   "Occasion": "Office, Daytime",
+   "Country of Origin": "USA",
+   "Description": "CK Eternity for Men is a definitive aromatic fougere that perfectly encapsulates classic 90s freshness. Blending crisp lavender and citrus with a herbaceous heart and a clean, woody base, it remains highly timeless. This polite, professional, and refreshing scent is an absolute staple for the modern manâ€™s daily work wardrobe."
+  }
+ },
+ {
+  "row": 2005,
+  "sku": "088300162505",
+  "product_name": "CK EUPHORIA EDP WOMEN 100 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Women",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Amber Floral",
+   "Main Accord": "Woody, Floral, Fruity",
+   "Top Notes": "Pomegranate, Persimmon, Green Accord",
+   "Heart Notes": "Black Orchid, Lotus, Champaca",
+   "Base Notes": "Mahogany, Amber, Black Violet, Whipped Cream",
+   "Occasion": "Night, Fall, Winter",
+   "Country of Origin": "USA",
+   "Description": "Calvin Klein Euphoria is a deeply glamorous and seductive amber floral fragrance that captures a sense of modern, mysterious sensuality. Exotic notes of pomegranate and black orchid melt into a rich, creamy mahogany base, making it a must-have for the confident woman. Elevate your evening wear with this alluring, award-winning scent that promises to leave a captivating impression."
+  }
+ },
+ {
+  "row": 2006,
+  "sku": "088300162529",
+  "product_name": "CK EUPHORIA EDP WOMEN 100 ML TESTER",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Women",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Amber Floral",
+   "Main Accord": "Woody, Floral, Fruity",
+   "Top Notes": "Pomegranate, Persimmon, Green Accord",
+   "Heart Notes": "Black Orchid, Lotus, Champaca",
+   "Base Notes": "Mahogany, Amber, Black Violet, Whipped Cream",
+   "Occasion": "Night, Fall, Winter",
+   "Country of Origin": "USA",
+   "Description": "Calvin Klein Euphoria is a deeply glamorous and seductive amber floral fragrance that captures a sense of modern, mysterious sensuality. Exotic notes of pomegranate and black orchid melt into a rich, creamy mahogany base, making it a must-have for the confident woman. Elevate your evening wear with this alluring, award-winning scent that promises to leave a captivating impression."
+  }
+ },
+ {
+  "row": 2013,
+  "sku": "3616301781141",
+  "product_name": "CK EVERYONE EDP 100ML (T)",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Unisex",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Citrus Aromatic",
+   "Main Accord": "Citrus, Fresh, Aquatic",
+   "Top Notes": "Orange Oil, Ginger",
+   "Heart Notes": "Blue Tea, Water Notes",
+   "Base Notes": "Cedar, Patchouli, Amber, Musk",
+   "Occasion": "Casual, Gym, Summer",
+   "Country of Origin": "United States",
+   "Description": "CK Everyone is a clean, eco-conscious citrus aromatic fragrance that invigorates with a sharp blast of organic orange oil and ginger. The refreshing heart features unique blue tea and aquatic notes, promoting a sense of absolute purity. Resting on a base of cedar and musk, this vegan, unisex fragrance is perfect for casual summer days and active lifestyles."
+  }
+ },
+ {
+  "row": 2016,
+  "sku": "088300197712",
+  "product_name": "CK IN 2U EDT 100 ML TESTER",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Unisex",
+   "Concentration": "EDT",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Amber Floral",
+   "Main Accord": "Citrus, Vanilla, Aromatic",
+   "Top Notes": "Pink Grapefruit, Bergamot, Red Currant Leaves",
+   "Heart Notes": "Cactus, Orchid",
+   "Base Notes": "Vanilla, Red Cedar, Amber",
+   "Occasion": "Daytime, Casual, Summer",
+   "Country of Origin": "USA",
+   "Description": "Calvin Klein CK IN2U for Her is an energetic amber floral fragrance designed to capture the spontaneous, connected spirit of the modern generation. A remarkably fresh burst of pink grapefruit seamlessly blends with a surprisingly warm and cozy vanilla cedar base. Keep your everyday, casual style effortlessly chic and vibrant with this highly versatile, easy-to-reach-for perfume."
+  }
+ },
+ {
+  "row": 2017,
+  "sku": "088300196890",
+  "product_name": "CK IN 2U FOR MAN EDT 100 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "EDT",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Amber Floral",
+   "Main Accord": "Citrus, Vanilla, Aromatic",
+   "Top Notes": "Pink Grapefruit, Bergamot, Red Currant Leaves",
+   "Heart Notes": "Cactus, Orchid",
+   "Base Notes": "Vanilla, Red Cedar, Amber",
+   "Occasion": "Daytime, Casual, Summer",
+   "Country of Origin": "USA",
+   "Description": "Calvin Klein CK IN2U for Her is an energetic amber floral fragrance designed to capture the spontaneous, connected spirit of the modern generation. A remarkably fresh burst of pink grapefruit seamlessly blends with a surprisingly warm and cozy vanilla cedar base. Keep your everyday, casual style effortlessly chic and vibrant with this highly versatile, easy-to-reach-for perfume."
+  }
+ },
+ {
+  "row": 2018,
+  "sku": "088300197699",
+  "product_name": "CK IN2U HER EDT 100ML (T)",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Women",
+   "Concentration": "EDT",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Oriental Floral",
+   "Main Accord": "Citrus, Fresh, Vanilla",
+   "Top Notes": "Pink Grapefruit, Sicilian Bergamot, Red Currant leaves",
+   "Heart Notes": "Sugar Orchid, White Cactus",
+   "Base Notes": "Amber, Red Cedar, Vanilla",
+   "Occasion": "Daytime, Spring, Summer",
+   "Country of Origin": "United States",
+   "Description": "Calvin Klein CK IN2U Her is a fresh and spontaneous oriental floral fragrance created for the younger, connected generation. Featuring vibrant notes of pink grapefruit, sugar orchid, and vanilla, it targets vibrant women who love a clean, sweet, and casual scent. Ideal for everyday daytime wear and summer outings, this fragrance delivers an effortlessly cool and refreshing vibe."
+  }
+ },
+ {
+  "row": 2020,
+  "sku": "088300603404",
+  "product_name": "CK OBBSESSION WOMEN EDP 100 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Women",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Amber Spicy",
+   "Main Accord": "Warm Spicy, Amber",
+   "Top Notes": "Green Notes, Mandarin, Vanilla, Peach",
+   "Heart Notes": "Spices, Coriander, Oakmoss, Rose",
+   "Base Notes": "Amber, Musk, Civet, Vanilla, Incense",
+   "Occasion": "Evening, Winter",
+   "Country of Origin": "USA",
+   "Description": "CK Obsession is a legendary amber spicy fragrance known for its intense, provocative, and deeply sensual warmth. Packed with rich spices, heavy amber, and sultry incense, it delivers a highly powerful and captivating aura. This iconic, bold 80s powerhouse is perfect for individuals who want an unforgettable, commanding winter scent."
+  }
+ },
+ {
+  "row": 2021,
+  "sku": "088300696512",
+  "product_name": "CK OBSESSION EDT MEN TESTER",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "EDT",
+   "Size": "",
+   "Category": "",
+   "Scent Family": "Amber Spicy",
+   "Main Accord": "Warm Spicy, Amber",
+   "Top Notes": "Vanilla, Basil, Bergamot",
+   "Heart Notes": "Spices, Coriander, Sandalwood",
+   "Base Notes": "Amber, Incense, Civet",
+   "Occasion": "Night, Winter",
+   "Country of Origin": "USA",
+   "Description": "Calvin Klein Obsession is a legendary amber spicy fragrance famous for its bold, animalic warmth. Loaded with intense spices, rich amber, and incense, it caters to those who love powerful, classic orientals. A highly seductive and provocative masterpiece that completely dominates cold winter nights."
+  }
+ },
+ {
+  "row": 2022,
+  "sku": "088300606511",
+  "product_name": "CK OBSESSION FOR MEN EDT 125 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Men",
+   "Concentration": "EDT",
+   "Size": "125 ML",
+   "Category": "",
+   "Scent Family": "Amber Spicy",
+   "Main Accord": "Warm Spicy, Amber",
+   "Top Notes": "Vanilla, Basil, Bergamot",
+   "Heart Notes": "Spices, Coriander, Sandalwood",
+   "Base Notes": "Amber, Incense, Civet",
+   "Occasion": "Night, Winter",
+   "Country of Origin": "USA",
+   "Description": "Calvin Klein Obsession is a legendary amber spicy fragrance famous for its bold, animalic warmth. Loaded with intense spices, rich amber, and incense, it caters to those who love powerful, classic orientals. A highly seductive and provocative masterpiece that completely dominates cold winter nights."
+  }
+ },
+ {
+  "row": 2024,
+  "sku": "088300193400",
+  "product_name": "CK OBSESSION WOMEN EDP 100 ML TESTER",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Women",
+   "Concentration": "EDP",
+   "Size": "100 ML",
+   "Category": "",
+   "Scent Family": "Amber Spicy",
+   "Main Accord": "Warm Spicy, Amber",
+   "Top Notes": "Vanilla, Basil, Bergamot",
+   "Heart Notes": "Spices, Coriander, Sandalwood",
+   "Base Notes": "Amber, Incense, Civet",
+   "Occasion": "Night, Winter",
+   "Country of Origin": "USA",
+   "Description": "Calvin Klein Obsession is a legendary amber spicy fragrance famous for its bold, animalic warmth. Loaded with intense spices, rich amber, and incense, it caters to those who love powerful, classic orientals. A highly seductive and provocative masterpiece that completely dominates cold winter nights."
+  }
+ },
+ {
+  "row": 2026,
+  "sku": "088300107438",
+  "product_name": "CK ONE EDT 200 ML",
+  "brand_in_sheet": "CK",
+  "existing_unverified": {
+   "Brand": "CK",
+   "Gender": "Unisex",
+   "Concentration": "EDT",
+   "Size": "200 ML",
+   "Category": "",
+   "Scent Family": "Woody Floral Musk",
+   "Main Accord": "Citrus Woody Floral",
+   "Top Notes": "Bergamot, Lemon, Pink Pepper",
+   "Heart Notes": "Rose, Jasmine, Lavender",
+   "Base Notes": "Vanilla, Amber, Musk, Sandalwood",
+   "Occasion": "Versatile for Day and Evening",
+   "Country of Origin": "France",
+   "Description": "CK CK ONE is a masterfully crafted fragrance that captivates from the first spritz with its vibrant top notes. The heart reveals a sophisticated blend of florals, seamlessly transitioning into a warm and enduring base. Perfect for the discerning wearer, this scent leaves a memorable trail that is both elegant and timeless, making it an essential addition to any collection."
+  }
+ }
+]
