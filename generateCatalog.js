@@ -26,15 +26,49 @@ function buildImageUrls(fileName) {
     return urls;
 }
 
+// Firebase security rules deny reading the whole /abeerx root ("Permission denied"),
+// but allow the product nodes — so fetch only the nodes this script needs.
+const DETAILS_URL = "https://abeerx-final-default-rtdb.firebaseio.com/abeerx/itemDetails.json";
+const RATES_URL = "https://abeerx-final-default-rtdb.firebaseio.com/abeerx/itemRates.json";
+
+function fetchJson(url) {
+    return new Promise((resolve, reject) => {
+        https.get(url, (resp) => {
+            let data = '';
+            resp.on('data', (chunk) => { data += chunk; });
+            resp.on('end', () => {
+                if (resp.statusCode !== 200) {
+                    return reject(new Error(`HTTP ${resp.statusCode} from ${url}: ${data.slice(0, 200)}`));
+                }
+                try {
+                    const parsed = JSON.parse(data);
+                    if (parsed && parsed.error) return reject(new Error(`Firebase said "${parsed.error}" for ${url}`));
+                    resolve(parsed);
+                } catch (e) {
+                    reject(new Error(`Could not parse response from ${url}: ${e.message}`));
+                }
+            });
+        }).on('error', reject);
+    });
+}
+
 console.log("Downloading Firebase data to generate static catalog...");
-https.get(dbUrl, (resp) => {
-  let data = '';
-  resp.on('data', (chunk) => { data += chunk; });
-  resp.on('end', () => {
-    const abeerx = JSON.parse(data);
-    const itemDetails = abeerx.itemDetails || {};
-    const itemRates = abeerx.itemRates || {};
-    
+Promise.all([
+    fetchJson(DETAILS_URL),
+    fetchJson(RATES_URL).catch((e) => {
+        console.log(`WARNING: could not read itemRates (${e.message}) — using each item's own price instead.`);
+        return {};
+    }),
+]).then(([itemDetailsRaw, itemRatesRaw]) => {
+    const itemDetails = itemDetailsRaw || {};
+    const itemRates = itemRatesRaw || {};
+
+    if (Object.keys(itemDetails).length === 0) {
+        console.log("ERROR: itemDetails came back empty — catalog.json was NOT overwritten.");
+        process.exit(1);
+    }
+    console.log(`Fetched ${Object.keys(itemDetails).length} items from Firebase.`);
+
     // We will build the exact Product[] array Next.js uses
     const products = [];
     
@@ -46,10 +80,18 @@ https.get(dbUrl, (resp) => {
         let basePrice = 0;
         let isDiscounted = false;
         
-        if (itemRates[key]) {
-            basePrice = parseFloat(itemRates[key].rate) || 0;
-            isDiscounted = itemRates[key].isDiscounted || false;
-        } else if (item.price) {
+        // itemRates entries can be a plain number (what the admin Excel importer writes)
+        // or an object like { rate, isDiscounted } — handle both.
+        const rateEntry = itemRates[key];
+        if (rateEntry !== undefined && rateEntry !== null && rateEntry !== '') {
+            if (typeof rateEntry === 'object') {
+                basePrice = parseFloat(rateEntry.rate) || 0;
+                isDiscounted = rateEntry.isDiscounted || false;
+            } else {
+                basePrice = parseFloat(rateEntry) || 0;
+            }
+        }
+        if (!basePrice && item.price) {
             basePrice = parseFloat(item.price) || 0;
         }
         
@@ -181,9 +223,14 @@ https.get(dbUrl, (resp) => {
     });
 
     const finalArray = Array.from(grouped.values());
+    if (finalArray.length === 0) {
+        console.log("ERROR: built 0 products — catalog.json was NOT overwritten.");
+        process.exit(1);
+    }
     fs.writeFileSync('C:\\Users\\user\\Documents\\GitHub\\abeerx\\public\\catalog.json', JSON.stringify(finalArray, null, 2));
     console.log("Generated catalog.json with " + finalArray.length + " products!");
-  });
-}).on("error", (err) => {
-  console.log("Error: " + err.message);
+}).catch((err) => {
+    console.log("ERROR: " + err.message);
+    console.log("catalog.json was NOT changed.");
+    process.exit(1);
 });
