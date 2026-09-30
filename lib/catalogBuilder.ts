@@ -72,14 +72,28 @@ type PhotoIndex = {
   byName: Map<string, string[]>;     // "212_men_sexy_edt_100_ml" -> files saved with a barcode
 };
 
-function buildPhotoIndex(files: string[]): PhotoIndex {
+// An old bulk upload stored every photo a second time with the folder name glued on the
+// front ("perfume_images_<name>.png") — byte-identical copies. Skip a prefixed copy
+// whenever the normal file exists, so the same photo never shows twice.
+const FOLDER_PREFIX = /^perfume_images_/i;
+
+function withoutDuplicateCopies(files: string[]): string[] {
+  const names = new Set(files.map(f => f.toLowerCase()));
+  return files.filter(f => {
+    const lower = f.toLowerCase();
+    return !(FOLDER_PREFIX.test(lower) && names.has(lower.replace(FOLDER_PREFIX, "")));
+  });
+}
+
+function buildPhotoIndex(allFiles: string[]): PhotoIndex {
   const idx: PhotoIndex = { byBase: new Map(), byBarcode: new Map(), byName: new Map() };
   const add = (m: Map<string, string[]>, k: string, f: string) => {
     if (!m.has(k)) m.set(k, []);
     m.get(k)!.push(f);
   };
-  for (const f of files) {
-    const lower = f.toLowerCase();
+  for (const f of withoutDuplicateCopies(allFiles)) {
+    // index a leftover prefixed-only photo under its normal name
+    const lower = f.toLowerCase().replace(FOLDER_PREFIX, "");
     add(idx.byBase, lower.replace(IMG_SUFFIX, "").replace(IMG_EXT, ""), f);
     const m = lower.match(/^(.+)_(\d{8,14})(?:_(\d{1,2}))?\.(png|jpe?g|webp)$/);
     if (m) {
