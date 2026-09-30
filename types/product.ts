@@ -7,6 +7,7 @@ export interface ProductVariant {
   barcode?: string;
   imageUrl?: string;
   isAvailable: boolean;
+  isTester?: boolean;
 }
 
 export interface Product {
@@ -18,6 +19,8 @@ export interface Product {
   gender: 'Men' | 'Women' | 'Unisex' | 'Gift';
   shortDescription: string;
   description: string;
+  descriptionAr?: string;
+  testerAvailable?: string; // "Yes" when at least one variant is a tester — drives the shop filter
   price: number; // Base price
   salePrice?: number | null;
   discountPercentage?: number;

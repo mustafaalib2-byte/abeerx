@@ -4,16 +4,26 @@ import Link from "next/link";
 import { useCart } from "@/features/cart/CartContext";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useDeliverySettings } from "@/features/delivery/DeliveryContext";
-import { formatAmount } from "@/lib/delivery";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Header({ locale }: { locale: string }) {
   const isArabic = locale === 'ar';
   const { items, setIsCartOpen } = useCart();
-  const { freeThreshold } = useDeliverySettings();
   const router = useRouter();
-  
+  const pathname = usePathname();
+
+  // Swap only the leading /en or /ar segment of the CURRENT path, instead of
+  // always sending the user back to the locale root. Query string (e.g. an
+  // active shop filter or search) is preserved too, read client-side so this
+  // doesn't need a Suspense boundary around the whole header.
+  const otherLocale = locale === 'en' ? 'ar' : 'en';
+  const restOfPath = pathname.replace(/^\/(en|ar)/, '') || '/';
+  const [queryString, setQueryString] = useState('');
+  useEffect(() => {
+    setQueryString(window.location.search || '');
+  }, [pathname]);
+  const otherLocaleHref = `/${otherLocale}${restOfPath}${queryString}`;
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,9 +73,7 @@ export default function Header({ locale }: { locale: string }) {
     <>
     <header className="w-full border-b border-border bg-background sticky top-0 z-50">
       <div className="bg-primary text-primary-foreground text-xs text-center py-2 uppercase tracking-widest font-medium">
-        {isArabic
-          ? `توصيل مجاني في الكويت للطلبات بقيمة ${formatAmount(freeThreshold)} د.ك فأكثر`
-          : `Free Delivery in Kuwait on orders of ${formatAmount(freeThreshold)} KWD and above`}
+        {isArabic ? "توصيل مجاني في الكويت للطلبات فوق 20 دينار" : "Free Delivery in Kuwait for orders over 20 KWD"}
       </div>
       
       <div className="container mx-auto px-4 h-32 flex items-center justify-between relative">
@@ -148,7 +156,7 @@ export default function Header({ locale }: { locale: string }) {
         </div>
 
         <div className="flex-1 flex items-center justify-end space-x-6 text-sm">
-          <Link href={`/${locale === 'en' ? 'ar' : 'en'}`} className="hover:text-ring transition-colors font-medium">
+          <Link href={otherLocaleHref} className="hover:text-ring transition-colors font-medium">
             {locale === 'en' ? 'العربية' : 'EN'}
           </Link>
           
@@ -225,7 +233,7 @@ export default function Header({ locale }: { locale: string }) {
             <Link href={`/${locale}/about`} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-ring transition-colors border-b border-border pb-4">{isArabic ? "تراثنا" : "Our Legacy"}</Link>
           </nav>
           <div className="p-6 mt-auto">
-            <Link href={`/${locale === 'en' ? 'ar' : 'en'}`} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center w-full py-4 bg-secondary hover:bg-secondary/80 transition-colors font-medium text-foreground tracking-widest uppercase rounded-md border border-border">
+            <Link href={otherLocaleHref} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center w-full py-4 bg-secondary hover:bg-secondary/80 transition-colors font-medium text-foreground tracking-widest uppercase rounded-md border border-border">
               {locale === 'en' ? 'العربية' : 'English'}
             </Link>
           </div>

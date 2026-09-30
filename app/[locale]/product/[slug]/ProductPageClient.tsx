@@ -76,7 +76,7 @@ export default function ProductPageClient({ product, locale }: { product: Produc
           </div>
 
           <p className="text-muted-foreground mb-6 leading-relaxed">
-            {product.description}
+            {(isArabic && product.descriptionAr) ? product.descriptionAr : product.description}
           </p>
 
           {/* Fragrance Profile Grid */}
@@ -127,16 +127,18 @@ export default function ProductPageClient({ product, locale }: { product: Produc
               </span>
               <div className="flex flex-wrap gap-4">
                 {product.variants.map((variant, idx) => (
-                  <button 
+                  <button
                     key={variant.sku}
                     onClick={() => setSelectedVariantIndex(idx)}
+                    disabled={!variant.isAvailable}
                     className={`px-6 py-2 text-sm tracking-wider uppercase transition-colors border ${
-                      selectedVariantIndex === idx 
-                        ? 'border-foreground bg-foreground text-background' 
+                      selectedVariantIndex === idx
+                        ? 'border-foreground bg-foreground text-background'
                         : 'border-border text-foreground hover:border-foreground'
-                    }`}
+                    } ${!variant.isAvailable ? 'opacity-40 cursor-not-allowed' : ''}`}
                   >
                     {variant.size}
+                    {variant.isTester ? ` (${isArabic ? "تيستر" : "Tester"})` : ''}
                   </button>
                 ))}
               </div>

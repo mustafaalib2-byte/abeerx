@@ -15,7 +15,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <!-- Barcode Generator Library -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 
 <style>
   :root {
@@ -467,11 +466,6 @@
           <div style="margin-top:10px;">
             <label style="margin:0 0 4px; font-size:0.9rem; display:block;">Delivery Address:</label>
             <textarea id="sale-delivery-address" placeholder="Area, block, street, building/house, floor, notes..." rows="2" style="width:100%; padding:8px; resize:vertical; font-family:inherit;"></textarea>
-          </div>
-          <div style="margin-top:10px;">
-            <label style="margin:0 0 4px; font-size:0.9rem; display:block;">📍 Customer Location (Google Maps link):</label>
-            <input type="url" id="sale-delivery-location" placeholder="https://www.google.com/maps?q=..." style="width:100%; padding:8px;">
-            <div style="font-size:0.75rem; color:var(--muted); margin-top:3px;">Filled automatically from website orders (or paste a link). Prints as a QR code on the delivery label.</div>
           </div>
           <div style="margin-top:10px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
             <label style="margin:0; font-size:0.9rem;">Payment Status:</label>
@@ -1688,7 +1682,7 @@
         <div class="card-title">🔄 Overwrite Database from Excel (POS + Website Sync)</div>
         <p style="font-size:0.9rem; color:var(--muted); margin-bottom:15px; line-height:1.5;">
           Select your updated Excel file. <strong>WARNING:</strong> This will overwrite all existing items. <br>
-          <strong>Format Required:</strong> SKU | Item | Pack Size | Material | Core Product Name | Color | Dimensions or Measurements | Category | Sub Category | SALE PRICE (KWD) | Shape/Design | Brand.<br>
+          <strong>Format Required:</strong> SKU | Product Name | Brand | Sale Price | Gender | Concentration | Size | Category | Scent Family | Main Accord | Top Notes | Heart Notes | Base Notes | Occasion | Country of Origin | Description | Description (Arabic) | Tester.<br>
           <em>🚀 Auto-Image Link Active: Image filenames will exactly match your Item Name.</em>
         </p>
         <label class="btn btn-outline" style="cursor:pointer; width: 100%; border-color:var(--brand-pink); color:var(--brand-pink);">
@@ -1968,22 +1962,6 @@ function applyDeliverySettings(del) {
     if (minInput && document.activeElement !== minInput) minInput.value = FREE_DELIVERY_THRESHOLD;
 }
 
-// Only real web links go into QR codes / clickable map links.
-function isSafeMapUrl(u) {
-    return typeof u === 'string' && /^https?:\/\/\S+$/i.test(u.trim());
-}
-
-// QR code as a GIF data URL (prints reliably and works in the image/PDF export). Needs qrcode-generator.
-function makeQrDataUrl(text) {
-    try {
-        if (typeof qrcode !== 'function') return '';
-        const qr = qrcode(0, 'M');
-        qr.addData(String(text).trim());
-        qr.make();
-        return qr.createDataURL(4, 2);
-    } catch (e) { console.warn('QR generation failed', e); return ''; }
-}
-
 function saveDeliverySettings() {
     if (!isAdmin) return toast('❌ Admin login required.');
     const fee = parseFloat(document.getElementById('set-delivery-fee').value);
@@ -2151,36 +2129,34 @@ function resetLabelPositions() {
       });
   }
 
+  // NOTE: This used to write a full base64 JPEG straight into Realtime Database
+  // (abeerx/productImages/<name>). That node has a permanent `.on('value')`
+  // listener (see wireLiveListeners), so every admin session re-downloaded the
+  // ENTIRE base64 blob for EVERY product, on every page load and every single
+  // time any one image changed anywhere. That was the single biggest source of
+  // Firebase bandwidth billing. Fix: upload the compressed image to Cloudflare
+  // R2 (same pipeline already used by the website's Image Manager) and store
+  // only the small ~80-byte URL string in RTDB instead. extractImageUrl() and
+  // every renderer already treat a plain URL exactly like a base64 string, so
+  // this is a drop-in swap with zero changes needed anywhere else.
   function uploadProductImage(event) {
       if (!isAdmin) return toast('Security Block: Must be logged in as Admin.');
       const itemName = document.getElementById('product-image-select').value;
       if (!itemName) return toast('Please select a perfume first!');
-      
+
       const file = event.target.files[0];
       if (!file) return;
-      
+
       showLoading('Optimizing and uploading product image...');
-      const reader = new FileReader();
-      reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-              const canvas = document.createElement('canvas');
-              const MAX_WIDTH = 600; 
-              let width = img.width; let height = img.height;
-              if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
-              canvas.width = width; canvas.height = height;
-              const ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, width, height);
-              const base64Str = canvas.toDataURL('image/jpeg', 0.85);
-              
-              dbRef.child('abeerx/productImages/' + itemName).set(base64Str).then(() => {
-                  hideLoading(); toast('Image synced to website!');
-              }).catch(err => { hideLoading(); toast('Error uploading image.'); });
-          }
-          img.onerror = function() { hideLoading(); toast('Invalid image format.'); }
-          img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      resizeAndCompressImageToBlob(file).then(blob => {
+          return uploadBlobToR2(blob, itemName);
+      }).then(url => {
+          return dbRef.child('abeerx/productImages/' + itemName).set(url);
+      }).then(() => {
+          hideLoading(); toast('Image synced to website!');
+      }).catch(err => {
+          hideLoading(); toast('Error uploading image: ' + (err && err.message ? err.message : err));
+      });
   }
 
       async function uploadBulkImagesFolder(event) {
@@ -2217,8 +2193,12 @@ function resetLabelPositions() {
 
           try {
               progressEl.innerText = 'Uploading ' + (i+1) + '/' + imageFiles.length + ': ' + rawName;
-              const base64Str = await resizeAndCompressImageBlob(file);
-              await dbRef.child('productImages/' + itemKey).set(base64Str);
+              // Uploaded to R2 + only the URL stored in RTDB (see note on
+              // uploadProductImage above) — keeps this bulk path off the
+              // expensive base64-in-Firebase pattern too.
+              const blob = await resizeAndCompressImageToBlob(file);
+              const url = await uploadBlobToR2(blob, itemKey);
+              await dbRef.child('productImages/' + itemKey).set(url);
               successCount++;
           } catch(e) {
               console.error('Error on', rawName, e);
@@ -2238,7 +2218,7 @@ function resetLabelPositions() {
           const img = new Image();
           img.onload = function() {
               const canvas = document.createElement('canvas');
-              const MAX_WIDTH = 600; 
+              const MAX_WIDTH = 600;
               let width = img.width; let height = img.height;
               if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
               canvas.width = width; canvas.height = height;
@@ -2249,6 +2229,49 @@ function resetLabelPositions() {
           img.onerror = reject;
           img.src = URL.createObjectURL(blob);
       });
+  }
+
+  // Same resize/compress as resizeAndCompressImageBlob above, but resolves a
+  // Blob (real binary bytes) instead of a base64 data: string. A Blob is what
+  // FormData/R2 upload need, and it's ~33% smaller on the wire than the
+  // equivalent base64 text, since base64 always inflates binary size by 1/3.
+  function resizeAndCompressImageToBlob(fileOrBlob) {
+      return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = function() {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 600;
+              let width = img.width; let height = img.height;
+              if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
+              canvas.width = width; canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              canvas.toBlob(b => b ? resolve(b) : reject(new Error('Could not encode image.')), 'image/jpeg', 0.85);
+          };
+          img.onerror = reject;
+          img.src = URL.createObjectURL(fileOrBlob);
+      });
+  }
+
+  // Uploads a compressed image Blob to Cloudflare R2 via the same
+  // /api/r2/upload bridge the website's Image Manager already uses, and
+  // returns the public URL. `nameHint` only affects the R2 object key
+  // (cosmetic); it doesn't need to be unique.
+  async function uploadBlobToR2(blob, nameHint) {
+      const formData = new FormData();
+      const safeName = (nameHint || 'image').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 80);
+      formData.append('file', blob, safeName + '.jpg');
+      formData.append('prefix', 'products');
+      const res = await fetch('https://abeerx.vercel.app/api/r2/upload', {
+          method: 'POST',
+          headers: { 'x-admin-key': ADMIN_API_KEY },
+          body: formData
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success || !data.url) {
+          throw new Error(data.error || 'R2 upload failed');
+      }
+      return data.url;
   }
 
   function uploadCustomLabelImage(event) {
@@ -2339,7 +2362,14 @@ function collectCurrentLabelLayout() {
     };
 }
 
-function saveLabelTemplate() {
+// Like the product-image fix above: `abeerx/labelTemplates` also has a
+// permanent `.on('value')` listener, so every saved design's `image` field
+// (previously a lossless PNG at up to 1800px, easily 1-3MB as base64) was
+// re-downloaded in full by every admin session on every load/reconnect. If
+// this label has a custom image, upload it to R2 once here and save only the
+// URL — the print/preview path (currentLabelImage) is untouched, so label
+// quality on the current screen is unaffected.
+async function saveLabelTemplate() {
     if (!isAdmin) return toast('❌ Admin login required to save a label template.');
     const nameInput = prompt('Name this label design (e.g. "Diwali Gift Box", "Eid Sticker"):');
     if (!nameInput || !nameInput.trim()) return;
@@ -2347,12 +2377,19 @@ function saveLabelTemplate() {
     const key = name.replace(/[.#$/\[\]]/g, '_');
 
     showLoading('Saving label design...');
-    const data = collectCurrentLabelLayout();
-    data.displayName = name;
-    dbRef.child(`labelTemplates/${key}`).set(data).then(() => {
+    try {
+        const data = collectCurrentLabelLayout();
+        if (data.image && data.image.startsWith('data:')) {
+            const blob = await (await fetch(data.image)).blob();
+            data.image = await uploadBlobToR2(blob, 'label-' + key);
+        }
+        data.displayName = name;
+        await dbRef.child(`labelTemplates/${key}`).set(data);
         hideLoading();
         toast(`✅ Saved label design "${name}".`);
-    }).catch(() => { hideLoading(); toast('❌ Error saving label design.'); });
+    } catch (e) {
+        hideLoading(); toast('❌ Error saving label design.');
+    }
 }
 
 function renderLabelTemplateDropdown() {
@@ -2792,13 +2829,14 @@ function getMatchScore(query, text) {
 // 2. FIREBASE INITIALIZATION
 // ==========================================
 const firebaseConfig = {
-  apiKey: "AIzaSyBiuzCg78AGyCBYFuUmwK8zNzhsqSqNcmE",
-  authDomain: "abeerx-a9260.firebaseapp.com",
-  databaseURL: "https://abeerx-a9260-default-rtdb.firebaseio.com",
-  projectId: "abeerx-a9260",
-  storageBucket: "abeerx-a9260.firebasestorage.app",
-  messagingSenderId: "736988938803",
-  appId: "1:736988938803:web:42eeeff34a212711c533da"
+  apiKey: "AIzaSyB2E8CT49KwJQxs_Uhmb5-p9GLXURiK4",
+  authDomain: "abeerx-final.firebaseapp.com",
+  databaseURL: "https://abeerx-final-default-rtdb.firebaseio.com",
+  projectId: "abeerx-final",
+  storageBucket: "abeerx-final.firebasestorage.app",
+  messagingSenderId: "466619469704",
+  appId: "1:466619469704:web:da1715b11ca14671b6b43d",
+  measurementId: "G-PLJD66FQ3J"
 };
 
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
@@ -3928,7 +3966,6 @@ function renderWebOrders() {
                 <strong>Customer:</strong> ${escH(c.name || 'Web Customer')} <br>
                 <strong>Mobile:</strong> ${escH(c.mobile || '--')} <br>
                 <strong>Address:</strong> ${escH(c.area || '')}, ${escH(c.address || '')}
-                ${isSafeMapUrl(c.locationUrl) ? `<br><a href="${escH(c.locationUrl)}" target="_blank" rel="noopener" style="color:var(--brand-pink); font-weight:bold;">📍 Open exact location</a>${c.location && c.location.accuracy ? ` <span style="color:var(--muted); font-size:0.75rem;">(±${escH(String(c.location.accuracy))} m)</span>` : ''}` : `<br><span style="color:var(--muted); font-size:0.8rem;">📍 No location shared</span>`}
                 ${c.notes ? `<br><em style="color:var(--muted)">Notes: ${escH(c.notes)}</em>` : ''}
                 <br><strong style="color:var(--sage); margin-top:5px; display:inline-block;">Payment Preference: ${escH(order.paymentMethod || 'Cash on Delivery')}</strong>
               </div>
@@ -4012,8 +4049,6 @@ function acceptAndInvoiceWebOrder(firebaseKey) {
   setCustomerType('sale', 'parcel');
   const addrEl = document.getElementById('sale-delivery-address');
   if (addrEl) addrEl.value = [c.area, c.address].filter(Boolean).join(', ');
-  const locEl = document.getElementById('sale-delivery-location');
-  if (locEl) locEl.value = c.locationUrl || '';
   // Default the Payment Status tick from the web order's own payment method — staff can still
   // flip it manually before saving if it's actually wrong.
   setCollectStatus('sale', order.paymentMethod === 'Cash on Delivery' ? 'cod' : 'paid');
@@ -4649,7 +4684,7 @@ function saveTransaction(type, postAction = null) {
   // when the customer pays it, it's a pass-through to the 3rd-party courier and must stay out of
   // accounts; when the shop bears it (manually, or automatically above the free-delivery
   // threshold), it's booked separately as an expense (see below) instead.
-  let custType = 'walkin', deliveryCharge = 0, deliveryBorneBy = 'customer', deliveryAutoFree = false, deliverySelectedBorneBy = 'customer', deliveryAddress = '', deliveryForceCharge = false, deliveryLocation = '';
+  let custType = 'walkin', deliveryCharge = 0, deliveryBorneBy = 'customer', deliveryAutoFree = false, deliverySelectedBorneBy = 'customer', deliveryAddress = '', deliveryForceCharge = false;
   if (isSale || isQuote) {
       custType = customerType[type] || 'walkin';
       if (custType === 'parcel') {
@@ -4664,8 +4699,6 @@ function saveTransaction(type, postAction = null) {
           deliveryBorneBy = deliveryAutoFree ? 'shop' : deliverySelectedBorneBy;
           const addrEl = document.getElementById(`${type}-delivery-address`);
           deliveryAddress = addrEl ? addrEl.value.trim() : '';
-          const locEl = document.getElementById(`${type}-delivery-location`);
-          deliveryLocation = locEl ? locEl.value.trim() : '';
       }
   }
 
@@ -4703,7 +4736,7 @@ function saveTransaction(type, postAction = null) {
       id: finalId, type, num, date, party, mobile, exRate, currency, note, logistics, 
       subtotal, discountVal, discountType, discountAmt, payMethod, total, rows,
       priceMode, wholesaleDiscPct,
-      custType, deliveryCharge, deliveryBorneBy, deliveryAutoFree, deliverySelectedBorneBy, deliveryAddress, deliveryForceCharge, deliveryLocation,
+      custType, deliveryCharge, deliveryBorneBy, deliveryAutoFree, deliverySelectedBorneBy, deliveryAddress, deliveryForceCharge,
       isWebOrder, webOrderPaymentMethod, collectOnDelivery,
       prevDueIncluded, prevDueAmt, paidAmt,
       createdAt, updatedAt,
@@ -5332,8 +5365,6 @@ function setCustomerType(type, mode) {
         document.getElementById(`${type}-delivery-amt`).value = '';
         const addrEl = document.getElementById(`${type}-delivery-address`);
         if (addrEl) addrEl.value = '';
-        const locEl = document.getElementById(`${type}-delivery-location`);
-        if (locEl) locEl.value = '';
         setDeliveryBorneBy(type, 'customer');
         if (document.getElementById(`${type}-collect-paid-btn`)) setCollectStatus(type, 'paid');
     }
@@ -6105,8 +6136,6 @@ function editEntry(id, type) {
             if (forceChargeEl) forceChargeEl.checked = !!t.deliveryForceCharge;
             const addrEl = document.getElementById(`${type}-delivery-address`);
             if (addrEl) addrEl.value = t.deliveryAddress || '';
-            const locEl = document.getElementById(`${type}-delivery-location`);
-            if (locEl) locEl.value = t.deliveryLocation || '';
             if (type === 'sale') setCollectStatus('sale', t.collectOnDelivery ? 'cod' : 'paid');
         }
         if (type === 'sale') {
@@ -6931,15 +6960,6 @@ function buildPrintHtml(bill, type, isAnonymous = false, isImage = false) {
   let deliverySlipHtml = '';
   if (isSale && bill.custType === 'parcel') {
       const codLine = bill.collectOnDelivery ? `<strong>Amount of KD ${fmt(printGrandTotal)} to be collected.</strong><br>` : '';
-      // Customer's exact location as a scannable QR (driver scans → Google Maps opens with the pin).
-      // If the QR library didn't load, fall back to printing the link itself.
-      let locationQrHtml = '';
-      if (isSafeMapUrl(bill.deliveryLocation)) {
-          const qrSrc = makeQrDataUrl(bill.deliveryLocation);
-          locationQrHtml = qrSrc
-              ? `<div style="text-align:center; flex-shrink:0;"><img src="${qrSrc}" alt="Location QR" style="width:110px; height:110px; image-rendering:pixelated; display:block;"><div style="font-size:10px; font-weight:bold; color:#3e200c; margin-top:2px;">📍 SCAN FOR LOCATION</div></div>`
-              : `<div style="font-size:10px; max-width:180px; word-break:break-all; color:#3e200c;">📍 ${escH(bill.deliveryLocation)}</div>`;
-      }
       deliverySlipHtml = `
       <div style="margin-top:20px; page-break-inside: avoid;">
         <div style="text-align:center; font-size:11px; color:#999; letter-spacing:2px; margin-bottom:10px; border-top:2px dashed #999; padding-top:10px;">✂️ — — — — — — — — — TEAR HERE — — — — — — — — — ✂️</div>
@@ -6947,14 +6967,11 @@ function buildPrintHtml(bill, type, isAnonymous = false, isImage = false) {
           <div style="font-weight:800; font-size:15px; color:#3e200c; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
             <span>📦 DELIVERY LABEL</span><span style="font-family:'DM Mono',monospace; font-size:13px;">${escH(bill.num || '')}</span>
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px;">
-          <div style="font-size:14px; line-height:1.8; color:#222; flex:1; min-width:0;">
+          <div style="font-size:14px; line-height:1.8; color:#222;">
             <strong>Deliver To:</strong> ${escH(bill.party || '')}<br>
             <strong>Mobile:</strong> ${escH(bill.mobile || '—')}<br>
             <strong>Address:</strong> ${escH(bill.deliveryAddress || '—')}<br>
             ${codLine}
-          </div>
-          ${locationQrHtml}
           </div>
         </div>
       </div>`;
@@ -8517,6 +8534,12 @@ function importItemsExcel(event) {
         let rateIdx   = getIdx(['sale price', 'sale rate', 'rate', 'price']);
         let brandIdx  = getIdx(['brand']);
         let descIdx   = getIdx(['description']);
+        // NOTE: descIdx above matches the FIRST header containing "description" — this only
+        // stays correct because "Description" comes before "Description (Arabic)" in the
+        // sheet. descArIdx below is matched on the more specific "arabic" keyword so it can't
+        // accidentally grab the English column instead.
+        let descArIdx = getIdx(['description (arabic)', 'arabic']);
+        let testerIdx = getIdx(['tester']);
 
         if (itemIdx === -1) { hideLoading(); toast('❌ Could not find "Item" column.'); return; }
         let nameIdxToUse = itemIdx;
@@ -8549,17 +8572,21 @@ function importItemsExcel(event) {
           let occasion = occIdx !== -1 && row[occIdx] ? String(row[occIdx]).trim() : '';
           let origin = originIdx !== -1 && row[originIdx] ? String(row[originIdx]).trim() : '';
           let description = descIdx !== -1 && row[descIdx] ? String(row[descIdx]).trim() : '';
+          let descriptionAr = descArIdx !== -1 && row[descArIdx] ? String(row[descArIdx]).trim() : '';
+          // Tester column: accept Yes/No, True/False, 1/0, or an already-blank cell.
+          let testerRaw = testerIdx !== -1 && row[testerIdx] ? String(row[testerIdx]).trim().toLowerCase() : '';
+          let tester = ['yes', 'y', 'true', '1', 'tester', 'available'].includes(testerRaw);
 
           // Auto image logic
           let exactImageName = originalName + '.jpg';
-          
+
           if (!newItems.includes(itemKey)) { newItems.push(itemKey); }
           newItemRates[itemKey] = rate;
-          newItemDetails[itemKey] = { 
-              name: itemKey, price: rate, sku: sku, brand: brand, gender: gender, 
+          newItemDetails[itemKey] = {
+              name: itemKey, price: rate, sku: sku, brand: brand, gender: gender,
               concentration: concentration, size: size, category: category, scentFamily: scentFamily, mainAccord: mainAccord,
               topNotes: topNotes, heartNotes: heartNotes, baseNotes: baseNotes, occasion: occasion, origin: origin,
-              description: description, imageName: exactImageName 
+              description: description, descriptionAr: descriptionAr, tester: tester, imageName: exactImageName
           };
         }
       

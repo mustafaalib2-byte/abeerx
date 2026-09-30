@@ -4,10 +4,10 @@ const https = require('https');
 
 const dbUrl = "https://abeerx-final-default-rtdb.firebaseio.com/abeerx.json";
 const R2_BASE = "https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/products";
-// Local folder used only to check WHICH suffixed images (_2, _3, _4) actually exist,
+// Local folder used only to check WHICH suffixed images (_2, _3) actually exist,
 // so we don't add broken image URLs for products that only have one photo.
 const LOCAL_IMAGE_DIR = "C:\\Users\\user\\Desktop\\Perfume_Images";
-const MAX_IMAGES_PER_PRODUCT = 4;
+const MAX_IMAGES_PER_PRODUCT = 3;
 
 function buildImageUrls(fileName) {
     // fileName already ends in .png, e.g. "212_vip_men_edt_100_ml_8411061723760.png"
@@ -69,8 +69,13 @@ https.get(dbUrl, (resp) => {
         const imageUrls = buildImageUrls(fileName);
         const slug = key.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         
+        // Tester flag: prefer the explicit "Tester" column from the master sheet, but also
+        // fall back to detecting a trailing "TESTER" word or "(T)" marker already baked into
+        // older product names, since a lot of existing rows encode it that way instead.
+        const isTester = !!item.tester || /\btester\b/i.test(key) || /\(\s*t\s*\)\s*$/i.test(key);
+
         products.push({
-            id: key, 
+            id: key,
             sku: sku,
             name: key,
             brand: item.brand || 'ABEERX',
@@ -78,6 +83,8 @@ https.get(dbUrl, (resp) => {
             gender: item.gender || 'Unisex',
             shortDescription: item.concentration || 'EDP',
             description: item.description || '',
+            descriptionAr: item.descriptionAr || '',
+            isTester: isTester,
             price: finalPrice,
             salePrice: finalSalePrice,
             discountPercentage: discountPercentage,
@@ -109,52 +116,70 @@ https.get(dbUrl, (resp) => {
     const grouped = new Map();
     products.forEach((p) => {
         let baseName = p.name;
-        let size = '100ml'; 
-        
-        const sizeMatch = p.name.match(/\s*[-()]*\s*(\d+)\s*(ml|oz)\s*[-()]*\s*$/i);
+        let size = '100ml';
+
+        // Strip a trailing "TESTER" word or "(T)" marker BEFORE the size match, so a tester
+        // row (e.g. "MONT BLANC ULTIMATE EDP TESTER" or "...100ML(T)") groups under the same
+        // product as its regular counterpart instead of becoming its own separate listing.
+        baseName = baseName
+            .replace(/\s*[-()]*\s*tester\s*[-()]*\s*$/i, '')
+            .replace(/\s*\(\s*t\s*\)\s*$/i, '')
+            .trim();
+
+        const sizeMatch = baseName.match(/\s*[-()]*\s*(\d+)\s*(ml|oz)\s*[-()]*\s*$/i);
         if (sizeMatch) {
-        baseName = p.name.substring(0, sizeMatch.index).trim();
+        baseName = baseName.substring(0, sizeMatch.index).trim();
         size = sizeMatch[1] + sizeMatch[2].toLowerCase();
         }
-        
+
         const groupSlug = baseName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        
+        const variantEntry = {
+            sku: p.sku || p.id,
+            size: size,
+            price: p.price,
+            salePrice: p.salePrice,
+            stock: p.totalStock,
+            isAvailable: p.isAvailable,
+            isTester: !!p.isTester
+        };
+
         if (grouped.has(groupSlug)) {
             const existing = grouped.get(groupSlug);
-            existing.variants.push({
-                sku: p.sku || p.id,
-                size: size,
-                price: p.price,
-                salePrice: p.salePrice,
-                stock: p.totalStock,
-                isAvailable: p.isAvailable
-            });
+            existing.variants.push(variantEntry);
             existing.totalStock += p.totalStock;
-            
+            if (p.isTester) existing.testerAvailable = 'Yes';
+            // Prefer a non-tester row's own description/Arabic description as the product's
+            // main copy, since the tester row's text (if any) is usually a duplicate.
+            if (!p.isTester) {
+                if (p.description) existing.description = p.description;
+                if (p.descriptionAr) existing.descriptionAr = p.descriptionAr;
+            }
+
+            // Dedupe by size + tester flag (not size alone), so a tester and a regular bottle
+            // of the same size both survive as distinct, selectable variants.
             const uniqueVariants = [];
-            const seenSizes = new Set();
+            const seenKeys = new Set();
             existing.variants.forEach((v) => {
-                if(!seenSizes.has(v.size)) {
-                seenSizes.add(v.size);
+                const dedupeKey = `${v.size}__${v.isTester ? 'tester' : 'regular'}`;
+                if(!seenKeys.has(dedupeKey)) {
+                seenKeys.add(dedupeKey);
                 uniqueVariants.push(v);
                 }
             });
-            existing.variants = uniqueVariants.sort((a,b) => parseInt(a.size) - parseInt(b.size));
+            existing.variants = uniqueVariants.sort((a,b) => {
+                const sizeDiff = parseInt(a.size) - parseInt(b.size);
+                if (sizeDiff !== 0) return sizeDiff;
+                return (a.isTester ? 1 : 0) - (b.isTester ? 1 : 0);
+            });
         } else {
             p.name = baseName;
             p.slug = groupSlug;
-            p.variants = [{
-                sku: p.sku || p.id,
-                size: size,
-                price: p.price,
-                salePrice: p.salePrice,
-                stock: p.totalStock,
-                isAvailable: p.isAvailable
-            }];
+            p.variants = [variantEntry];
+            p.testerAvailable = p.isTester ? 'Yes' : '';
             grouped.set(groupSlug, p);
         }
     });
-    
+
     const finalArray = Array.from(grouped.values());
     fs.writeFileSync('C:\\Users\\user\\Documents\\GitHub\\abeerx\\public\\catalog.json', JSON.stringify(finalArray, null, 2));
     console.log("Generated catalog.json with " + finalArray.length + " products!");

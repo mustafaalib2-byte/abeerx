@@ -14,7 +14,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Product } from "@/types/product";
-import { AddToCartButton } from "@/features/cart/AddToCartButton";
 
 function ShopContent({ products, locale }: { products: Product[], locale: string }) {
   const searchParams = useSearchParams();
@@ -110,6 +109,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   }, [urlFamily, urlGender]);
 
   const filterConfigs = [
+    { key: 'testerAvailable', label: isArabic ? "يتوفر تيستر" : "Tester Available" },
     { key: 'gender', label: isArabic ? "الجنس" : "Gender" },
     { key: 'concentration', label: isArabic ? "التركيز" : "Concentration" },
     { key: 'size', label: isArabic ? "الحجم" : "Size" },
@@ -393,7 +393,11 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                         disabled={!opt.available && !(selectedFilters[config.key]?.includes(opt.val))}
                         className="rounded border-border text-ring focus:ring-ring" 
                       />
-                      <span>{opt.val}</span>
+                      <span>
+                        {config.key === 'testerAvailable'
+                          ? (isArabic ? "متوفر" : "Available")
+                          : opt.val}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -435,7 +439,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.slice(0, visibleCount).map(product => (
-              <div key={product.id} className="group relative flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
+              <Link key={product.id} href={`/${locale}/product/${product.slug}`} className="group flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
                 <div className="relative aspect-square bg-secondary mb-4 overflow-hidden border border-border/50">
                   <Image 
                     src={product.images[0] || '/placeholder.jpg'} 
@@ -445,16 +449,16 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                     className="object-cover group-hover:scale-105 transition-transform duration-500" 
                   />
                   {product.discountPercentage ? (
-                    <span className="pointer-events-none absolute top-2 left-2 bg-red-600 text-white text-[10px] uppercase font-bold tracking-wider px-2 py-1 z-10">
+                    <span className="absolute top-2 left-2 bg-red-600 text-white text-[10px] uppercase font-bold tracking-wider px-2 py-1 z-10">
                       -{product.discountPercentage}% OFF
                     </span>
                   ) : null}
                 </div>
                 <div className="flex-grow flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{product.brand}</span>
-                  <Link href={`/${locale}/product/${product.slug}`} className="text-lg font-serif mb-2 group-hover:text-ring transition-colors line-clamp-1 text-foreground after:absolute after:inset-0">
+                  <span className="text-lg font-serif mb-2 group-hover:text-ring transition-colors line-clamp-1 text-foreground">
                     {product.name}
-                  </Link>
+                  </span>
                   <div className="mt-auto flex items-center justify-between text-foreground">
                     <div>
                       {product.salePrice ? (
@@ -466,12 +470,9 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                         <span className="font-medium">{product.price.toFixed(2)} {product.currency}</span>
                       )}
                     </div>
-                    <div className="relative z-20">
-                      <AddToCartButton product={product} locale={locale} />
-                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
