@@ -116,16 +116,9 @@ async function run() {
   await Promise.all(workers);
   console.log(`Finished! Uploaded: ${uploaded}, Failed: ${failed}`);
 
-  // Also upload the catalog JSON
-  console.log("Uploading catalog.json to root...");
-  const catalogBuffer = fs.readFileSync('C:\\Users\\user\\Documents\\GitHub\\abeerx\\public\\catalog.json');
-  await s3Client.send(new PutObjectCommand({
-    Bucket: BUCKET_NAME,
-    Key: "catalog.json",
-    Body: catalogBuffer,
-    ContentType: "application/json"
-  }));
-  console.log("Uploaded catalog.json successfully.");
+  // catalog.json is NOT uploaded from here any more: the website builds and publishes it
+  // itself. After uploading photos, click "Update website now" in the POS admin.
+  console.log("Photos uploaded. Now click 'Update website now' in the POS admin to show them on the site.");
 }
 
 run();
