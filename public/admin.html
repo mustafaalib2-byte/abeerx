@@ -8653,6 +8653,11 @@ async function syncGoogleSheets() {
         const occIdx = headers.findIndex(h => h.includes('occasion'));
         const originIdx = headers.findIndex(h => h.includes('origin') || h.includes('country'));
         const descIdx = headers.findIndex(h => h.includes('desc'));
+        // descIdx above matches the FIRST header containing "desc" — stays correct only because
+        // "Description" comes before "Description (Arabic)" in the sheet. descArIdx is matched
+        // on the more specific "arabic" keyword so it can't grab the English column instead.
+        const descArIdx = headers.findIndex(h => h.includes('arabic'));
+        const testerIdx = headers.findIndex(h => h.includes('tester'));
 
         if (itemIdx === -1 || rateIdx === -1) { hideLoading(); toast('Sheet must have "Item" and "Price" columns.'); return; }
 
@@ -8684,19 +8689,22 @@ async function syncGoogleSheets() {
           let occasion = occIdx !== -1 && row[occIdx] ? String(row[occIdx]).trim() : '';
           let origin = originIdx !== -1 && row[originIdx] ? String(row[originIdx]).trim() : '';
           let description = descIdx !== -1 && row[descIdx] ? String(row[descIdx]).trim() : '';
+          let descriptionAr = descArIdx !== -1 && row[descArIdx] ? String(row[descArIdx]).trim() : '';
+          let testerRaw = testerIdx !== -1 && row[testerIdx] ? String(row[testerIdx]).trim().toLowerCase() : '';
+          let tester = ['yes', 'y', 'true', '1', 'tester', 'available'].includes(testerRaw);
 
           let exactImageName = originalName + '.jpg';
-          
+
           if (!newItems.includes(itemKey)) { newItems.push(itemKey); }
           newItemRates[itemKey] = rate;
-          newItemDetails[itemKey] = { 
-              name: itemKey, price: rate, sku: sku, brand: brand, gender: gender, 
+          newItemDetails[itemKey] = {
+              name: itemKey, price: rate, sku: sku, brand: brand, gender: gender,
               concentration: concentration, size: size, category: category, scentFamily: scentFamily, mainAccord: mainAccord,
               topNotes: topNotes, heartNotes: heartNotes, baseNotes: baseNotes, occasion: occasion, origin: origin,
-              description: description, imageName: exactImageName 
+              description: description, descriptionAr: descriptionAr, tester: tester, imageName: exactImageName
           };
         }
-      
+
         await dbRef.update({ items: newItems, itemRates: newItemRates, itemDetails: newItemDetails });
         hideLoading(); 
         toast('Google Sheets Synced Successfully!'); 
