@@ -8519,7 +8519,7 @@ function importItemsExcel(event) {
       
       const getIdx = (keywords) => headers.findIndex(h => keywords.some(kw => h.includes(kw))); 
       let skuIdx    = getIdx(['sku']); 
-        let itemIdx   = getIdx(['item']); 
+        let itemIdx   = getIdx(['product name', 'item', 'product', 'name']);
         let genderIdx = getIdx(['gender']);
         let concIdx   = getIdx(['concentration']);
         let sizeIdx   = getIdx(['size', 'volume']);
