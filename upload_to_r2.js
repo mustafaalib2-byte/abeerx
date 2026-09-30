@@ -19,7 +19,7 @@ const { S3Client, PutObjectCommand, ListObjectsV2Command } = require('@aws-sdk/c
   }
 })();
 
-const ACCOUNT_ID = "2604e12e7f799e4e440edaeba8db3d20";
+const ACCOUNT_ID = "2604e12a7f799efe440edaaba8db3d20"; // verified real account ID
 const ACCESS_KEY = process.env.CLOUDFLARE_ACCESS_KEY_ID;
 const SECRET_KEY = process.env.CLOUDFLARE_SECRET_ACCESS_KEY;
 const BUCKET_NAME = process.env.CLOUDFLARE_BUCKET_NAME || "abeerx";

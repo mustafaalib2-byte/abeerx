@@ -1689,6 +1689,7 @@
           📁 Choose Excel File to Overwrite Database
           <input type="file" id="excel-uploader" style="display:none;" accept=".xlsx, .xls, .csv" onchange="importItemsExcel(event)">
         </label>
+        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="triggerWebsiteUpdate(0)">🌐 Update website now</button>
 <div style="margin-top:20px; padding-top:20px; border-top:1px dashed var(--border);">
 <div style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">Or Auto-Sync from Google Sheets</div>
 <div style="font-size:0.8rem; color:var(--muted); margin-bottom:10px;">Paste your Published CSV Link here (File -> Share -> Publish to web -> CSV):</div>
@@ -3047,6 +3048,24 @@ const ADMIN_EMAIL = "mustafaalib2@gmail.com";
 // Sent as the x-admin-key header on every call to the /api/r2/* endpoints below.
 // Must match the ADMIN_API_KEY env var set on the Vercel project.
 const ADMIN_API_KEY = "a127df916e828b3e321633cf9f5f53497041cae321fb866b";
+
+// Updates the website after any product change (add / edit / delete / Excel import /
+// Google Sheets sync). The website's own server rebuilds the catalog from this database
+// and publishes it — nothing to run or upload from this computer. Several changes in a
+// row are batched into one update.
+let _websiteUpdateTimer = null;
+function triggerWebsiteUpdate(delayMs) {
+    clearTimeout(_websiteUpdateTimer);
+    _websiteUpdateTimer = setTimeout(async () => {
+        try {
+            toast('🌐 Updating website...');
+            const res = await fetch('https://abeerx.vercel.app/api/catalog/rebuild', { method: 'POST', headers: { 'x-admin-key': ADMIN_API_KEY } });
+            const j = await res.json().catch(() => ({}));
+            if (res.ok && j.success) toast(`🌐 Website updated: ${j.products} products (${j.productsWithPhotos} with photos). Live within a minute.`);
+            else toast('⚠️ Website update failed: ' + (j.error || ('HTTP ' + res.status)));
+        } catch (e) { toast('⚠️ Website update failed: ' + e.message); }
+    }, typeof delayMs === 'number' ? delayMs : 3000);
+}
 localStorage.setItem('shop_is_admin', 'false'); 
 
 // Who's doing the saving right now — stamped onto every record so the Admin can see
@@ -8393,6 +8412,7 @@ function saveNewCatalogItem() {
     dbRef.update(updates).then(() => {
         hideLoading();
         toast(isUpdatingExisting ? `✅ "${itemKey}" updated.` : `✅ "${itemKey}" added with SKU ${sku}.`);
+        triggerWebsiteUpdate();
         document.getElementById('cat-new-name').value = '';
         document.getElementById('cat-new-category').value = '';
         document.getElementById('cat-new-price').value = '';
@@ -8451,6 +8471,7 @@ function deleteCatalogItem(name) {
     const newItems = items.filter(i => i !== name);
     dbRef.update({ items: newItems, [`itemRates/${name}`]: null, [`itemDetails/${name}`]: null }).then(() => {
         toast(`🗑️ "${name}" deleted from catalog.`);
+        triggerWebsiteUpdate();
         renderCatalogTable();
     }).catch(() => toast('❌ Error deleting item.'));
 }
@@ -8592,6 +8613,7 @@ function importItemsExcel(event) {
       
       dbRef.update({ items: newItems, itemRates: newItemRates, itemDetails: newItemDetails }).then(() => {
          hideLoading(); toast(`✅ ${newItems.length} items synced successfully!`); event.target.value = '';
+         triggerWebsiteUpdate(0);
       }).catch(err => { hideLoading(); console.error("Firebase Update Error:", err); toast('❌ Firebase Error. Some data might be invalid.'); });
     } catch(err) { hideLoading(); console.error("File Parse Error:", err); toast('❌ Error reading file. Please check format.'); }
   }; 
@@ -8708,6 +8730,7 @@ async function syncGoogleSheets() {
         await dbRef.update({ items: newItems, itemRates: newItemRates, itemDetails: newItemDetails });
         hideLoading(); 
         toast('Google Sheets Synced Successfully!'); 
+        triggerWebsiteUpdate(0);
     } catch(err) { 
         hideLoading(); 
         console.error("Google Sheets Sync Error:", err); 

@@ -64,7 +64,8 @@ function candidateFiles(safeName, sku, index) {
     return [...found];
 }
 
-const headAgent = new https.Agent({ keepAlive: true, maxSockets: 25 });
+const headAgent = new https.Agent({ keepAlive: true, maxSockets: 8 });
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 function headStatus(url) {
     return new Promise((resolve) => {
         const req = https.request(url, { method: 'HEAD', agent: headAgent, timeout: 15000 }, (res) => {
@@ -77,20 +78,41 @@ function headStatus(url) {
     });
 }
 
+// Only a definite 200 means "photo exists" and only a definite 404 means "photo missing".
+// Anything else (429 "slow down", 5xx, timeouts) is NOT an answer — retry it with a pause.
+// Anything still unanswered after retries is counted as an error, and the run aborts rather
+// than silently dropping real photos from the catalog.
+async function checkOne(f, replies) {
+    const url = `${R2_BASE}/${encodeURIComponent(f)}`;
+    const waits = [1000, 3000, 6000, 12000, 20000];
+    for (let attempt = 0; attempt <= waits.length; attempt++) {
+        const s = await headStatus(url);
+        replies[s] = (replies[s] || 0) + 1;
+        if (s === 200 || s === 404) return s;
+        if (attempt < waits.length) await sleep(waits[attempt]);
+    }
+    return -1; // still unknown
+}
+
 async function checkAllOnR2(fileNames) {
     const unique = [...new Set(fileNames)];
     const status = new Map();
+    const replies = {};
     let next = 0, done = 0, errors = 0;
     async function worker() {
         while (next < unique.length) {
             const f = unique[next++];
-            const s = await headStatus(`${R2_BASE}/${encodeURIComponent(f)}`);
-            if (s === 0) errors++;
+            const s = await checkOne(f, replies);
+            if (s === -1) errors++;
             status.set(f, s);
-            if (++done % 1000 === 0) console.log(`  checked ${done} / ${unique.length} image links on R2...`);
+            if (++done % 500 === 0) console.log(`  checked ${done} / ${unique.length} image links on R2...`);
         }
     }
-    await Promise.all(Array.from({ length: 25 }, worker));
+    await Promise.all(Array.from({ length: 8 }, worker));
+    const found = [...status.values()].filter(s => s === 200).length;
+    const missing = [...status.values()].filter(s => s === 404).length;
+    console.log(`  R2 replies seen: ${JSON.stringify(replies)}  (0 = could not connect)`);
+    console.log(`  Result: ${found} photos found, ${missing} not on R2, ${errors} could not be confirmed.`);
     return { status, errors, total: unique.length };
 }
 
@@ -227,11 +249,11 @@ Promise.all([
     }
     
     // Confirm every candidate photo actually exists on Cloudflare R2
-    console.log("Checking which photos really exist on Cloudflare (takes a minute or two)...");
+    console.log("Checking which photos really exist on Cloudflare (can take 5-10 minutes — leave it running)...");
     const r2 = await checkAllOnR2(allCandidates);
-    if (r2.total > 0 && r2.errors / r2.total > 0.3) {
-        console.log(`ERROR: ${r2.errors} of ${r2.total} photo checks failed to connect — looks like a network problem.`);
-        console.log("catalog.json was NOT changed. Try again in a few minutes.");
+    if (r2.errors > 20) {
+        console.log(`ERROR: ${r2.errors} of ${r2.total} photo checks could not be confirmed (Cloudflare busy or network problem).`);
+        console.log("catalog.json was NOT changed, so no photos were dropped. Wait 10 minutes and run it again.");
         process.exit(1);
     }
     for (const p of products) {

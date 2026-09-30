@@ -8,6 +8,7 @@ export interface ProductVariant {
   imageUrl?: string;
   isAvailable: boolean;
   isTester?: boolean;
+  key?: string; // exact POS item name, used to look up this size's live price & stock
 }
 
 export interface Product {

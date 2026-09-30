@@ -13,7 +13,9 @@ const CATALOG_URL = 'https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog
 
 // Live selling prices, edited in the admin panel (Item Catalog). Each value is a plain
 // number keyed by the item's full name, e.g. { "212 NYC EDT 100 ML": 36 }. ~0.25 MB.
-const RATES_URL = 'https://abeerx-a9260-default-rtdb.firebaseio.com/abeerx/itemRates.json';
+// NOTE: must be the POS database (abeerx-final). abeerx-a9260 is an old copy that
+// stopped receiving POS changes, so prices/stock from it were stale.
+const RATES_URL = 'https://abeerx-final-default-rtdb.firebaseio.com/abeerx/itemRates.json';
 
 // Must match the grouping in generateCatalog.js exactly: the catalog merges items that
 // only differ by a trailing size ("X 50 ML" / "X 100 ML") into one product whose slug
@@ -37,6 +39,11 @@ function buildRateLookup(rates: Record<string, unknown>): Map<string, number> {
   return lookup;
 }
 
+function liveRateValue(entry: unknown): number {
+  if (entry && typeof entry === 'object') return parseFloat((entry as any).rate) || 0;
+  return parseFloat(String(entry)) || 0;
+}
+
 function getPriority(p: any) {
     const hasStock = (p.totalStock || 0) > 0;
     const hasImage = p.images && p.images.length > 0;
@@ -55,7 +62,18 @@ export const ProductService = {
 
       const [liveStock, liveRates] = await Promise.all([this.getLiveStock(), this.getLiveRates()]);
       products.forEach((p: any) => {
-          p.totalStock = liveStock[p.name] || 0;
+          const variants = Array.isArray(p.variants) ? p.variants : [];
+          if (variants.some((v: any) => v.key)) {
+              let total = 0;
+              for (const v of variants) {
+                  const s = Number(liveStock[v.key]) || 0;
+                  v.stock = s;
+                  total += s;
+              }
+              p.totalStock = total;
+          } else {
+              p.totalStock = Number(liveStock[p.name]) || 0; // older catalog without keys
+          }
       });
 
       // If the price feed is unavailable, don't wipe the shop — keep catalog prices
@@ -68,7 +86,10 @@ export const ProductService = {
 
         if (rateLookup) {
           for (const v of variants) {
-            const live = rateLookup.get(`${p.slug}|${v.size}`);
+            const exact = v.key && liveRates && liveRates[v.key] !== undefined && liveRates[v.key] !== null
+              ? liveRateValue(liveRates[v.key])
+              : undefined;
+            const live = exact !== undefined ? exact : (v.key ? undefined : rateLookup.get(`${p.slug}|${v.size}`));
             if (live !== undefined) {
               v.price = live;
               v.salePrice = undefined; // discounts aren't stored anywhere live, so never show a stale one
@@ -110,7 +131,7 @@ export const ProductService = {
 
     async getLiveStock(): Promise<Record<string, number>> {
     try {
-      const url = "https://abeerx-a9260-default-rtdb.firebaseio.com/abeerx/liveStock.json";
+      const url = "https://abeerx-final-default-rtdb.firebaseio.com/abeerx/liveStock.json";
       const res = await fetch(url, { next: { revalidate: 60 } });
       if (!res.ok) throw new Error("Firebase REST failed");
       const data = await res.json();
