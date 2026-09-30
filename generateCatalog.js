@@ -1,7 +1,30 @@
 ﻿const fs = require('fs');
+const path = require('path');
 const https = require('https');
 
-const dbUrl = "https://abeerx-a9260-default-rtdb.firebaseio.com/abeerx.json";
+const dbUrl = "https://abeerx-final-default-rtdb.firebaseio.com/abeerx.json";
+const R2_BASE = "https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/products";
+// Local folder used only to check WHICH suffixed images (_2, _3, _4) actually exist,
+// so we don't add broken image URLs for products that only have one photo.
+const LOCAL_IMAGE_DIR = "C:\\Users\\user\\Desktop\\Perfume_Images";
+const MAX_IMAGES_PER_PRODUCT = 4;
+
+function buildImageUrls(fileName) {
+    // fileName already ends in .png, e.g. "212_vip_men_edt_100_ml_8411061723760.png"
+    const base = fileName.replace(/\.png$/i, '');
+    const urls = [`${R2_BASE}/${fileName}`]; // primary image, always included
+    for (let n = 2; n <= MAX_IMAGES_PER_PRODUCT; n++) {
+        const suffixedFile = `${base}_${n}.png`;
+        try {
+            if (fs.existsSync(path.join(LOCAL_IMAGE_DIR, suffixedFile))) {
+                urls.push(`${R2_BASE}/${suffixedFile}`);
+            }
+        } catch (e) {
+            // LOCAL_IMAGE_DIR not reachable from this machine — just skip extra-image detection
+        }
+    }
+    return urls;
+}
 
 console.log("Downloading Firebase data to generate static catalog...");
 https.get(dbUrl, (resp) => {
@@ -23,15 +46,9 @@ https.get(dbUrl, (resp) => {
         let basePrice = 0;
         let isDiscounted = false;
         
-        const rateVal = itemRates[key];
-        if (rateVal !== undefined && rateVal !== null) {
-            // The admin panel saves itemRates as plain numbers; older data used { rate, isDiscounted }.
-            if (typeof rateVal === 'object') {
-                basePrice = parseFloat(rateVal.rate) || 0;
-                isDiscounted = rateVal.isDiscounted || false;
-            } else {
-                basePrice = parseFloat(rateVal) || 0;
-            }
+        if (itemRates[key]) {
+            basePrice = parseFloat(itemRates[key].rate) || 0;
+            isDiscounted = itemRates[key].isDiscounted || false;
         } else if (item.price) {
             basePrice = parseFloat(item.price) || 0;
         }
@@ -48,8 +65,8 @@ https.get(dbUrl, (resp) => {
         
         const safe_product_name = key.replace(/[^a-zA-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
         const fileName = `${safe_product_name}_${sku}.png`.toLowerCase();
-        
-        const imageUrl = `https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/products/${fileName}`;
+
+        const imageUrls = buildImageUrls(fileName);
         const slug = key.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         
         products.push({
@@ -67,7 +84,7 @@ https.get(dbUrl, (resp) => {
             currency: 'KWD',
             totalStock: 99, 
             isAvailable: true,
-            images: [imageUrl],
+            images: imageUrls,
             variants: [],
             fragranceFamily: item.scentFamily || 'General',
             topNotes: item.topNotes || '',
