@@ -8557,7 +8557,7 @@ function importItemsExcel(event) {
           
           let excelSku = skuIdx !== -1 && row[skuIdx] ? String(row[skuIdx]).trim() : '';
           let existingSku = (itemDetails[itemKey] && itemDetails[itemKey].sku) ? itemDetails[itemKey].sku : '';
-          let sku = existingSku || excelSku;
+          let sku = excelSku || existingSku; // your Excel/Sheet SKU wins; only keep the old one if the cell is empty
           
           let brand = brandIdx !== -1 && row[brandIdx] ? String(row[brandIdx]).trim() : '';
           let gender = genderIdx !== -1 && row[genderIdx] ? String(row[genderIdx]).trim() : 'Unisex';
@@ -8674,7 +8674,7 @@ async function syncGoogleSheets() {
           
           let excelSku = skuIdx !== -1 && row[skuIdx] ? String(row[skuIdx]).trim() : '';
           let existingSku = (itemDetails[itemKey] && itemDetails[itemKey].sku) ? itemDetails[itemKey].sku : '';
-          let sku = existingSku || excelSku;
+          let sku = excelSku || existingSku; // your Excel/Sheet SKU wins; only keep the old one if the cell is empty
           
           let brand = brandIdx !== -1 && row[brandIdx] ? String(row[brandIdx]).trim() : '';
           let gender = genderIdx !== -1 && row[genderIdx] ? String(row[genderIdx]).trim() : 'Unisex';

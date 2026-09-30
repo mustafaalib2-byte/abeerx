@@ -2,28 +2,96 @@
 const path = require('path');
 const https = require('https');
 
-const dbUrl = "https://abeerx-final-default-rtdb.firebaseio.com/abeerx.json";
 const R2_BASE = "https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/products";
-// Local folder used only to check WHICH suffixed images (_2, _3) actually exist,
-// so we don't add broken image URLs for products that only have one photo.
 const LOCAL_IMAGE_DIR = "C:\\Users\\user\\Desktop\\Perfume_Images";
-const MAX_IMAGES_PER_PRODUCT = 3;
+const MAX_IMAGES_PER_PRODUCT = 5;
 
-function buildImageUrls(fileName) {
-    // fileName already ends in .png, e.g. "212_vip_men_edt_100_ml_8411061723760.png"
-    const base = fileName.replace(/\.png$/i, '');
-    const urls = [`${R2_BASE}/${fileName}`]; // primary image, always included
+// ---------------------------------------------------------------------------
+// IMAGES: only ever link a photo that REALLY exists on Cloudflare R2.
+// A guessed filename that doesn't exist shows as a broken image on the site AND
+// breaks the shop's "products with photos first" sorting — so every candidate is
+// checked on R2 before it goes into the catalog. Products with no real photo get
+// images: [] (exactly how the site expects "no photo").
+// ---------------------------------------------------------------------------
+const IMG_EXT = /\.(png|jpe?g|webp)$/i;
+
+function buildLocalIndex() {
+    let files = [];
+    try {
+        files = fs.readdirSync(LOCAL_IMAGE_DIR).filter(f => IMG_EXT.test(f));
+    } catch (e) {
+        console.log(`WARNING: could not read ${LOCAL_IMAGE_DIR} (${e.message}) — will only check exact filenames on R2.`);
+    }
+    const byBarcode = new Map(); // "8411061865583" -> [files]
+    const byName = new Map();    // "212_men_sexy_edt_100_ml" -> [files]  (name + any barcode)
+    for (const f of files) {
+        const lower = f.toLowerCase();
+        const m = lower.match(/^(.+)_(\d{8,14})(?:_(\d{1,2}))?\.(png|jpe?g|webp)$/);
+        if (!m) continue;
+        const [, namePart, barcode] = m;
+        if (!byBarcode.has(barcode)) byBarcode.set(barcode, []);
+        byBarcode.get(barcode).push(f);
+        if (!byName.has(namePart)) byName.set(namePart, []);
+        byName.get(namePart).push(f);
+    }
+    return { files: new Set(files), byBarcode, byName };
+}
+
+// "x_123.png" -> 1, "x_123_2.png" -> 2  (primary photo sorts first)
+function imageOrder(file) {
+    const m = file.toLowerCase().match(/_(\d{1,2})\.(png|jpe?g|webp)$/);
+    return m ? parseInt(m[1], 10) : 1;
+}
+
+function candidateFiles(safeName, sku, index) {
+    const found = new Set();
+    const skuLower = String(sku).toLowerCase();
+    const exactBase = `${safeName}_${skuLower}`;
+    // 1) exact names the image downloader writes: name_sku.png, name_sku_2.png ...
+    found.add(`${exactBase}.png`);
     for (let n = 2; n <= MAX_IMAGES_PER_PRODUCT; n++) {
-        const suffixedFile = `${base}_${n}.png`;
-        try {
-            if (fs.existsSync(path.join(LOCAL_IMAGE_DIR, suffixedFile))) {
-                urls.push(`${R2_BASE}/${suffixedFile}`);
-            }
-        } catch (e) {
-            // LOCAL_IMAGE_DIR not reachable from this machine — just skip extra-image detection
+        if (index.files.has(`${exactBase}_${n}.png`)) found.add(`${exactBase}_${n}.png`);
+    }
+    // 2) any local photo carrying this barcode, whatever the name part says
+    if (/^\d{8,14}$/.test(skuLower)) {
+        (index.byBarcode.get(skuLower) || []).forEach(f => found.add(f));
+    }
+    // 3) product has a made-up SKU (ABX-1003, SKU-17...) — find photos saved under the
+    //    same product name with a real barcode instead
+    if (!/^\d{8,14}$/.test(skuLower)) {
+        (index.byName.get(safeName) || []).forEach(f => found.add(f));
+    }
+    return [...found];
+}
+
+const headAgent = new https.Agent({ keepAlive: true, maxSockets: 25 });
+function headStatus(url) {
+    return new Promise((resolve) => {
+        const req = https.request(url, { method: 'HEAD', agent: headAgent, timeout: 15000 }, (res) => {
+            res.resume();
+            resolve(res.statusCode);
+        });
+        req.on('timeout', () => { req.destroy(); resolve(0); });
+        req.on('error', () => resolve(0));
+        req.end();
+    });
+}
+
+async function checkAllOnR2(fileNames) {
+    const unique = [...new Set(fileNames)];
+    const status = new Map();
+    let next = 0, done = 0, errors = 0;
+    async function worker() {
+        while (next < unique.length) {
+            const f = unique[next++];
+            const s = await headStatus(`${R2_BASE}/${encodeURIComponent(f)}`);
+            if (s === 0) errors++;
+            status.set(f, s);
+            if (++done % 1000 === 0) console.log(`  checked ${done} / ${unique.length} image links on R2...`);
         }
     }
-    return urls;
+    await Promise.all(Array.from({ length: 25 }, worker));
+    return { status, errors, total: unique.length };
 }
 
 // Firebase security rules deny reading the whole /abeerx root ("Permission denied"),
@@ -59,7 +127,7 @@ Promise.all([
         console.log(`WARNING: could not read itemRates (${e.message}) — using each item's own price instead.`);
         return {};
     }),
-]).then(([itemDetailsRaw, itemRatesRaw]) => {
+]).then(async ([itemDetailsRaw, itemRatesRaw]) => {
     const itemDetails = itemDetailsRaw || {};
     const itemRates = itemRatesRaw || {};
 
@@ -68,6 +136,10 @@ Promise.all([
         process.exit(1);
     }
     console.log(`Fetched ${Object.keys(itemDetails).length} items from Firebase.`);
+
+    const localIndex = buildLocalIndex();
+    console.log(`Found ${localIndex.files.size} photos in ${LOCAL_IMAGE_DIR}.`);
+    const allCandidates = [];
 
     // We will build the exact Product[] array Next.js uses
     const products = [];
@@ -105,10 +177,9 @@ Promise.all([
             discountPercentage = 20; 
         }
         
-        const safe_product_name = key.replace(/[^a-zA-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-        const fileName = `${safe_product_name}_${sku}.png`.toLowerCase();
-
-        const imageUrls = buildImageUrls(fileName);
+        const safe_product_name = key.replace(/[^a-zA-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "").toLowerCase();
+        const imageCandidates = candidateFiles(safe_product_name, sku, localIndex);
+        allCandidates.push(...imageCandidates);
         const slug = key.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         
         // Tester flag: prefer the explicit "Tester" column from the master sheet, but also
@@ -133,7 +204,8 @@ Promise.all([
             currency: 'KWD',
             totalStock: 99, 
             isAvailable: true,
-            images: imageUrls,
+            images: [],                      // filled in below, only with photos confirmed on R2
+            _imageCandidates: imageCandidates,
             variants: [],
             fragranceFamily: item.scentFamily || 'General',
             topNotes: item.topNotes || '',
@@ -154,6 +226,25 @@ Promise.all([
         });
     }
     
+    // Confirm every candidate photo actually exists on Cloudflare R2
+    console.log("Checking which photos really exist on Cloudflare (takes a minute or two)...");
+    const r2 = await checkAllOnR2(allCandidates);
+    if (r2.total > 0 && r2.errors / r2.total > 0.3) {
+        console.log(`ERROR: ${r2.errors} of ${r2.total} photo checks failed to connect — looks like a network problem.`);
+        console.log("catalog.json was NOT changed. Try again in a few minutes.");
+        process.exit(1);
+    }
+    for (const p of products) {
+        p.images = p._imageCandidates
+            .filter(f => r2.status.get(f) === 200)
+            .sort((a, b) => imageOrder(a) - imageOrder(b) || a.localeCompare(b))
+            .slice(0, MAX_IMAGES_PER_PRODUCT)
+            .map(f => `${R2_BASE}/${encodeURIComponent(f)}`);
+        delete p._imageCandidates;
+    }
+    const rowsWithPhoto = products.filter(p => p.images.length > 0).length;
+    console.log(`Photos confirmed on Cloudflare for ${rowsWithPhoto} of ${products.length} items.`);
+
     // Group variants
     const grouped = new Map();
     products.forEach((p) => {
@@ -190,6 +281,15 @@ Promise.all([
             existing.variants.push(variantEntry);
             existing.totalStock += p.totalStock;
             if (p.isTester) existing.testerAvailable = 'Yes';
+            // Combine photos from every row in the group (a 100ml + 200ml + tester can each
+            // have their own) — regular bottle photos first, then tester photos.
+            if (p.images.length > 0) {
+                const regularFirst = (!p.isTester && existing._imagesFromTester)
+                    ? [...p.images, ...existing.images]
+                    : [...existing.images, ...p.images];
+                existing.images = [...new Set(regularFirst)].slice(0, MAX_IMAGES_PER_PRODUCT);
+                if (!p.isTester) existing._imagesFromTester = false;
+            }
             // Prefer a non-tester row's own description/Arabic description as the product's
             // main copy, since the tester row's text (if any) is usually a duplicate.
             if (!p.isTester) {
@@ -218,11 +318,15 @@ Promise.all([
             p.slug = groupSlug;
             p.variants = [variantEntry];
             p.testerAvailable = p.isTester ? 'Yes' : '';
+            p._imagesFromTester = p.isTester && p.images.length > 0;
             grouped.set(groupSlug, p);
         }
     });
 
     const finalArray = Array.from(grouped.values());
+    finalArray.forEach(p => { delete p._imagesFromTester; });
+    const withPhoto = finalArray.filter(p => p.images.length > 0).length;
+    console.log(`Products with at least one photo: ${withPhoto} of ${finalArray.length}.`);
     if (finalArray.length === 0) {
         console.log("ERROR: built 0 products — catalog.json was NOT overwritten.");
         process.exit(1);
