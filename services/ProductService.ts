@@ -107,6 +107,10 @@ export const ProductService = {
         } else if (!(Number(p.price) > 0)) {
           continue;
         }
+        // The shop only lists what can be bought today: a real photo, a price above zero (checked
+        // above) and stock on the shelf.
+        const hasPhoto = Array.isArray(p.images) && p.images.length > 0;
+        if (!hasPhoto || !(Number(p.totalStock) > 0)) continue;
         priced.push(p);
       }
 
