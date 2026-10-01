@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { ProductService } from '@/services/ProductService';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.abeerx.com';
-const PLACEHOLDER_IMAGE = `${SITE_URL}/placeholder.jpg`;
 
 function escapeXml(unsafe: string) {
   return unsafe.replace(/[<>&'"]/g, (c) => {
@@ -40,28 +39,52 @@ export async function GET() {
   try {
     const products = await ProductService.getAllProducts();
 
-    const itemsXml = products
-      // Google rejects items with no usable image anyway, so skip products
-      // that have neither a real image nor an id/name instead of emitting
-      // a broken "https://...undefined" link.
-      .filter(product => !!product.sku && !!product.name)
-      .map(product => {
-        const isAvailable = product.isAvailable ? 'in_stock' : 'out_of_stock';
-        const imageLink = getImageLink(product) || PLACEHOLDER_IMAGE;
-        const title = sanitizeText(product.name);
+    // Only what can actually be bought today: a real photo, a selling price above zero and
+    // stock on the shelf. One feed item per in-stock size/tester so every price is correct.
+    type FeedItem = { id: string; groupId: string; title: string; price: number; product: any };
+    const items: FeedItem[] = [];
+    for (const product of products as any[]) {
+      if (!product.sku || !product.name || !getImageLink(product)) continue;
+      const variants: any[] = Array.isArray(product.variants) ? product.variants : [];
+      if (variants.length > 0) {
+        variants.forEach((v, i) => {
+          const price = Number(v.price);
+          if (!(price > 0) || !(Number(v.stock) > 0)) return;
+          const label = [v.size, v.isTester ? 'Tester' : ''].filter(Boolean).join(' ');
+          items.push({
+            id: String(v.sku || v.key || `${product.sku}-${i}`),
+            groupId: String(product.sku),
+            title: label ? `${product.name} - ${label}` : product.name,
+            price,
+            product,
+          });
+        });
+      } else if (Number(product.price) > 0 && Number(product.totalStock) > 0) {
+        items.push({ id: String(product.sku), groupId: String(product.sku), title: product.name, price: Number(product.price), product });
+      }
+    }
+
+    const seen = new Set<string>();
+    const itemsXml = items
+      .filter(it => (seen.has(it.id) ? false : (seen.add(it.id), true)))
+      .map(it => {
+        const product = it.product;
+        const imageLink = getImageLink(product) as string;
+        const title = sanitizeText(it.title);
         const description = sanitizeText(product.description || product.shortDescription) || title;
 
         return `
       <item>
-        <g:id>${escapeXml(product.sku)}</g:id>
+        <g:id>${escapeXml(it.id)}</g:id>
+        <g:item_group_id>${escapeXml(it.groupId)}</g:item_group_id>
         <g:title>${escapeXml(title)}</g:title>
         <g:description>${escapeXml(description)}</g:description>
         <g:link>${SITE_URL}/en/product/${product.slug}</g:link>
         <g:image_link>${escapeXml(imageLink)}</g:image_link>
         <g:condition>new</g:condition>
-        <g:availability>${isAvailable}</g:availability>
-        <g:price>${product.price} KWD</g:price>
-        <g:brand>${escapeXml(product.brand)}</g:brand>
+        <g:availability>in_stock</g:availability>
+        <g:price>${it.price.toFixed(3)} KWD</g:price>
+        <g:brand>${escapeXml(sanitizeText(product.brand))}</g:brand>
         <g:google_product_category>Health &amp; Beauty &gt; Personal Care &gt; Cosmetics &gt; Perfume &amp; Cologne</g:google_product_category>
       </item>
       `;
@@ -81,7 +104,7 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 's-maxage=86400, stale-while-revalidate',
+        'Cache-Control': 's-maxage=3600, stale-while-revalidate',
       }
     });
 
