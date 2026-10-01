@@ -1690,6 +1690,7 @@
           <input type="file" id="excel-uploader" style="display:none;" accept=".xlsx, .xls, .csv" onchange="importItemsExcel(event)">
         </label>
         <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="triggerWebsiteUpdate(0)">🌐 Update website now</button>
+        <button class="btn btn-outline" style="width:100%; margin-top:10px; border-color:#dc2626; color:#dc2626;" onclick="deleteAllCloudflarePhotos()">🗑️ Delete ALL product photos from Cloudflare</button>
 <div style="margin-top:20px; padding-top:20px; border-top:1px dashed var(--border);">
 <div style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">Or Auto-Sync from Google Sheets</div>
 <div style="font-size:0.8rem; color:var(--muted); margin-bottom:10px;">Paste your Published CSV Link here (File -> Share -> Publish to web -> CSV):</div>
@@ -3065,6 +3066,30 @@ function triggerWebsiteUpdate(delayMs) {
             else toast('⚠️ Website update failed: ' + (j.error || ('HTTP ' + res.status)));
         } catch (e) { toast('⚠️ Website update failed: ' + e.message); }
     }, typeof delayMs === 'number' ? delayMs : 3000);
+}
+
+// Deletes EVERY product photo in Cloudflare (products/ folder). catalog.json is not touched.
+// Used to wipe old photos before re-uploading a fresh, verified set.
+async function deleteAllCloudflarePhotos() {
+    if (!confirm('This will permanently DELETE ALL product photos from Cloudflare.\n\nProducts will show no photos until you upload new ones.\n\nContinue?')) return;
+    const typed = prompt('To confirm, type exactly:  DELETE ALL PHOTOS');
+    if (typed !== 'DELETE ALL PHOTOS') { toast('Cancelled - nothing was deleted.'); return; }
+    let total = 0;
+    try {
+        for (let round = 0; round < 100; round++) {
+            toast('Deleting photos... ' + total + ' removed so far');
+            const res = await fetch('https://abeerx.vercel.app/api/r2/delete-all', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+                body: JSON.stringify({ confirm: 'DELETE ALL PHOTOS' })
+            });
+            const j = await res.json().catch(() => ({}));
+            if (!res.ok || !j.success) { toast('Delete failed: ' + (j.error || ('HTTP ' + res.status)) + ' (' + total + ' removed before the error)'); return; }
+            total += j.deleted || 0;
+            if (j.done) break;
+        }
+        toast('Done: ' + total + ' photos deleted from Cloudflare. Upload your new photos, then click "Update website now".');
+    } catch (e) { toast('Delete failed: ' + e.message + ' (' + total + ' removed before the error)'); }
 }
 localStorage.setItem('shop_is_admin', 'false'); 
 
