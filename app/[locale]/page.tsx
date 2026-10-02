@@ -83,7 +83,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             { name: 'Chypre Fruity', label: 'Fruity' },
             { name: 'Amber Oriental', label: 'Oriental' }
           ].map((note) => (
-            <Link href={`/${locale}/shop?family=${encodeURIComponent(note.name)}`} key={note.name} className="group cursor-pointer flex flex-col items-center">
+            <Link href={`/${locale}/shop?note=${note.label.toLowerCase()}`} key={note.name} className="group cursor-pointer flex flex-col items-center">
               <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-secondary relative overflow-hidden mb-4 border-4 border-transparent group-hover:border-ring transition-colors shadow-lg">
                 <Image 
                   src={`/images/notes/${note.label.toLowerCase()}.jpg`}

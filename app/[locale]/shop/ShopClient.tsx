@@ -15,12 +15,27 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Product } from "@/types/product";
 
+// "Shop By Notes" tiles on the home page link here with ?note=<key>. A product matches when its
+// scent family contains any of the words (families are combos like "Woody Aromatic").
+const NOTE_FAMILIES: Record<string, { words: string[]; en: string; ar: string }> = {
+  aquatic: { words: ['aquatic', 'fresh', 'marine'], en: 'Aquatic', ar: '\u0645\u0627\u0626\u064a' },
+  citrus: { words: ['citrus'], en: 'Citrus', ar: '\u062d\u0645\u0636\u064a' },
+  aromatic: { words: ['aromatic', 'fougere', 'foug\u00e8re'], en: 'Aromatic', ar: '\u0639\u0637\u0631\u064a' },
+  woody: { words: ['woody'], en: 'Woody', ar: '\u062e\u0634\u0628\u064a' },
+  floral: { words: ['floral'], en: 'Floral', ar: '\u0632\u0647\u0631\u064a' },
+  spicy: { words: ['spicy'], en: 'Spicy', ar: '\u062d\u0627\u0631' },
+  fruity: { words: ['fruity'], en: 'Fruity', ar: '\u0641\u0627\u0643\u0647\u064a' },
+  oriental: { words: ['oriental', 'amber'], en: 'Oriental', ar: '\u0634\u0631\u0642\u064a' },
+};
+
 function ShopContent({ products, locale }: { products: Product[], locale: string }) {
   const searchParams = useSearchParams();
   const urlBrand = searchParams.get("brand");
   const urlFamily = searchParams.get("family");
   const urlQuery = searchParams.get("q");
   const urlGender = searchParams.get("gender");
+  const urlNote = (searchParams.get("note") || "").toLowerCase();
+  const noteDef = NOTE_FAMILIES[urlNote];
   const isArabic = locale === 'ar';
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
@@ -34,7 +49,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   // Reset visible count when filters or search changes
   useEffect(() => {
     setVisibleCount(15);
-  }, [urlBrand, urlFamily, urlQuery, urlGender, sortBy]);
+  }, [urlBrand, urlFamily, urlQuery, urlGender, urlNote, sortBy]);
 
   useEffect(() => {
     const handleOpenFilters = () => setIsMobileFiltersOpen(true);
@@ -52,9 +67,16 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
   }, [searchParams]);
 
   const baseProducts = useMemo(() => {
-    if (!urlBrand) return products;
-    return products.filter(p => p.brand?.toLowerCase() === urlBrand.toLowerCase());
-  }, [products, urlBrand]);
+    let list = products;
+    if (urlBrand) list = list.filter(p => p.brand?.toLowerCase() === urlBrand.toLowerCase());
+    if (noteDef) {
+      list = list.filter(p => {
+        const family = String(p.fragranceFamily || '').toLowerCase();
+        return noteDef.words.some(w => family.includes(w));
+      });
+    }
+    return list;
+  }, [products, urlBrand, noteDef]);
 
   const [priceMin, setPriceMin] = useState<number>(0);
   const [priceMax, setPriceMax] = useState<number>(1000);
@@ -412,7 +434,7 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
         <div className="flex justify-between items-end mb-8 border-b border-border pb-4">
             <div>
               <h1 className="text-3xl font-serif text-foreground capitalize">
-                {urlBrand ? urlBrand : (isArabic ? "جميع العطور" : "All Fragrances")}
+                {urlBrand ? urlBrand : noteDef ? (isArabic ? `عطور ${noteDef.ar}` : `${noteDef.en} Fragrances`) : (isArabic ? "جميع العطور" : "All Fragrances")}
               </h1>
               <p className="text-sm text-muted-foreground mt-1">{filteredProducts.length} {isArabic ? "نتيجة" : "Results"}</p>
             </div>
