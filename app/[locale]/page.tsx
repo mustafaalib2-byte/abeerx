@@ -113,10 +113,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <div className="w-16 h-[1px] bg-ring mx-auto" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8">
             {featuredProducts.map(product => (
-              <div key={product.id} className="group flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
-                <Link href={`/${locale}/product/${product.slug}`} className="relative block aspect-square bg-secondary mb-4 overflow-hidden">
+              <div key={product.id} className="group flex flex-col bg-card p-2 sm:p-4 hover:shadow-lg transition-shadow border border-border">
+                <Link href={`/${locale}/product/${product.slug}`} className="relative block aspect-square bg-secondary mb-2 sm:mb-4 overflow-hidden">
                   <Image 
                   src={product.images[0] || '/placeholder.jpg'} 
                   alt={product.name} 
@@ -132,7 +132,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 </Link>
                 <div className="flex-grow flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{product.brand}</span>
-                  <Link href={`/${locale}/product/${product.slug}`} className="text-lg font-serif mb-2 group-hover:text-ring transition-colors line-clamp-1 text-foreground">
+                  <Link href={`/${locale}/product/${product.slug}`} className="text-sm sm:text-lg font-serif mb-1 sm:mb-2 group-hover:text-ring transition-colors line-clamp-2 sm:line-clamp-1 text-foreground">
                     {product.name}
                   </Link>
                   <div className="mt-auto flex items-center justify-between text-foreground">

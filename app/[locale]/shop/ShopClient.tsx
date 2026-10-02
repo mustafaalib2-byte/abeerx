@@ -437,15 +437,15 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
             No products match your selected filters.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
             {filteredProducts.slice(0, visibleCount).map(product => (
-              <Link key={product.id} href={`/${locale}/product/${product.slug}`} className="group flex flex-col bg-card p-4 hover:shadow-lg transition-shadow border border-border">
-                <div className="relative aspect-square bg-secondary mb-4 overflow-hidden border border-border/50">
+              <Link key={product.id} href={`/${locale}/product/${product.slug}`} className="group flex flex-col bg-card p-2 sm:p-4 hover:shadow-lg transition-shadow border border-border">
+                <div className="relative aspect-square bg-secondary mb-2 sm:mb-4 overflow-hidden border border-border/50">
                   <Image 
                     src={product.images[0] || '/placeholder.jpg'} 
                     alt={product.name} 
                     fill 
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500" 
                   />
                   {product.discountPercentage ? (
@@ -455,19 +455,19 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                   ) : null}
                 </div>
                 <div className="flex-grow flex flex-col">
-                  <span className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{product.brand}</span>
-                  <span className="text-lg font-serif mb-2 group-hover:text-ring transition-colors line-clamp-1 text-foreground">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider sm:tracking-widest mb-1 line-clamp-1">{product.brand}</span>
+                  <span className="text-sm sm:text-lg font-serif mb-1 sm:mb-2 group-hover:text-ring transition-colors line-clamp-2 sm:line-clamp-1 text-foreground">
                     {product.name}
                   </span>
                   <div className="mt-auto flex items-center justify-between text-foreground">
                     <div>
                       {product.salePrice ? (
                         <>
-                          <span className="font-medium text-red-600 mr-2">{product.salePrice.toFixed(2)} {product.currency}</span>
+                          <span className="text-sm sm:text-base font-medium text-red-600 mr-2">{product.salePrice.toFixed(2)} {product.currency}</span>
                           <span className="text-sm text-muted-foreground line-through">{product.price.toFixed(2)}</span>
                         </>
                       ) : (
-                        <span className="font-medium">{product.price.toFixed(2)} {product.currency}</span>
+                        <span className="text-sm sm:text-base font-medium">{product.price.toFixed(2)} {product.currency}</span>
                       )}
                     </div>
                   </div>
