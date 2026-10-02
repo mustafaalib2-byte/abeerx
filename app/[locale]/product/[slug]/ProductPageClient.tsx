@@ -75,6 +75,61 @@ export default function ProductPageClient({ product, locale }: { product: Produc
             )}
           </div>
 
+          {/* Variants */}
+          {product.variants && product.variants.length > 0 && (
+            <div className="mb-8">
+              <span className="block text-sm font-medium tracking-wider uppercase mb-3 text-foreground">
+                {isArabic ? "الحجم" : "Size"}
+              </span>
+              <div className="flex flex-wrap gap-4">
+                {product.variants.map((variant, idx) => (
+                  <button
+                    key={variant.sku}
+                    onClick={() => setSelectedVariantIndex(idx)}
+                    disabled={!variant.isAvailable}
+                    className={`px-6 py-2 text-sm tracking-wider uppercase transition-colors border ${
+                      selectedVariantIndex === idx
+                        ? 'border-foreground bg-foreground text-background'
+                        : 'border-border text-foreground hover:border-foreground'
+                    } ${!variant.isAvailable ? 'opacity-40 cursor-not-allowed' : ''}`}
+                  >
+                    {variant.size}
+                    {variant.isTester ? ` (${isArabic ? "تيستر" : "Tester"})` : ''}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quantity & Add to Cart */}
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center border border-border">
+              <button 
+                className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              >-</button>
+              <span className="px-4 py-3 min-w-[3rem] text-center text-foreground">{quantity}</span>
+              <button 
+                className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
+                onClick={() => setQuantity(quantity + 1)}
+              >+</button>
+            </div>
+            
+            <button 
+              onClick={handleAddToCart}
+              disabled={!isAvailable}
+              className={`flex-grow py-4 px-8 text-sm tracking-widest uppercase font-bold transition-colors ${
+                isAvailable 
+                  ? 'bg-ring text-white hover:bg-black' 
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
+              }`}
+            >
+              {!isAvailable 
+                ? (isArabic ? "نفدت الكمية" : "Out of Stock")
+                : (isArabic ? "أضف للسلة" : "Add to Cart")}
+            </button>
+          </div>
+
           <p className="text-muted-foreground mb-6 leading-relaxed">
             {(isArabic && product.descriptionAr) ? product.descriptionAr : product.description}
           </p>
@@ -117,61 +172,6 @@ export default function ProductPageClient({ product, locale }: { product: Produc
                 <span className="text-sm font-medium">{product.origin}</span>
               </div>
             )}
-          </div>
-
-          {/* Variants */}
-          {product.variants && product.variants.length > 0 && (
-            <div className="mb-8">
-              <span className="block text-sm font-medium tracking-wider uppercase mb-3 text-foreground">
-                {isArabic ? "الحجم" : "Size"}
-              </span>
-              <div className="flex flex-wrap gap-4">
-                {product.variants.map((variant, idx) => (
-                  <button
-                    key={variant.sku}
-                    onClick={() => setSelectedVariantIndex(idx)}
-                    disabled={!variant.isAvailable}
-                    className={`px-6 py-2 text-sm tracking-wider uppercase transition-colors border ${
-                      selectedVariantIndex === idx
-                        ? 'border-foreground bg-foreground text-background'
-                        : 'border-border text-foreground hover:border-foreground'
-                    } ${!variant.isAvailable ? 'opacity-40 cursor-not-allowed' : ''}`}
-                  >
-                    {variant.size}
-                    {variant.isTester ? ` (${isArabic ? "تيستر" : "Tester"})` : ''}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Quantity & Add to Cart */}
-          <div className="flex items-center gap-4 mb-12">
-            <div className="flex items-center border border-border">
-              <button 
-                className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >-</button>
-              <span className="px-4 py-3 min-w-[3rem] text-center text-foreground">{quantity}</span>
-              <button 
-                className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
-                onClick={() => setQuantity(quantity + 1)}
-              >+</button>
-            </div>
-            
-            <button 
-              onClick={handleAddToCart}
-              disabled={!isAvailable}
-              className={`flex-grow py-4 px-8 text-sm tracking-widest uppercase font-bold transition-colors ${
-                isAvailable 
-                  ? 'bg-ring text-white hover:bg-black' 
-                  : 'bg-muted text-muted-foreground cursor-not-allowed'
-              }`}
-            >
-              {!isAvailable 
-                ? (isArabic ? "نفدت الكمية" : "Out of Stock")
-                : (isArabic ? "أضف للسلة" : "Add to Cart")}
-            </button>
           </div>
 
           {(product.topNotes || product.heartNotes || product.baseNotes) && (
