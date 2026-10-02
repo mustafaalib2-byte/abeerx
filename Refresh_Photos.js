@@ -2,15 +2,18 @@
 //
 //  1. Reads verification_log.csv -> works out exactly which photo files are AI-verified.
 //  2. MOVES every other file out of Desktop\Perfume_Images into Desktop\Perfume_Images_Unverified (nothing deleted locally).
-//  3. Uploads ALL verified photos to Cloudflare, overwriting any old photo with the same name.
-//  4. Deletes from Cloudflare every photo that is NOT in the verified set (only if all uploads succeeded).
-//  5. Tells the website to rebuild its catalog.
+//  3. Makes compressed copies (800 x 800 max, WebP) in Desktop\\Perfume_Images_800 - originals are never changed.
+//  4. Uploads the compressed copies to Cloudflare (overwriting same-named files).
+//  5. Deletes from Cloudflare every photo that is NOT one of those compressed copies - this also removes the
+//     old full-size .png files - but only if every upload succeeded.
+//  6. Tells the website to rebuild its catalog.
 //
 // Add "--dry" to only show the numbers without changing anything.
 
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { spawnSync } = require('child_process');
 const { S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } = require('@aws-sdk/client-s3');
 
 (function loadEnvLocal() {
@@ -31,6 +34,7 @@ const DRY = process.argv.includes('--dry');
 const DESKTOP = path.join(os.homedir(), 'Desktop');
 const IMAGE_DIR = path.join(DESKTOP, 'Perfume_Images');
 const OLD_DIR = path.join(DESKTOP, 'Perfume_Images_Unverified');
+const SMALL_DIR = path.join(DESKTOP, 'Perfume_Images_800');
 const LOG = path.join(DESKTOP, 'verification_log.csv');
 
 const ACCOUNT_ID = '2604e12a7f799efe440edaaba8db3d20';
@@ -99,28 +103,41 @@ async function main() {
   for (const f of bad) fs.renameSync(path.join(IMAGE_DIR, f), path.join(OLD_DIR, f));
   console.log(`\nMoved ${bad.length} unverified files to Perfume_Images_Unverified.`);
 
-  // 2) upload every verified photo (overwrites old ones with the same name)
+  // 2) compressed copies (originals untouched)
+  let py = null;
+  for (const cmd of ['python', 'py', 'python3']) {
+    if (spawnSync(cmd, ['--version']).status === 0) { py = cmd; break; }
+  }
+  if (!py) throw new Error('Python was not found, so the photos could not be compressed.');
+  console.log('\nCompressing photos to 800 x 800 WebP (originals are kept)...');
+  const r = spawnSync(py, [path.join(__dirname, 'Make_Compressed_Photos.py')], { stdio: 'inherit' });
+  if (r.status !== 0) throw new Error('Compression failed - nothing was uploaded or deleted.');
+  const small = good.map(f => f.replace(/\.[^.]+$/, '').toLowerCase() + '.webp');
+  const notMade = small.filter(f => !fs.existsSync(path.join(SMALL_DIR, f)));
+  if (notMade.length) throw new Error(`${notMade.length} compressed photos are missing (e.g. ${notMade[0]}) - nothing was uploaded or deleted.`);
+
+  // 3) upload every compressed photo (overwrites same-named files)
   let i = 0, uploaded = 0, failed = 0;
   async function worker() {
-    while (i < good.length) {
-      const f = good[i++];
+    while (i < small.length) {
+      const f = small[i++];
       let ok = false;
       for (let attempt = 0; attempt < 3 && !ok; attempt++) {
         try {
-          await s3.send(new PutObjectCommand({ Bucket: BUCKET, Key: `products/${f}`, Body: fs.readFileSync(path.join(IMAGE_DIR, f)), ContentType: 'image/png' }));
+          await s3.send(new PutObjectCommand({ Bucket: BUCKET, Key: `products/${f}`, Body: fs.readFileSync(path.join(SMALL_DIR, f)), ContentType: 'image/webp', CacheControl: 'public, max-age=86400' }));
           ok = true;
         } catch (e) { if (attempt === 2) console.log(`Failed ${f}: ${e.message}`); }
       }
       ok ? uploaded++ : failed++;
-      if ((uploaded + failed) % 200 === 0) console.log(`  ...${uploaded + failed}/${good.length}`);
+      if ((uploaded + failed) % 200 === 0) console.log(`  ...${uploaded + failed}/${small.length}`);
     }
   }
   await Promise.all(Array.from({ length: 10 }, worker));
   console.log(`Uploaded ${uploaded}, failed ${failed}.`);
   if (failed > 0) throw new Error('Some uploads failed, so old photos on Cloudflare were NOT deleted. Run this again.');
 
-  // 3) delete everything on Cloudflare that is not a verified photo
-  const goodSet = new Set(good.map(f => f.toLowerCase()));
+  // 4) delete everything on Cloudflare that is not a compressed verified photo (incl. old full-size .png)
+  const goodSet = new Set(small);
   const toDelete = []; let token;
   do {
     const out = await s3.send(new ListObjectsV2Command({ Bucket: BUCKET, Prefix: 'products/', ContinuationToken: token }));
@@ -135,7 +152,7 @@ async function main() {
   }
   console.log(`Deleted ${toDelete.length} old/unverified photos from Cloudflare.`);
 
-  // 4) rebuild the website catalog
+  // 5) rebuild the website catalog
   try {
     const res = await fetch('https://abeerx.vercel.app/api/catalog/rebuild', { method: 'POST', headers: { 'x-admin-key': ADMIN_KEY } });
     const j = await res.json().catch(() => ({}));
