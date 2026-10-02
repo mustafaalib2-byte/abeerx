@@ -23,27 +23,27 @@ export default function ProductPageClient({ product, locale }: { product: Produc
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div className="container mx-auto px-4 py-3 md:py-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-12">
         
         {/* Left: Image Gallery */}
-        <div className="flex flex-col space-y-4">
-          <div className="aspect-square bg-secondary w-full relative border border-border">
+        <div className="flex flex-col space-y-2 md:space-y-4">
+          <div className="h-[30vh] min-h-[190px] md:h-auto md:aspect-square bg-secondary w-full relative border border-border">
             <Image 
               src={product.images[selectedImageIndex] || product.images[0] || '/placeholder.jpg'} 
               alt={product.name} 
               fill 
               priority 
-              className="object-cover" 
+              className="object-contain md:object-cover" 
             />
           </div>
           {product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-4">
+            <div className="flex gap-2 overflow-x-auto md:grid md:grid-cols-4 md:gap-4 md:overflow-visible">
               {product.images.map((img, idx) => (
                 <div 
                   key={idx} 
                   onClick={() => setSelectedImageIndex(idx)}
-                  className={`aspect-square bg-secondary relative border cursor-pointer hover:opacity-80 transition-opacity ${
+                  className={`h-12 w-12 shrink-0 md:h-auto md:w-auto md:aspect-square bg-secondary relative border cursor-pointer hover:opacity-80 transition-opacity ${
                     selectedImageIndex === idx ? 'border-ring' : 'border-border'
                   }`}
                 >
@@ -56,12 +56,12 @@ export default function ProductPageClient({ product, locale }: { product: Produc
 
         {/* Right: Product Info */}
         <div className="flex flex-col">
-          <span className="text-sm tracking-widest uppercase text-muted-foreground mb-2">
+          <span className="text-xs md:text-sm tracking-widest uppercase text-muted-foreground mb-1 md:mb-2">
             {product.brand}
           </span>
-          <h1 className="text-4xl font-serif text-foreground mb-4">{product.name}</h1>
+          <h1 className="text-2xl md:text-4xl font-serif text-foreground mb-2 md:mb-4">{product.name}</h1>
           
-          <div className="text-2xl font-medium mb-6 flex items-center gap-4">
+          <div className="text-xl md:text-2xl font-medium mb-3 md:mb-6 flex items-center gap-4">
             {displaySalePrice ? (
               <>
                 <span className="text-red-600">{displaySalePrice.toFixed(2)} {product.currency}</span>
@@ -77,17 +77,17 @@ export default function ProductPageClient({ product, locale }: { product: Produc
 
           {/* Variants */}
           {product.variants && product.variants.length > 0 && (
-            <div className="mb-8">
-              <span className="block text-sm font-medium tracking-wider uppercase mb-3 text-foreground">
+            <div className="mb-4 md:mb-8">
+              <span className="block text-xs md:text-sm font-medium tracking-wider uppercase mb-2 md:mb-3 text-foreground">
                 {isArabic ? "الحجم" : "Size"}
               </span>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-2 md:gap-4">
                 {product.variants.map((variant, idx) => (
                   <button
                     key={variant.sku}
                     onClick={() => setSelectedVariantIndex(idx)}
                     disabled={!variant.isAvailable}
-                    className={`px-6 py-2 text-sm tracking-wider uppercase transition-colors border ${
+                    className={`px-4 md:px-6 py-2 text-xs md:text-sm tracking-wider uppercase transition-colors border ${
                       selectedVariantIndex === idx
                         ? 'border-foreground bg-foreground text-background'
                         : 'border-border text-foreground hover:border-foreground'
@@ -102,7 +102,7 @@ export default function ProductPageClient({ product, locale }: { product: Produc
           )}
 
           {/* Quantity & Add to Cart */}
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
             <div className="flex items-center border border-border">
               <button 
                 className="px-4 py-3 text-foreground hover:bg-secondary transition-colors"
@@ -118,7 +118,7 @@ export default function ProductPageClient({ product, locale }: { product: Produc
             <button 
               onClick={handleAddToCart}
               disabled={!isAvailable}
-              className={`flex-grow py-4 px-8 text-sm tracking-widest uppercase font-bold transition-colors ${
+              className={`flex-grow py-3 md:py-4 px-4 md:px-8 text-sm tracking-widest uppercase font-bold transition-colors ${
                 isAvailable 
                   ? 'bg-ring text-white hover:bg-black' 
                   : 'bg-muted text-muted-foreground cursor-not-allowed'
