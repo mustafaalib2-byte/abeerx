@@ -126,6 +126,16 @@ const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 const safeFileName = (s: string) =>
   s.replace(/[^a-zA-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "").toLowerCase();
 
+// POS names mark testers in many ways: TESTER, TST, TSTR, TEST, PROBADOR, DEMONSTRATION,
+// "(T)" or just a lone "T" at the end ("... 100 ML T").
+export function looksLikeTester(name: string): boolean {
+  return (
+    /\b(tester|testers|tstr|tst|testr|test|probador|demonstar?tion|demo)\b/i.test(name) ||
+    /\(\s*t\s*\)/i.test(name) ||
+    /\s+T\.?\s*$/.test(name)
+  );
+}
+
 export function rateValue(entry: unknown): number {
   if (entry === null || entry === undefined || entry === "") return 0;
   if (typeof entry === "object") return parseFloat((entry as any).rate) || 0;
@@ -159,7 +169,7 @@ export function buildCatalog(
       discountPercentage = 20;
     }
 
-    const isTester = !!item.tester || /\btester\b/i.test(key) || /\(\s*t\s*\)\s*$/i.test(key);
+    const isTester = !!item.tester || looksLikeTester(key);
 
     rows.push({
       key, sku, isTester, price, salePrice, discountPercentage,
@@ -199,10 +209,14 @@ export function buildCatalog(
   const grouped = new Map<string, any>();
   const now = new Date().toISOString();
   for (const r of rows) {
-    let baseName = r.key
-      .replace(/\s*[-()]*\s*tester\s*[-()]*\s*$/i, "")
-      .replace(/\s*\(\s*t\s*\)\s*$/i, "")
-      .trim();
+    let baseName = r.key;
+    if (r.isTester) {
+      baseName = baseName
+        .replace(/\s*[-(]*\s*\b(tester|testers|tstr|tst|testr|test)\b\s*[-)]*\s*$/i, "")
+        .replace(/\s*\(\s*t\s*\)\s*$/i, "")
+        .replace(/\s+T\.?\s*$/, "");
+    }
+    baseName = baseName.trim();
     let size = "100ml";
     const sizeMatch = baseName.match(/\s*[-()]*\s*(\d+)\s*(ml|oz)\s*[-()]*\s*$/i);
     if (sizeMatch) {

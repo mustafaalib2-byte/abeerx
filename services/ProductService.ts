@@ -53,6 +53,18 @@ function getPriority(p: any) {
     return 0;
 }
 
+// Some notes were stored as a Python-style list text, e.g. "['Mint', 'Lemon']".
+// Turn that into "Mint, Lemon" so filters and product pages show clean names.
+function cleanNotes(value: unknown): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  const text = String(value).trim().replace(/^\[/, "").replace(/\]$/, "");
+  return text
+    .split(",")
+    .map(part => part.trim().replace(/^['"\u2018\u2019\u201c\u201d]+|['"\u2018\u2019\u201c\u201d]+$/g, "").trim())
+    .filter(Boolean)
+    .join(", ");
+}
+
 export const ProductService = {
   async getAllProducts(): Promise<Product[]> {
     try {
@@ -62,6 +74,9 @@ export const ProductService = {
 
       const [liveStock, liveRates] = await Promise.all([this.getLiveStock(), this.getLiveRates()]);
       products.forEach((p: any) => {
+          p.topNotes = cleanNotes(p.topNotes);
+          p.heartNotes = cleanNotes(p.heartNotes);
+          p.baseNotes = cleanNotes(p.baseNotes);
           const variants = Array.isArray(p.variants) ? p.variants : [];
           if (variants.some((v: any) => v.key)) {
               let total = 0;

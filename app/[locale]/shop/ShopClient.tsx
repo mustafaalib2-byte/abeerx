@@ -456,6 +456,14 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
                 </div>
                 <div className="flex-grow flex flex-col">
                   <span className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider sm:tracking-widest mb-1 line-clamp-1">{product.brand}</span>
+                  {(() => {
+                    const vs = product.variants || [];
+                    const sizes = Array.from(new Set(vs.filter(v => !v.isTester).map(v => String(v.size).toUpperCase())));
+                    const hasTester = vs.some(v => v.isTester);
+                    if (sizes.length <= 1 && !hasTester) return null;
+                    const parts = [...sizes, ...(hasTester ? [isArabic ? "\u062a\u064a\u0633\u062a\u0631" : "TESTER"] : [])];
+                    return <span className="text-[10px] sm:text-xs text-ring tracking-wide mb-1 line-clamp-1">{parts.join(" \u00b7 ")}</span>;
+                  })()}
                   <span className="text-sm sm:text-lg font-serif mb-1 sm:mb-2 group-hover:text-ring transition-colors line-clamp-2 sm:line-clamp-1 text-foreground">
                     {product.name}
                   </span>
