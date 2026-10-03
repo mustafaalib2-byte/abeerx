@@ -8,6 +8,7 @@ import { ref, push, set } from "firebase/database";
 import { use } from "react";
 import { useDeliverySettings } from "@/features/delivery/DeliveryContext";
 import { deliveryFeeFor, formatAmount } from "@/lib/delivery";
+import { saveLastOrder } from "@/lib/orderTracking";
 
 export default function CheckoutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = use(params);
@@ -157,23 +158,41 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
         }))
       };
 
+      // Summary for the "Order confirmed" page (also used to report the sale to Google Ads / GA4 / Meta)
+      const summary = {
+        orderId, orderNum, date: posOrder.date,
+        paymentMethod: paymentMethod === 'Cash on Delivery' ? 'Cash on Delivery' : paymentMethod,
+        subtotal: cartTotal, discount: cartTotal - finalTotal, couponCode: appliedCoupon?.code,
+        deliveryFee, total: grandTotal, currency: 'KWD' as const,
+        customer: { name: formData.name, mobile: formData.mobile, email: formData.email, area: formData.area, address: posOrder.customer.address },
+        items: items.map(i => ({
+          sku: i.variant ? i.variant.sku : i.product.sku,
+          name: i.product.name,
+          brand: i.product.brand,
+          size: i.variant ? (i.variant.isTester ? `${i.variant.size} Tester` : i.variant.size) : undefined,
+          qty: i.quantity,
+          price: i.variant ? (i.variant.salePrice || i.variant.price) : (i.product.salePrice || i.product.price),
+          image: i.variant?.imageUrl || i.product.images?.[0],
+        })),
+      };
+
       if (paymentMethod === 'Cash on Delivery') {
-        // Direct to Firebase and show success
         await set(orderRef, posOrder);
+        saveLastOrder(summary);
         clearCart();
-        alert(`Order Placed Successfully! Your Order Number is #${orderNum}`);
-        window.location.href = `/${locale}/shop`;
+        window.location.href = `/${locale}/checkout/success?order=${encodeURIComponent(orderNum)}`;
       } else {
         // Here we would call our server-side MyFatoorah integration
         // const res = await fetch('/api/payment/create', { method: 'POST', body: JSON.stringify(posOrder) });
         // const { paymentUrl } = await res.json();
+        // saveLastOrder(summary);  // keep this before leaving for the payment page
         // window.location.href = paymentUrl;
-        
+
         // Mocking success for now
         await set(orderRef, posOrder);
+        saveLastOrder(summary);
         clearCart();
-        alert(`Redirecting to MyFatoorah (${paymentMethod})... (Mocked Success)`);
-        window.location.href = `/${locale}/shop`;
+        window.location.href = `/${locale}/checkout/success?order=${encodeURIComponent(orderNum)}`;
       }
     } catch (error) {
       console.error(error);

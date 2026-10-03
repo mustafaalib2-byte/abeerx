@@ -2,23 +2,28 @@ import Script from 'next/script';
 
 export function Analytics() {
   const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
+  // Google Ads account tag, e.g. AW-123456789 (Google Ads > Goals > Conversions > your purchase action)
+  const ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
   const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const TAG_ID = GA_TRACKING_ID || ADS_ID;
 
   return (
     <>
-      {/* Google Analytics (GA4) */}
-      {GA_TRACKING_ID && (
+      {/* Google tag (GA4 and/or Google Ads share one gtag.js) */}
+      {TAG_ID && (
         <>
           <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+            src={`https://www.googletagmanager.com/gtag/js?id=${TAG_ID}`}
             strategy="afterInteractive"
           />
           <Script id="google-analytics" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){window.dataLayer.push(arguments);}
+              window.gtag = gtag;
               gtag('js', new Date());
-              gtag('config', '${GA_TRACKING_ID}');
+              ${GA_TRACKING_ID ? `gtag('config', '${GA_TRACKING_ID}');` : ''}
+              ${ADS_ID ? `gtag('config', '${ADS_ID}', { allow_enhanced_conversions: true });` : ''}
             `}
           </Script>
         </>
