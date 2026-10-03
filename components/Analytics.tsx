@@ -1,7 +1,8 @@
 import Script from 'next/script';
 
 export function Analytics() {
-  const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
+  // Google tag for abeerx.com (GA4). Can be overridden with NEXT_PUBLIC_GA_ID in Vercel.
+  const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-S6ZZ4QN62F';
   // Google Ads account tag, e.g. AW-123456789 (Google Ads > Goals > Conversions > your purchase action)
   const ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
   const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
