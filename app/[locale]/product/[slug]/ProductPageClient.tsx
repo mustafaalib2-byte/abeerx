@@ -60,7 +60,7 @@ export default function ProductPageClient({ product, locale }: { product: Produc
           <span className="text-xs md:text-sm tracking-widest uppercase text-muted-foreground mb-1 md:mb-2">
             {product.brand}
           </span>
-          <h1 className="text-2xl md:text-4xl font-serif text-foreground mb-2 md:mb-4">{product.name}</h1>
+          <h1 className="text-2xl md:text-4xl font-serif text-foreground mb-2 md:mb-4 pe-[150px] md:pe-[170px]">{product.name}</h1>
           
           <div className="text-xl md:text-2xl font-medium mb-3 md:mb-6 flex items-center gap-4">
             {displaySalePrice ? (
