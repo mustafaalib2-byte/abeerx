@@ -6,11 +6,11 @@ import { createPortal } from "react-dom";
 import { artDataUrl, artKeyFor } from "./sprayArt";
 
 /* ------------------------------------------------------------------------------------------
-   "Spray & Smell" — played right on the product page (no new screen).
-   Tapping the button makes a luxury glass bottle appear on the main product photo. It sprays:
-   a soft, realistic mist drifts out of the nozzle to the right across the page, carrying the
-   perfume's own notes (rose, lemon, oud…) — Top notes first, then Heart, then Base.
-   The photo box on the product page carries data-spray-anchor so the bottle knows where to stand.
+   "Spray & Smell" — a small floating button on the product page.
+   Tapping it softly blurs the page, a clear glass bottle appears and sprays three times
+   (Top, Heart, Base). The mist carries the perfume's own notes out of the nozzle and they
+   settle in three rows at the bottom of the screen: Base notes at the very bottom, Heart notes
+   above them, Top notes on top — like the structure of the perfume itself.
 ------------------------------------------------------------------------------------------- */
 
 type ProductLike = {
@@ -24,22 +24,7 @@ type ProductLike = {
 };
 
 const GOLD = "#b8933a";
-
-// Liquid colour per scent family
-const LIQUIDS: [RegExp, string][] = [
-  [/floral|rose|jasmine|peony|powdery/i, "#e7a0b4"],
-  [/citrus|fresh|zest/i, "#f1d36a"],
-  [/aquatic|marine|ozonic|water/i, "#8cc6e6"],
-  [/fruity|gourmand|sweet|berry/i, "#e98a8a"],
-  [/spicy|spice|leather|tobacco/i, "#d0782e"],
-  [/aromatic|green|fougere|fougère|herbal/i, "#a9cf86"],
-  [/oriental|amber|vanilla|oud|incense/i, "#d99a2b"],
-  [/woody|wood|chypre|earthy|musk/i, "#c8873e"],
-];
-function liquidFor(text: string): string {
-  for (const [re, c] of LIQUIDS) if (re.test(text)) return c;
-  return "#e2b65a";
-}
+const CLEAR_LIQUID = "#efe7d2"; // almost colourless perfume
 
 function splitNotes(value?: string, max = 5): string[] {
   if (!value) return [];
@@ -80,21 +65,22 @@ function playSpraySound(volume = 0.1) {
   }
 }
 
-/* ---------------------------------- the bottle ---------------------------------- */
+/* ---------------------------------- the bottle (clear glass) ---------------------------------- */
 
 // viewBox 160 x 320. The nozzle opening sits at (NOZ_X, NOZ_Y) of that box.
 const VB_W = 160, VB_H = 320;
 const NOZ_X = 97 / VB_W;
 const NOZ_Y = 72 / VB_H;
 
-function Bottle({ liquid, pressed, className, style }: { liquid: string; pressed: boolean; className?: string; style?: CSSProperties }) {
+function Bottle({ pressed, style }: { pressed: boolean; style?: CSSProperties }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const id = (n: string) => `sb${n}${uid}`;
   const u = (n: string) => `url(#${id(n)})`;
+  const liquid = CLEAR_LIQUID;
   const BODY = "M30 118 H130 Q142 118 142 131 V281 Q142 300 123 300 H37 Q18 300 18 281 V131 Q18 118 30 118Z";
   const CAV = "M36 132 H124 Q129 132 129 138 V264 Q129 271 122 271 H38 Q31 271 31 264 V138 Q31 132 36 132Z";
   return (
-    <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className={className} style={{ overflow: "visible", ...style }} aria-hidden="true">
+    <svg viewBox={`0 0 ${VB_W} ${VB_H}`} style={{ overflow: "visible", display: "block", width: "100%", height: "100%", ...style }} aria-hidden="true">
       <defs>
         <filter id={id("b1")} x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1" /></filter>
         <filter id={id("b2")} x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" /></filter>
@@ -102,27 +88,23 @@ function Bottle({ liquid, pressed, className, style }: { liquid: string; pressed
         <linearGradient id={id("glass")} x1="0" x2="1">
           <stop offset="0" stopColor="#5d6670" stopOpacity="0.55" />
           <stop offset="0.04" stopColor="#c9d1d9" stopOpacity="0.35" />
-          <stop offset="0.12" stopColor="#ffffff" stopOpacity="0.1" />
-          <stop offset="0.85" stopColor="#ffffff" stopOpacity="0.05" />
+          <stop offset="0.12" stopColor="#ffffff" stopOpacity="0.12" />
+          <stop offset="0.85" stopColor="#ffffff" stopOpacity="0.06" />
           <stop offset="0.93" stopColor="#8b95a0" stopOpacity="0.32" />
-          <stop offset="0.975" stopColor="#ffffff" stopOpacity="0.6" />
+          <stop offset="0.975" stopColor="#ffffff" stopOpacity="0.65" />
           <stop offset="1" stopColor="#4c545d" stopOpacity="0.6" />
         </linearGradient>
         <linearGradient id={id("liqH")} x1="0" x2="1">
-          <stop offset="0" stopColor="#000" stopOpacity="0.4" />
-          <stop offset="0.2" stopColor="#000" stopOpacity="0.05" />
-          <stop offset="0.45" stopColor="#fff" stopOpacity="0.22" />
+          <stop offset="0" stopColor="#56606b" stopOpacity="0.28" />
+          <stop offset="0.2" stopColor="#000" stopOpacity="0.02" />
+          <stop offset="0.45" stopColor="#fff" stopOpacity="0.35" />
           <stop offset="0.7" stopColor="#000" stopOpacity="0" />
-          <stop offset="1" stopColor="#000" stopOpacity="0.45" />
+          <stop offset="1" stopColor="#56606b" stopOpacity="0.32" />
         </linearGradient>
         <linearGradient id={id("liqV")} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor={liquid} stopOpacity="0.82" />
-          <stop offset="0.6" stopColor={liquid} stopOpacity="0.95" />
-          <stop offset="1" stopColor={liquid} stopOpacity="1" />
-        </linearGradient>
-        <linearGradient id={id("liqDark")} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#000" stopOpacity="0" />
-          <stop offset="1" stopColor="#3a1a00" stopOpacity="0.28" />
+          <stop offset="0" stopColor={liquid} stopOpacity="0.25" />
+          <stop offset="0.6" stopColor={liquid} stopOpacity="0.38" />
+          <stop offset="1" stopColor={liquid} stopOpacity="0.55" />
         </linearGradient>
         <linearGradient id={id("gold")} x1="0" x2="1">
           <stop offset="0" stopColor="#5e4512" />
@@ -145,58 +127,53 @@ function Bottle({ liquid, pressed, className, style }: { liquid: string; pressed
         </linearGradient>
         <linearGradient id={id("engrave")} x1="0" x2="1">
           <stop offset="0" stopColor="#8a6a22" />
-          <stop offset="0.5" stopColor="#f3dc8a" />
+          <stop offset="0.5" stopColor="#d9b85a" />
           <stop offset="1" stopColor="#8a6a22" />
         </linearGradient>
         <clipPath id={id("cav")}><path d={CAV} /></clipPath>
         <clipPath id={id("body")}><path d={BODY} /></clipPath>
       </defs>
 
-      {/* shadow + coloured caustic light on the surface */}
-      <ellipse cx="80" cy="303" rx="64" ry="6" fill="#000" opacity="0.28" filter={u("b5")} />
-      <ellipse cx="116" cy="304" rx="44" ry="5" fill={liquid} opacity="0.35" filter={u("b5")} />
+      {/* soft shadow */}
+      <ellipse cx="80" cy="303" rx="64" ry="6" fill="#000" opacity="0.22" filter={u("b5")} />
 
       {/* glass body */}
-      <path d={BODY} fill="#eef2f5" fillOpacity="0.32" />
+      <path d={BODY} fill="#eef2f5" fillOpacity="0.28" />
       <g clipPath={u("body")}>
-        {/* liquid seen through the walls (refracted, a little wider) */}
-        <rect x="22" y="150" width="116" height="125" fill={liquid} opacity="0.28" filter={u("b2")} />
-        {/* thick base: refracted liquid colour + bright bottom edge */}
-        <rect x="24" y="274" width="112" height="20" fill={liquid} opacity="0.4" filter={u("b2")} />
-        <path d="M30 296 H130" stroke="#fff" strokeOpacity="0.85" strokeWidth="1.6" filter={u("b1")} />
+        <rect x="24" y="274" width="112" height="20" fill="#dfe6ec" opacity="0.6" filter={u("b2")} />
+        <path d="M30 296 H130" stroke="#fff" strokeOpacity="0.9" strokeWidth="1.6" filter={u("b1")} />
       </g>
-      {/* liquid */}
+      {/* clear liquid */}
       <g clipPath={u("cav")}>
         <rect x="31" y="150" width="98" height="122" fill={u("liqV")} />
         <rect x="31" y="150" width="98" height="122" fill={u("liqH")} />
-        <rect x="31" y="150" width="98" height="122" fill={u("liqDark")} />
-        <ellipse cx="80" cy="150" rx="49" ry="2.6" fill="#fff" opacity="0.55" />
-        <path d="M31 152.5 H129" stroke="#000" strokeOpacity="0.12" strokeWidth="1" />
+        <ellipse cx="80" cy="150" rx="49" ry="2.6" fill="#fff" opacity="0.75" />
+        <path d="M31 152.5 H129" stroke="#56606b" strokeOpacity="0.28" strokeWidth="0.9" />
         {/* dip tube */}
-        <path d="M80 112 C80 160 81 220 84 268" stroke="#fff" strokeOpacity="0.65" strokeWidth="1.8" fill="none" />
-        <path d="M81.6 112 C81.6 160 82.6 220 85.6 268" stroke="#000" strokeOpacity="0.18" strokeWidth="0.8" fill="none" />
+        <path d="M80 112 C80 160 81 220 84 268" stroke="#fff" strokeOpacity="0.75" strokeWidth="1.8" fill="none" />
+        <path d="M81.6 112 C81.6 160 82.6 220 85.6 268" stroke="#56606b" strokeOpacity="0.3" strokeWidth="0.8" fill="none" />
       </g>
-      <path d="M80 112 C80 125 80 132 80 150" stroke="#fff" strokeOpacity="0.55" strokeWidth="1.6" fill="none" />
-      {/* inner wall edges */}
-      <path d={CAV} fill="none" stroke="#fff" strokeOpacity="0.55" strokeWidth="0.9" filter={u("b1")} />
-      <path d={CAV} fill="none" stroke="#3b434c" strokeOpacity="0.18" strokeWidth="0.6" />
-      {/* glass surface shading and reflections */}
+      <path d="M80 112 C80 125 80 132 80 150" stroke="#fff" strokeOpacity="0.6" strokeWidth="1.6" fill="none" />
+      <path d="M81.6 112 V150" stroke="#56606b" strokeOpacity="0.25" strokeWidth="0.7" fill="none" />
+      {/* inner wall edges (glass thickness) */}
+      <path d={CAV} fill="none" stroke="#fff" strokeOpacity="0.7" strokeWidth="0.9" filter={u("b1")} />
+      <path d={CAV} fill="none" stroke="#3b434c" strokeOpacity="0.28" strokeWidth="0.6" />
+      {/* reflections */}
       <path d={BODY} fill={u("glass")} />
       <g clipPath={u("body")}>
-        <rect x="23" y="124" width="7" height="168" rx="3.5" fill="#fff" opacity="0.8" filter={u("b2")} />
-        <rect x="38" y="138" width="3" height="120" rx="1.5" fill="#fff" opacity="0.35" filter={u("b1")} />
-        <rect x="132" y="128" width="3.4" height="160" rx="1.7" fill="#fff" opacity="0.55" filter={u("b1")} />
-        <path d="M26 123 Q80 116 134 123" stroke="#fff" strokeOpacity="0.85" strokeWidth="2" fill="none" filter={u("b1")} />
+        <rect x="23" y="124" width="7" height="168" rx="3.5" fill="#fff" opacity="0.85" filter={u("b2")} />
+        <rect x="38" y="138" width="3" height="120" rx="1.5" fill="#fff" opacity="0.4" filter={u("b1")} />
+        <rect x="132" y="128" width="3.4" height="160" rx="1.7" fill="#fff" opacity="0.6" filter={u("b1")} />
+        <path d="M26 123 Q80 116 134 123" stroke="#fff" strokeOpacity="0.9" strokeWidth="2" fill="none" filter={u("b1")} />
       </g>
-      <path d={BODY} fill="none" stroke="#56606b" strokeOpacity="0.55" strokeWidth="0.9" />
+      <path d={BODY} fill="none" stroke="#56606b" strokeOpacity="0.6" strokeWidth="0.9" />
 
-      {/* engraved gold lettering */}
+      {/* engraved lettering */}
       <text x="80" y="214" textAnchor="middle" fontSize="12.5" fontFamily="Georgia, 'Times New Roman', serif" letterSpacing="4.2" fill={u("engrave")}>ABEERX</text>
-      <text x="80" y="227" textAnchor="middle" fontSize="5" fontFamily="Georgia, 'Times New Roman', serif" letterSpacing="2.6" fill="#5a4a2a" opacity="0.75">EAU DE PARFUM</text>
+      <text x="80" y="227" textAnchor="middle" fontSize="5" fontFamily="Georgia, 'Times New Roman', serif" letterSpacing="2.6" fill="#5a5a5a" opacity="0.7">EAU DE PARFUM</text>
 
-      {/* glass neck */}
+      {/* glass neck + gold collar */}
       <rect x="64" y="104" width="32" height="16" fill="#e6ecf1" fillOpacity="0.6" stroke="#56606b" strokeOpacity="0.4" strokeWidth="0.6" />
-      {/* gold ferrule collar with crimp ridges */}
       <rect x="57" y="88" width="46" height="24" rx="2" fill={u("gold")} />
       {[92, 96, 100, 104].map(y => <rect key={y} x="57" y={y} width="46" height="0.8" fill="#3d2c08" opacity="0.28" />)}
       <rect x="53" y="110" width="54" height="9" rx="3" fill={u("gold")} />
@@ -217,9 +194,7 @@ function Bottle({ liquid, pressed, className, style }: { liquid: string; pressed
 /* ---------------------------------- mist sprites (soft, wispy, cool grey) ---------------------------------- */
 
 function makeMistSprites(rgb: [number, number, number], count = 7): HTMLCanvasElement[] {
-  const S = 160;
-  // value noise
-  const P = 64;
+  const S = 160, P = 64;
   const out: HTMLCanvasElement[] = [];
   for (let k = 0; k < count; k++) {
     let seed = 7 + k * 7919;
@@ -242,8 +217,7 @@ function makeMistSprites(rgb: [number, number, number], count = 7): HTMLCanvasEl
         let f = 0, amp = 0.55, fr = 3;
         for (let o = 0; o < 4; o++) { f += amp * vn(nx * fr + ox, ny * fr + oy); amp *= 0.5; fr *= 2.1; }
         const dx = nx - 0.5, dy = ny - 0.5;
-        const d = Math.sqrt(dx * dx + dy * dy) * 2;
-        const fall = Math.max(0, 1 - d);
+        const fall = Math.max(0, 1 - Math.sqrt(dx * dx + dy * dy) * 2);
         const a = Math.max(0, f - 0.38) * 1.9 * fall * fall;
         const i = (y * S + x) * 4;
         img.data[i] = rgb[0]; img.data[i + 1] = rgb[1]; img.data[i + 2] = rgb[2];
@@ -265,14 +239,17 @@ type Puff = {
 };
 type Drop = { x: number; y: number; vx: number; vy: number; age: number; life: number; r: number };
 type FlyingNote = {
-  img: CanvasImageSource | null; label: string; age: number; T: number;
-  x0: number; y0: number; laneY: number; size: number; spin: number; phase: number; dist: number;
+  key: string; label: string; tier: number; age: number;
+  x0: number; y0: number; laneY: number; dist: number;
+  slotX: number; slotY: number; slotW: number;
+  spin: number; phase: number;
 };
-type TimelineEvent = { t: number; kind: "spritz" | "note"; tier: number; label?: string };
+type TimelineEvent = { t: number; kind: "spritz" | "note"; tier: number; idx: number; label?: string };
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const smooth = (a: number, b: number, t: number) => { const x = clamp((t - a) / (b - a), 0, 1); return x * x * (3 - 2 * x); };
 
 // Each note illustration is rasterised once into a canvas (crisp and cheap to draw every frame).
@@ -295,9 +272,16 @@ function noteArt(key: string): HTMLCanvasElement | null {
   return null;
 }
 
-type Engine = { start: (tiers: Tier[], getNozzle: () => { x: number; y: number } | null) => void; stop: () => void };
+const FLY = 1.5;      // seconds a note drifts in the mist before heading to its place
+const SETTLE = 1.5;   // seconds to glide into its place
 
-function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => void; onSpritz: (i: number) => void; onDone: () => void }): Engine {
+type Engine = {
+  start: (tiers: Tier[], tierLabels: string[], getNozzle: () => { x: number; y: number } | null) => void;
+  dismiss: () => void;
+  stop: () => void;
+};
+
+function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => void; onSpritz: (i: number) => void; onDone: () => void; onGone: () => void }): Engine {
   const ctx = canvas.getContext("2d")!;
   const sprites = makeMistSprites([160, 173, 190]);
   let W = 0, H = 0, dpr = 1, s = 1;
@@ -315,11 +299,33 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
   const drops: Drop[] = [];
   const notes: FlyingNote[] = [];
   let timeline: TimelineEvent[] = [];
+  let tiersRef: Tier[] = [];
+  let labels: string[] = [];
   let tIdx = 0, tClock = -1, tEnd = 0, doneFired = true, emitAcc = 0, emitting = 0, lastTier = -1, laneCursor = 0;
+  let fade = 1, dismissing = false;
   let nozzleFn: () => { x: number; y: number } | null = () => null;
   let raf = 0, last = 0, running = false;
+  let layout = { size: 64, rowH: 100, capH: 16, nameFs: 11, margin: 24 };
 
-  const nozzle = () => nozzleFn() ?? { x: W * 0.15, y: H * 0.35 };
+  const nozzle = () => nozzleFn() ?? { x: W * 0.2, y: H * 0.3 };
+
+  // Rows at the bottom: base notes lowest, heart above, top notes on top.
+  const computeLayout = () => {
+    const margin = 22 + Math.min(20, H * 0.02);
+    const size = clamp(Math.min(W / 6.2, H / 9.5), 46, 84);
+    const nameFs = clamp(size / 6.2, 9.5, 13);
+    const capH = 16;
+    const rowH = capH + size + nameFs + 14;
+    layout = { size, rowH, capH, nameFs, margin };
+  };
+  const slotFor = (tier: number, idx: number) => {
+    const n = tiersRef[tier].notes.length;
+    const fromBottom = tiersRef.length - 1 - tier;
+    const { size, rowH, capH, margin } = layout;
+    const rowTop = H - margin - (fromBottom + 1) * rowH;
+    const slotW = Math.min((W - 24) / n, size * 1.75);
+    return { x: W / 2 + (idx - (n - 1) / 2) * slotW, y: rowTop + capH + size / 2, w: slotW };
+  };
 
   const spawnPuff = (n: { x: number; y: number }, v0: number, burst: boolean, delay = 0) => {
     const ang = (Math.random() - 0.5) * (burst ? 0.42 : 0.3) - 0.05;
@@ -339,7 +345,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
   const spritz = (tier: number) => {
     const n = nozzle();
     const v0 = clamp(W - n.x, 260, 1500) * 0.9;
-    emitting = 2.2;
+    emitting = 2.0;
     for (let i = 0; i < 56; i++) spawnPuff(n, v0, true, Math.random() * 0.5);
     for (let i = 0; i < 110; i++) {
       const a = (Math.random() - 0.5) * 0.45 - 0.04;
@@ -353,24 +359,22 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
     const n = nozzle();
     const key = artKeyFor(ev.label || "");
     noteArt(key);
-    const size = clamp(W / 5.6, 60, 104);
-    const bandTop = Math.max(64, n.y - H * 0.26);
-    const bandBot = Math.min(H - 70, n.y + H * 0.3);
+    const slot = slotFor(ev.tier, ev.idx);
     const order = [1, 3, 0, 4, 2];
     const lane = order[laneCursor++ % 5];
-    const laneY = lerp(bandTop, Math.max(bandTop + 40, bandBot), lane / 4) + (Math.random() - 0.5) * 12 * s;
+    const laneY = n.y + (lane / 4 - 0.35) * H * 0.22;
     notes.push({
-      img: null, label: ev.label || "", age: 0, T: 7.6 + Math.random() * 0.8,
-      x0: n.x, y0: n.y, laneY, size, spin: (Math.random() - 0.5) * 30, phase: Math.random() * 6.28,
-      dist: W - n.x + size * 1.4,
+      key, label: ev.label || "", tier: ev.tier, age: 0,
+      x0: n.x, y0: n.y, laneY, dist: clamp(W * 0.55, 140, Math.max(160, W - n.x - layout.size)),
+      slotX: slot.x, slotY: slot.y, slotW: slot.w,
+      spin: (Math.random() - 0.5) * 60, phase: Math.random() * 6.28,
     });
-    (notes[notes.length - 1] as FlyingNote & { key?: string }).key = key;
   };
 
   const drawPuff = (p: Puff) => {
     const u = p.age / p.life;
     const size = lerp(p.s0, p.s1, easeOutCubic(clamp(u, 0, 1)));
-    const a = p.peak * smooth(0, 0.08, u) * Math.pow(1 - clamp(u, 0, 1), 1.5);
+    const a = p.peak * smooth(0, 0.08, u) * Math.pow(1 - clamp(u, 0, 1), 1.5) * fade;
     if (a <= 0.003) return;
     ctx.globalAlpha = a;
     const c = Math.cos(p.rot), sn = Math.sin(p.rot);
@@ -378,12 +382,33 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
     ctx.drawImage(sprites[p.spr], -size / 2, -size / 2, size, size);
   };
 
+  const label = (text: string, x: number, y: number, fs: number, maxW: number, color: string, alpha: number, spacing = 1.6) => {
+    if (alpha <= 0.01) return;
+    let f = fs;
+    ctx.font = `600 ${f}px Georgia, 'Times New Roman', serif`;
+    (ctx as any).letterSpacing = `${spacing}px`;
+    while (f > 7.5 && ctx.measureText(text).width > maxW) {
+      f -= 0.5;
+      ctx.font = `600 ${f}px Georgia, 'Times New Roman', serif`;
+    }
+    ctx.textAlign = "center";
+    ctx.globalAlpha = alpha;
+    ctx.shadowColor = "rgba(255,255,255,1)";
+    ctx.shadowBlur = 5;
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, y);
+    ctx.fillText(text, x, y);
+    ctx.shadowBlur = 0;
+    (ctx as any).letterSpacing = "0px";
+  };
+
   const frame = (now: number) => {
     const real = clamp((now - last) / 1000, 0, 0.25);
     const dt = Math.min(0.05, real);
     last = now;
+    const time = now / 1000;
 
-    if (tClock >= 0) {
+    if (tClock >= 0 && !dismissing) {
       tClock += real;
       while (tIdx < timeline.length && timeline[tIdx].t <= tClock) {
         const ev = timeline[tIdx++];
@@ -392,13 +417,14 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
       }
       if (!doneFired && tClock > tEnd) { doneFired = true; cb.onDone(); }
     }
-    if (emitting > 0) {
+    if (emitting > 0 && !dismissing) {
       emitting -= dt;
       emitAcc += dt * 34;
       const n = nozzle();
       const v0 = clamp(W - n.x, 260, 1500) * 0.9;
       while (emitAcc >= 1) { emitAcc -= 1; spawnPuff(n, v0, false); }
     }
+    if (dismissing) fade = Math.max(0, fade - real * 2.4);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.globalAlpha = 1;
@@ -416,40 +442,43 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
     }
     for (const p of puffs) if (!p.front && p.age >= 0) drawPuff(p);
 
-    for (let i = notes.length - 1; i >= 0; i--) {
-      const nt = notes[i] as FlyingNote & { key?: string };
-      nt.age += dt;
-      const p = nt.age / nt.T;
-      if (p >= 1) { notes.splice(i, 1); continue; }
-      const img = nt.key ? noteArt(nt.key) : null;
-      const x = nt.x0 + nt.dist * (0.5 * easeOutCubic(p) + 0.5 * p);
-      const y = lerp(nt.y0, nt.laneY, easeOutCubic(clamp(p * 2.4, 0, 1))) + Math.sin(p * 8 + nt.phase) * 9 * s * smooth(0.05, 0.4, p);
-      const sz = nt.size * lerp(0.15, 1, easeOutCubic(clamp(p * 4.5, 0, 1))) * (1 + Math.sin(nt.age * 2 + nt.phase) * 0.03);
-      const alpha = smooth(0, 0.08, p) * (1 - smooth(0.85, 1, p));
-      const rotn = (nt.spin * nt.age + Math.sin(nt.age * 1.2 + nt.phase) * 8) * (Math.PI / 180);
-      // gentle 3D tumble: squash horizontally as it turns
-      const tumble = 0.82 + 0.18 * Math.cos(nt.age * 1.4 + nt.phase);
+    // row captions (Top / Heart / Base) appear as their first note lands
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    tiersRef.forEach((t, ti) => {
+      const first = notes.find(n => n.tier === ti);
+      if (!first) return;
+      const a = smooth(FLY + SETTLE * 0.5, FLY + SETTLE, first.age) * fade;
+      const slot = slotFor(ti, 0);
+      const y = slot.y - layout.size / 2 - 6;
+      label(labels[ti] || t.en, W / 2, y, 9.5, W - 40, GOLD, a, 3.2);
+      ctx.globalAlpha = a * 0.6;
+      ctx.fillStyle = GOLD;
+      const lw = Math.min(W * 0.5, 260);
+      ctx.fillRect(W / 2 - lw / 2, y + 4, lw, 0.6);
+    });
+
+    for (const nt of notes) {
+      nt.age += real;
+      const img = noteArt(nt.key);
+      const tf = clamp(nt.age / (FLY + 0.8), 0, 1);
+      const fx = nt.x0 + nt.dist * easeOutCubic(tf);
+      const fy = lerp(nt.y0, nt.laneY, easeOutCubic(clamp(nt.age / 1.1, 0, 1))) + Math.sin(nt.age * 3 + nt.phase) * 8 * s;
+      const q = easeInOut(clamp((nt.age - FLY) / SETTLE, 0, 1));
+      const x = lerp(fx, nt.slotX, q);
+      const y = lerp(fy, nt.slotY, q) + Math.sin(time * 1.5 + nt.phase) * 2 * q;
+      const grow = lerp(0.15, 1, easeOutCubic(clamp(nt.age / 0.7, 0, 1)));
+      const sz = layout.size * grow;
+      const alpha = smooth(0, 0.18, nt.age) * fade;
+      const rotn = (nt.spin * nt.age + Math.sin(nt.age * 1.2 + nt.phase) * 8) * (Math.PI / 180) * (1 - q);
+      const tumble = lerp(0.82 + 0.18 * Math.cos(nt.age * 1.4 + nt.phase), 1, q);
       const c = Math.cos(rotn), sn = Math.sin(rotn);
       ctx.globalAlpha = alpha;
       ctx.setTransform(c * dpr * tumble, sn * dpr * tumble, -sn * dpr, c * dpr, x * dpr, y * dpr);
       if (img) ctx.drawImage(img, -sz / 2, -sz / 2, sz, sz);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const la = alpha * smooth(0.12, 0.28, p);
-      if (la > 0.01) {
-        const fs = clamp(W / 36, 10, 13.5);
-        ctx.font = `600 ${fs}px Georgia, 'Times New Roman', serif`;
-        (ctx as any).letterSpacing = "2px";
-        ctx.textAlign = "center";
-        ctx.globalAlpha = la;
-        ctx.shadowColor = "rgba(255,255,255,1)";
-        ctx.shadowBlur = 5;
-        ctx.fillStyle = "#2a2a2a";
-        const ty = y + sz * 0.5 + fs + 2;
-        ctx.fillText(nt.label.toUpperCase(), x, ty);
-        ctx.fillText(nt.label.toUpperCase(), x, ty);
-        ctx.shadowBlur = 0;
-        (ctx as any).letterSpacing = "0px";
-      }
+      const la = alpha * smooth(0.3, 0.8, nt.age);
+      const maxW = lerp(160, nt.slotW - 6, q);
+      label(nt.label.toUpperCase(), x, y + sz * 0.5 + layout.nameFs + 3, layout.nameFs, maxW, "#2a2a2a", la);
     }
 
     for (const p of puffs) if (p.front && p.age >= 0) drawPuff(p);
@@ -464,33 +493,48 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
       d.vy = d.vy * Math.exp(-1.6 * dt) + 16 * s * dt;
       d.x += d.vx * dt; d.y += d.vy * dt;
       const u = d.age / d.life;
-      ctx.globalAlpha = (1 - u) * 0.55;
+      ctx.globalAlpha = (1 - u) * 0.55 * fade;
       ctx.fillStyle = "#7d8a9a";
       ctx.beginPath(); ctx.arc(d.x, d.y, d.r * (1 - u * 0.5), 0, 6.283); ctx.fill();
     }
     ctx.globalAlpha = 1;
 
-    const idle = tClock < 0 || doneFired;
-    if (idle && !puffs.length && !drops.length && !notes.length) { running = false; ctx.clearRect(0, 0, W, H); return; }
+    if (dismissing && fade <= 0) {
+      running = false;
+      puffs.length = 0; drops.length = 0; notes.length = 0;
+      ctx.clearRect(0, 0, W, H);
+      cb.onGone();
+      return;
+    }
     raf = requestAnimationFrame(frame);
   };
 
   return {
-    start(tiers, getNozzle) {
+    start(tiers, tierLabels, getNozzle) {
       nozzleFn = getNozzle;
+      tiersRef = tiers;
+      labels = tierLabels;
+      resize();
+      computeLayout();
       const evs: TimelineEvent[] = [];
-      let cursor = 0.15;
+      let cursor = 0.15, lastSpawn = 0;
       tiers.forEach((tier, ti) => {
-        if (!tier.notes.length) return;
-        evs.push({ t: cursor, kind: "spritz", tier: ti });
-        tier.notes.forEach((nt, i) => evs.push({ t: cursor + 0.4 + i * 0.5, kind: "note", tier: ti, label: nt }));
-        tier.notes.forEach(nt => noteArt(artKeyFor(nt)));
-        cursor += 0.4 + tier.notes.length * 0.5 + 1.1;
+        evs.push({ t: cursor, kind: "spritz", tier: ti, idx: -1 });
+        tier.notes.forEach((nt, i) => {
+          lastSpawn = cursor + 0.4 + i * 0.4;
+          evs.push({ t: lastSpawn, kind: "note", tier: ti, idx: i, label: nt });
+          noteArt(artKeyFor(nt));
+        });
+        cursor += 0.4 + tier.notes.length * 0.4 + 1.0;
       });
       timeline = evs.sort((a, b) => a.t - b.t);
-      tIdx = 0; tClock = 0; tEnd = cursor + 6.5; doneFired = false; lastTier = -1; laneCursor = 0;
-      notes.length = 0;
+      tIdx = 0; tClock = 0; tEnd = lastSpawn + FLY + SETTLE + 0.3; doneFired = false; lastTier = -1; laneCursor = 0;
+      notes.length = 0; fade = 1; dismissing = false;
       if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); }
+    },
+    dismiss() {
+      dismissing = true;
+      if (!running) cb.onGone();
     },
     stop() {
       cancelAnimationFrame(raf);
@@ -515,32 +559,45 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
     if (!t.length && accords.length) t.push({ key: "heart", en: "Main accords", ar: "الأكوردات الرئيسية", notes: accords });
     return t;
   }, [top, heart, base, accords]);
-  const liquid = useMemo(() => liquidFor(`${product.fragranceFamily || ""} ${product.mainAccord || ""}`), [product.fragranceFamily, product.mainAccord]);
 
   const [mounted, setMounted] = useState(false);
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const [phase, setPhase] = useState<"idle" | "spraying" | "leaving">("idle");
-  const [played, setPlayed] = useState(false);
+  const [phase, setPhase] = useState<"idle" | "spraying" | "done" | "closing">("idle");
   const [tierIdx, setTierIdx] = useState(-1);
   const [pressed, setPressed] = useState(false);
-  const [staticNotes, setStaticNotes] = useState(false);
+  const [reduced, setReduced] = useState(false);
+  const [hint, setHint] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null);
   const nozzleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    setAnchor(document.querySelector<HTMLElement>("[data-spray-anchor]"));
+    setReduced(!!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+    const t = setTimeout(() => setHint(false), 6000); // the "Spray & Smell" label tucks away after a few seconds
+    return () => clearTimeout(t);
   }, []);
-
   useEffect(() => () => engineRef.current?.stop(), []);
 
+  const open = phase !== "idle";
+  // keep the page still while the show is on
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  const L = (en: string, ar: string) => (isArabic ? ar : en);
+
   const start = useCallback(() => {
-    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) { setStaticNotes(true); return; }
-    const a = document.querySelector<HTMLElement>("[data-spray-anchor]");
-    setAnchor(a);
-    const go = () => {
+    setTierIdx(-1);
+    setHint(false);
+    if (reduced) { setPhase("done"); return; }
+    setPhase("spraying");
+    setTimeout(() => {
       if (!canvasRef.current) return;
       if (!engineRef.current) {
         engineRef.current = createEngine(canvasRef.current, {
@@ -551,120 +608,150 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
             playSpraySound(i === 0 ? 0.1 : 0.07);
             try { navigator.vibrate?.(i === 0 ? [22] : [12]); } catch { /* optional */ }
           },
-          onDone: () => {
-            setPhase("leaving");
-            setTimeout(() => { setPhase("idle"); setTierIdx(-1); }, 700);
-          },
+          onDone: () => setPhase(p => (p === "spraying" ? "done" : p)),
+          onGone: () => { setPhase("idle"); setTierIdx(-1); },
         });
       }
-      engineRef.current.start(tiers, () => {
+      engineRef.current.start(tiers, tiers.map(t => (isArabic ? t.ar : t.en).toUpperCase()), () => {
         const el = nozzleRef.current;
         if (!el) return null;
         const r = el.getBoundingClientRect();
         return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
       });
-    };
-    setTierIdx(-1);
-    setPhase("spraying");
-    setPlayed(true);
-    // make sure the photo (where the bottle appears) is on screen
-    if (a) {
-      const r = a.getBoundingClientRect();
-      if (r.top < 0 || r.bottom > window.innerHeight) {
-        a.scrollIntoView({ behavior: "smooth", block: "center" });
-        setTimeout(go, 650);
-        return;
-      }
-    }
-    setTimeout(go, 550); // let the bottle settle in first
-  }, [tiers]);
+    }, 550); // let the bottle settle in first
+  }, [tiers, reduced, isArabic]);
 
-  const hasNotes = tiers.length > 0;
-  if (!hasNotes) return null;
+  const close = useCallback(() => {
+    setPhase("closing");
+    if (engineRef.current) engineRef.current.dismiss();
+    else setTimeout(() => setPhase("idle"), 300);
+  }, []);
 
-  const L = (en: string, ar: string) => (isArabic ? ar : en);
+  if (!tiers.length) return null;
+
   const cur = tierIdx >= 0 ? tiers[tierIdx] : null;
-  const busy = phase !== "idle";
-
-  // The bottle stands on the product photo (or bottom-left of the screen if the photo box isn't found)
-  const bottleBox: CSSProperties = anchor
-    ? { position: "absolute", left: "4%", bottom: "3%", height: "min(86%, 360px)", aspectRatio: `${VB_W} / ${VB_H}`, zIndex: 5 }
-    : { position: "fixed", left: 12, bottom: 24, height: "min(40vh, 320px)", aspectRatio: `${VB_W} / ${VB_H}`, zIndex: 61 };
-  const show = phase === "spraying";
-
-  const bottle = (
-    <div aria-hidden="true" style={{ ...bottleBox, pointerEvents: "none", opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(14px)", transition: "opacity .5s ease, transform .5s ease" }}>
-      <Bottle liquid={liquid} pressed={pressed} className="w-full h-full" style={{ width: "100%", height: "100%", display: "block", filter: "drop-shadow(0 10px 14px rgba(0,0,0,.12))" }} />
-      <div ref={nozzleRef} style={{ position: "absolute", left: `${NOZ_X * 100}%`, top: `${NOZ_Y * 100}%`, width: 2, height: 2 }} />
-    </div>
-  );
-
-  const caption = anchor && cur && show && (
-    <div key={tierIdx} className="spr-in" style={{ position: "absolute", top: 10, left: "50%", transform: "translateX(-50%)", zIndex: 6, pointerEvents: "none", background: "rgba(255,255,255,.88)", border: `1px solid ${GOLD}`, padding: "5px 14px", fontSize: 10.5, letterSpacing: "0.32em", textTransform: "uppercase", color: "#5a4718", whiteSpace: "nowrap", fontFamily: "Georgia, serif" }}>
-      {isArabic ? cur.ar : cur.en}
-    </div>
-  );
+  const visible = phase === "spraying" || phase === "done";
+  const side = isArabic ? { left: 16 } : { right: 16 };
+  const pill: CSSProperties = {
+    background: "rgba(255,255,255,.92)", border: `1px solid ${GOLD}`, padding: "8px 16px", fontSize: 11,
+    letterSpacing: "0.22em", textTransform: "uppercase", color: "#5a4718", fontFamily: "Georgia, serif", cursor: "pointer",
+  };
 
   return (
     <>
       <style>{`
-        @keyframes spr-in{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%,0)}}
-        .spr-in{animation:spr-in .5s ease-out both}
-        @keyframes spr-t-mist{0%{transform:translateX(0) scale(.5);opacity:0}25%{opacity:.6}100%{transform:translateX(90px) scale(1.8);opacity:0}}
-        .spr-t-mist{animation:spr-t-mist 2.8s ease-out infinite}
-        @keyframes spr-t-arrow{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
-        .spr-t-arrow{animation:spr-t-arrow 1s ease-in-out infinite}
-        @media (prefers-reduced-motion: reduce){.spr-in,.spr-t-mist,.spr-t-arrow{animation:none!important}}
+        @keyframes spr-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+        .spr-in{animation:spr-in .45s ease-out both}
+        @keyframes spr-ring{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.55);opacity:0}}
+        .spr-ring{animation:spr-ring 2s ease-out infinite}
+        @keyframes spr-puff{0%{transform:translate(0,0) scale(.3);opacity:0}20%{opacity:.85}100%{transform:translate(20px,-3px) scale(1.5);opacity:0}}
+        .spr-puff{animation:spr-puff 1.6s ease-out infinite}
+        @keyframes spr-arrow{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+        .spr-arrow{animation:spr-arrow .9s ease-in-out infinite}
+        @keyframes spr-press{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(1.5px)}}
+        .spr-press{animation:spr-press 1.6s ease-in-out infinite}
+        @media (prefers-reduced-motion: reduce){.spr-in,.spr-ring,.spr-puff,.spr-arrow,.spr-press{animation:none!important}}
       `}</style>
 
-      <button
-        type="button"
-        onClick={start}
-        disabled={busy}
-        className="w-full mb-6 md:mb-8"
-        dir={isArabic ? "rtl" : "ltr"}
-        style={{
-          position: "relative", overflow: "hidden", display: "flex", alignItems: "center", gap: 14, padding: "8px 14px",
-          background: "linear-gradient(100deg, #ffffff 0%, #fbf7ec 100%)", border: `1px solid ${GOLD}`, color: "#1a1a1a",
-          textAlign: isArabic ? "right" : "left", cursor: busy ? "default" : "pointer",
-        }}
-      >
-        {[0, 0.9, 1.8].map((d, i) => (
-          <span key={i} className="spr-t-mist" style={{ position: "absolute", [isArabic ? "right" : "left"]: 46, top: 14, width: 40, height: 26, borderRadius: "50%", background: "radial-gradient(closest-side, rgba(126,140,158,.35), rgba(126,140,158,0))", animationDelay: `${d}s`, pointerEvents: "none" }} />
-        ))}
-        <span style={{ position: "relative", width: 30, height: 60, flexShrink: 0, display: "block" }}>
-          <Bottle liquid={liquid} pressed={false} style={{ width: "100%", height: "100%", display: "block" }} />
-        </span>
-        <span style={{ display: "flex", flexDirection: "column", gap: 3, position: "relative" }}>
-          <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "#8a6a1e", fontFamily: "Georgia, serif", display: "flex", alignItems: "center", gap: 8 }}>
-            {busy ? (cur ? (isArabic ? cur.ar : cur.en) : L("Spraying…", "جارٍ الرش…")) : played ? L("Spray again", "رش مرة أخرى") : L("Spray & Smell", "رشّ وتخيّل العطر")}
-            {!busy && (
-              <svg className="spr-t-arrow" width="10" height="13" viewBox="0 0 30 40" aria-hidden="true"><path d="M11 1 H19 V20 H27 L15 38 L3 20 H11Z" fill="#b8933a" /></svg>
-            )}
-          </span>
-          <span style={{ fontSize: 11.5, color: "#666", lineHeight: 1.4 }}>
-            {L("Can't smell it online? Tap to spray and watch its notes drift out.", "لا يمكنك شمّه؟ اضغط للرش وشاهد نوتاته تتطاير أمامك")}
-          </span>
-        </span>
-      </button>
-
-      {staticNotes && (
-        <div className="mb-6" style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-          {tiers.flatMap(t => t.notes).map((n, i) => (
-            <figure key={i} style={{ margin: 0, width: 72, textAlign: "center" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={artDataUrl(artKeyFor(n))} alt="" width={60} height={60} />
-              <figcaption style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase" }}>{n}</figcaption>
-            </figure>
-          ))}
-        </div>
-      )}
-
       {mounted && createPortal(
-        <canvas ref={canvasRef} aria-hidden="true" style={{ position: "fixed", inset: 0, width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 60 }} />,
+        <>
+          {/* Floating button */}
+          {phase === "idle" && (
+            <div style={{ position: "fixed", ...side, bottom: "calc(env(safe-area-inset-bottom) + var(--spr-fab-bottom, 92px))", zIndex: 45, display: "flex", alignItems: "center", gap: 10, flexDirection: isArabic ? "row" : "row-reverse" }} className="spr-fab-wrap">
+              <style>{`@media (min-width:768px){.spr-fab-wrap{--spr-fab-bottom:28px}}`}</style>
+              <button
+                type="button"
+                onClick={start}
+                aria-label={L("Spray and smell this perfume", "رشّ وتخيّل العطر")}
+                style={{ position: "relative", width: 60, height: 60, borderRadius: "50%", background: "#fff", border: `1px solid ${GOLD}`, boxShadow: "0 6px 20px rgba(0,0,0,.14)", cursor: "pointer", padding: 0 }}
+              >
+                <span className="spr-ring" style={{ position: "absolute", inset: -1, borderRadius: "50%", border: `1px solid ${GOLD}`, pointerEvents: "none" }} />
+                {/* gold arrow pointing at the pump */}
+                <svg className="spr-arrow" width="8" height="10" viewBox="0 0 30 40" aria-hidden="true" style={{ position: "absolute", left: 23, top: 4 }}>
+                  <path d="M11 1 H19 V20 H27 L15 38 L3 20 H11Z" fill={GOLD} />
+                </svg>
+                {/* mini bottle */}
+                <span className="spr-press" style={{ position: "absolute", left: 16, top: 13, width: 20, height: 40, display: "block" }}>
+                  <Bottle pressed={false} />
+                </span>
+                {/* little puffs leaving the nozzle */}
+                {[0, 0.55, 1.1].map((d, i) => (
+                  <span key={i} className="spr-puff" style={{ position: "absolute", left: 35, top: 18, width: 10, height: 7, borderRadius: "50%", background: "radial-gradient(closest-side, rgba(140,155,175,.75), rgba(140,155,175,0))", animationDelay: `${d}s`, pointerEvents: "none" }} />
+                ))}
+              </button>
+              {hint && (
+                <button type="button" onClick={start} className="spr-in" style={{ ...pill, boxShadow: "0 4px 14px rgba(0,0,0,.1)", padding: "7px 12px", fontSize: 10.5, whiteSpace: "nowrap" }}>
+                  {L("Spray & Smell", "رشّ وتخيّل العطر")}
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Blurred page behind the show (tap anywhere to close) */}
+          <div
+            onClick={open ? close : undefined}
+            aria-hidden={!open}
+            style={{
+              position: "fixed", inset: 0, zIndex: 70, background: "rgba(255,255,255,.38)",
+              backdropFilter: "blur(7px)", WebkitBackdropFilter: "blur(7px)",
+              opacity: visible ? 1 : 0, pointerEvents: open ? "auto" : "none", transition: "opacity .5s ease",
+            }}
+          />
+
+          {/* The bottle */}
+          <div aria-hidden="true" style={{
+            position: "fixed", left: "max(14px, 6vw)", top: "13vh", height: "min(34vh, 300px)", aspectRatio: `${VB_W} / ${VB_H}`, zIndex: 71,
+            pointerEvents: "none", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(14px)", transition: "opacity .5s ease, transform .5s ease",
+            filter: "drop-shadow(0 10px 14px rgba(0,0,0,.12))",
+          }}>
+            <Bottle pressed={pressed} />
+            <div ref={nozzleRef} style={{ position: "absolute", left: `${NOZ_X * 100}%`, top: `${NOZ_Y * 100}%`, width: 2, height: 2 }} />
+          </div>
+
+          <canvas ref={canvasRef} aria-hidden="true" style={{ position: "fixed", inset: 0, width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 72 }} />
+
+          {/* Caption + controls */}
+          {open && (
+            <div style={{ position: "fixed", top: "max(14px, env(safe-area-inset-top))", left: 0, right: 0, zIndex: 73, display: "flex", justifyContent: "center", pointerEvents: "none", opacity: visible ? 1 : 0, transition: "opacity .4s" }} dir={isArabic ? "rtl" : "ltr"}>
+              {phase === "spraying" && cur && (
+                <div key={tierIdx} className="spr-in" style={{ ...pill, cursor: "default" }}>{isArabic ? cur.ar : cur.en}</div>
+              )}
+              {phase === "done" && (
+                <div className="spr-in" style={{ display: "flex", gap: 8, pointerEvents: "auto" }}>
+                  <button type="button" style={pill} onClick={start}>{L("Spray again", "رش مرة أخرى")}</button>
+                  <button type="button" style={{ ...pill, background: "#111", color: "#fff", borderColor: "#111" }} onClick={close}>{L("Close", "إغلاق")}</button>
+                </div>
+              )}
+            </div>
+          )}
+          {open && (
+            <button type="button" onClick={close} aria-label={L("Close", "إغلاق")} style={{ position: "fixed", top: "max(10px, env(safe-area-inset-top))", [isArabic ? "left" : "right"]: 12, zIndex: 74, width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,.9)", border: `1px solid ${GOLD}`, cursor: "pointer", display: "grid", placeItems: "center", opacity: visible ? 1 : 0, transition: "opacity .4s" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a4718" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          )}
+
+          {/* Reduced motion: the same rows, without the animation */}
+          {reduced && phase === "done" && (
+            <div style={{ position: "fixed", left: 0, right: 0, bottom: 24, zIndex: 72, display: "flex", flexDirection: "column-reverse", gap: 14, alignItems: "center", pointerEvents: "none" }}>
+              {[...tiers].reverse().map(t => (
+                <div key={t.key} style={{ textAlign: "center" }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 10, letterSpacing: "0.3em", color: GOLD, textTransform: "uppercase" }}>{isArabic ? t.ar : t.en}</p>
+                  <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+                    {t.notes.map((n, i) => (
+                      <figure key={i} style={{ margin: 0, width: 64, textAlign: "center" }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={artDataUrl(artKeyFor(n))} alt="" width={52} height={52} />
+                        <figcaption style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>{n}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>,
         document.body
       )}
-      {mounted && (busy || played) && createPortal(<>{bottle}{caption}</>, anchor ?? document.body)}
     </>
   );
 }
