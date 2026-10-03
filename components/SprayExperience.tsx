@@ -72,7 +72,22 @@ const VB_W = 160, VB_H = 320;
 const NOZ_X = 97 / VB_W;
 const NOZ_Y = 72 / VB_H;
 
-function Bottle({ pressed, style }: { pressed: boolean; style?: CSSProperties }) {
+// Splits a product name into at most 2 lines that fit the bottle front.
+function labelLines(name: string): string[] {
+  const words = name.trim().toUpperCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return [];
+  const full = words.join(" ");
+  if (full.length <= 13) return [full];
+  let best = [full, ""], bestDiff = Infinity;
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(" "), b = words.slice(i).join(" ");
+    const d = Math.max(a.length, b.length);
+    if (d < bestDiff) { bestDiff = d; best = [a, b]; }
+  }
+  return best.filter(Boolean);
+}
+
+function Bottle({ pressed, style, brand, name }: { pressed: boolean; style?: CSSProperties; brand?: string; name?: string }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const id = (n: string) => `sb${n}${uid}`;
   const u = (n: string) => `url(#${id(n)})`;
@@ -169,8 +184,28 @@ function Bottle({ pressed, style }: { pressed: boolean; style?: CSSProperties })
       <path d={BODY} fill="none" stroke="#56606b" strokeOpacity="0.6" strokeWidth="0.9" />
 
       {/* engraved lettering */}
-      <text x="80" y="214" textAnchor="middle" fontSize="12.5" fontFamily="Georgia, 'Times New Roman', serif" letterSpacing="4.2" fill={u("engrave")}>ABEERX</text>
-      <text x="80" y="227" textAnchor="middle" fontSize="5" fontFamily="Georgia, 'Times New Roman', serif" letterSpacing="2.6" fill="#5a5a5a" opacity="0.7">EAU DE PARFUM</text>
+      {(() => {
+        // Perfume name and brand engraved on the glass (falls back to ABEERX)
+        const lines = name ? labelLines(name) : [];
+        if (!lines.length) {
+          return <text x="80" y="214" textAnchor="middle" fontSize="12.5" fontFamily="Georgia, 'Times New Roman', serif" letterSpacing="4.2" fill={u("engrave")}>ABEERX</text>;
+        }
+        const longest = Math.max(...lines.map(l => l.length));
+        const fs = Math.min(12, 92 / (longest * 0.68));
+        const lh = fs * 1.18;
+        const top = 206 - ((lines.length - 1) * lh) / 2;
+        const b = (brand || "").trim().toUpperCase();
+        const bfs = b ? Math.min(5.6, 88 / (b.length * 0.78)) : 0;
+        return (
+          <g fontFamily="Georgia, 'Times New Roman', serif" textAnchor="middle">
+            {b && <text x="80" y={top - fs - 3} fontSize={bfs} letterSpacing="1.6" fill="#5a5a5a" opacity="0.85">{b}</text>}
+            {lines.map((l, i) => (
+              <text key={i} x="80" y={top + i * lh} fontSize={fs} letterSpacing={fs > 9 ? 2 : 0.8} fill={u("engrave")}>{l}</text>
+            ))}
+            <line x1="62" x2="98" y1={top + (lines.length - 1) * lh + 6} y2={top + (lines.length - 1) * lh + 6} stroke="#b8933a" strokeOpacity="0.6" strokeWidth="0.5" />
+          </g>
+        );
+      })()}
 
       {/* glass neck + gold collar */}
       <rect x="64" y="104" width="32" height="16" fill="#e6ecf1" fillOpacity="0.6" stroke="#56606b" strokeOpacity="0.4" strokeWidth="0.6" />
@@ -287,7 +322,8 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
   let W = 0, H = 0, dpr = 1, s = 1;
   const resize = () => {
     dpr = Math.min(window.devicePixelRatio || 1, 1.6);
-    W = window.innerWidth; H = window.innerHeight;
+    const r = canvas.getBoundingClientRect();
+    W = r.width || window.innerWidth; H = r.height || window.innerHeight;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     s = clamp(Math.min(W, H * 1.1) / 430, 0.8, 1.45);
@@ -311,11 +347,11 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
 
   // Rows at the bottom: base notes lowest, heart above, top notes on top.
   const computeLayout = () => {
-    const margin = 22 + Math.min(20, H * 0.02);
+    const margin = 34 + Math.min(26, H * 0.03); // clear of phone gesture bars
     const size = clamp(Math.min(W / 6.2, H / 9.5), 46, 84);
     const nameFs = clamp(size / 6.2, 9.5, 13);
     const capH = 16;
-    const rowH = capH + size + nameFs + 14;
+    const rowH = capH + size + nameFs * 2.2 + 16; // room for two-line names
     layout = { size, rowH, capH, nameFs, margin };
   };
   const slotFor = (tier: number, idx: number) => {
@@ -382,22 +418,38 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
     ctx.drawImage(sprites[p.spr], -size / 2, -size / 2, size, size);
   };
 
-  const label = (text: string, x: number, y: number, fs: number, maxW: number, color: string, alpha: number, spacing = 1.6) => {
+  const label = (text: string, x: number, y: number, fs: number, maxW: number, color: string, alpha: number, spacing = 1.6, wrap = false) => {
     if (alpha <= 0.01) return;
-    let f = fs;
-    ctx.font = `600 ${f}px Georgia, 'Times New Roman', serif`;
-    (ctx as any).letterSpacing = `${spacing}px`;
-    while (f > 7.5 && ctx.measureText(text).width > maxW) {
+    const setFont = (f: number, sp: number) => { ctx.font = `600 ${f}px Georgia, 'Times New Roman', serif`; (ctx as any).letterSpacing = `${sp}px`; };
+    let f = fs, sp = spacing;
+    let lines = [text];
+    setFont(f, sp);
+    // too wide: first try two lines (for names with a space), then shrink
+    if (wrap && ctx.measureText(text).width > maxW && text.includes(" ")) {
+      const w = text.split(" ");
+      let best = [text], bestW = Infinity;
+      for (let i = 1; i < w.length; i++) {
+        const a = w.slice(0, i).join(" "), b = w.slice(i).join(" ");
+        const m = Math.max(ctx.measureText(a).width, ctx.measureText(b).width);
+        if (m < bestW) { bestW = m; best = [a, b]; }
+      }
+      lines = best;
+    }
+    const widest = () => Math.max(...lines.map(l => ctx.measureText(l).width));
+    while (f > 7 && widest() > maxW) {
       f -= 0.5;
-      ctx.font = `600 ${f}px Georgia, 'Times New Roman', serif`;
+      sp = Math.max(0.3, sp - 0.15);
+      setFont(f, sp);
     }
     ctx.textAlign = "center";
     ctx.globalAlpha = alpha;
     ctx.shadowColor = "rgba(255,255,255,1)";
     ctx.shadowBlur = 5;
     ctx.fillStyle = color;
-    ctx.fillText(text, x, y);
-    ctx.fillText(text, x, y);
+    lines.forEach((l, i) => {
+      ctx.fillText(l, x, y + i * f * 1.2);
+      ctx.fillText(l, x, y + i * f * 1.2);
+    });
     ctx.shadowBlur = 0;
     (ctx as any).letterSpacing = "0px";
   };
@@ -478,7 +530,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const la = alpha * smooth(0.3, 0.8, nt.age);
       const maxW = lerp(160, nt.slotW - 6, q);
-      label(nt.label.toUpperCase(), x, y + sz * 0.5 + layout.nameFs + 3, layout.nameFs, maxW, "#2a2a2a", la);
+      label(nt.label.toUpperCase(), x, y + sz * 0.5 + layout.nameFs + 3, layout.nameFs, maxW, "#2a2a2a", la, 1.6, q > 0.5);
     }
 
     for (const p of puffs) if (p.front && p.age >= 0) drawPuff(p);
@@ -657,8 +709,8 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
         <>
           {/* Floating button */}
           {phase === "idle" && (
-            <div style={{ position: "fixed", ...side, bottom: "calc(env(safe-area-inset-bottom) + var(--spr-fab-bottom, 92px))", zIndex: 45, display: "flex", alignItems: "center", gap: 10, flexDirection: isArabic ? "row" : "row-reverse" }} className="spr-fab-wrap">
-              <style>{`@media (min-width:768px){.spr-fab-wrap{--spr-fab-bottom:28px}}`}</style>
+            <div style={{ position: "fixed", ...side, bottom: "calc(env(safe-area-inset-bottom) + var(--spr-fab-bottom, 168px))", zIndex: 45, display: "flex", alignItems: "center", gap: 10, flexDirection: isArabic ? "row" : "row-reverse" }} className="spr-fab-wrap">
+              <style>{`@media (min-width:768px){.spr-fab-wrap{--spr-fab-bottom:40px}}`}</style>
               <button
                 type="button"
                 onClick={start}
@@ -704,11 +756,11 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
             pointerEvents: "none", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(14px)", transition: "opacity .5s ease, transform .5s ease",
             filter: "drop-shadow(0 10px 14px rgba(0,0,0,.12))",
           }}>
-            <Bottle pressed={pressed} />
+            <Bottle pressed={pressed} brand={product.brand} name={product.name} />
             <div ref={nozzleRef} style={{ position: "absolute", left: `${NOZ_X * 100}%`, top: `${NOZ_Y * 100}%`, width: 2, height: 2 }} />
           </div>
 
-          <canvas ref={canvasRef} aria-hidden="true" style={{ position: "fixed", inset: 0, width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 72 }} />
+          <canvas ref={canvasRef} aria-hidden="true" style={{ position: "fixed", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 72 }} />
 
           {/* Caption + controls */}
           {open && (
