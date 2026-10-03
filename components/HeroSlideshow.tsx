@@ -28,7 +28,7 @@ export default function HeroSlideshow({ slides, locale }: { slides: HeroSlide[];
 
   return (
     <section
-      className="relative w-full h-[80vh] min-h-[540px] overflow-hidden select-none flex flex-col"
+      className="relative w-full h-[calc(100svh-180px)] md:h-[calc(100vh-140px)] min-h-[440px] max-h-[820px] overflow-hidden select-none flex flex-col"
       style={{ background: "radial-gradient(ellipse 70% 55% at 50% 55%, #3a322a 0%, #1c1916 55%, #0b0a09 100%)" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -47,11 +47,11 @@ export default function HeroSlideshow({ slides, locale }: { slides: HeroSlide[];
       `}</style>
 
       {/* Heading — top */}
-      <div className="relative z-20 text-center px-4 pt-6 md:pt-10 shrink-0">
-        <h1 className="text-4xl md:text-6xl font-serif leading-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,.5)]">
+      <div className="relative z-20 text-center px-4 pt-5 md:pt-10 shrink-0">
+        <h1 className="text-3xl md:text-6xl font-serif leading-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,.5)]">
           {isArabic ? "اكتشف عطرك المميز" : "Discover Your Signature Scent"}
         </h1>
-        <div className="w-16 h-[1px] bg-ring mx-auto mt-4" />
+        <div className="w-16 h-[1px] bg-ring mx-auto mt-3 md:mt-4" />
       </div>
 
       {/* Slides — middle */}
@@ -88,10 +88,10 @@ export default function HeroSlideshow({ slides, locale }: { slides: HeroSlide[];
       </div>
 
       {/* Shop Now + dots — bottom */}
-      <div className="relative z-20 flex flex-col items-center gap-4 px-4 pt-3 pb-6 md:pb-8 shrink-0">
+      <div className="relative z-20 flex flex-col items-center gap-3 md:gap-4 px-4 pt-2 pb-5 md:pb-8 shrink-0">
         <Link
           href={`/${locale}/shop`}
-          className="bg-ring text-white px-10 py-4 text-sm tracking-widest uppercase font-bold hover:bg-white hover:text-black transition-colors w-full max-w-xs text-center"
+          className="bg-ring text-white px-10 py-3.5 md:py-4 text-sm tracking-widest uppercase font-bold hover:bg-white hover:text-black transition-colors w-full max-w-xs text-center"
         >
           {isArabic ? "تسوق الآن" : "Shop Now"}
         </Link>

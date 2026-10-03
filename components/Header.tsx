@@ -72,17 +72,14 @@ export default function Header({ locale }: { locale: string }) {
   return (
     <>
     <header className="w-full border-b border-border bg-background sticky top-0 z-50">
-      <div className="bg-primary text-primary-foreground text-xs text-center py-2 uppercase tracking-widest font-medium">
-        {isArabic ? "توصيل مجاني في الكويت للطلبات فوق 20 دينار" : "Free Delivery in Kuwait for orders over 20 KWD"}
-      </div>
       
-      <div className="container mx-auto px-4 h-32 flex items-center justify-between relative">
+      <div className="container mx-auto px-4 h-16 md:h-24 flex items-center justify-between relative">
         <div className="flex-1 flex items-center justify-start space-x-2 md:space-x-0">
           <button onClick={() => setIsMobileMenuOpen(true)} className="md:hidden p-2 -ml-2 text-foreground">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
           <Link href={`/${locale}`}>
-            <Image src="/logo-zoomed.png" alt="ABEERX" width={300} height={300} priority className="object-contain h-28 w-auto transform md:scale-110 md:origin-left" />
+            <Image src="/logo-zoomed.png" alt="ABEERX" width={300} height={300} priority className="object-contain h-14 md:h-20 w-auto transform md:scale-110 md:origin-left" />
           </Link>
         </div>
 
