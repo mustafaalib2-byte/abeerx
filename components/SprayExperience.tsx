@@ -774,11 +774,6 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
       {/* Bottle trigger: sits on the right, just above the Add to Cart button */}
       <div style={{ position: "relative", height: 0 }} dir="ltr">
         <div style={{ position: "absolute", [isArabic ? "left" : "right"]: 2, bottom: 10, display: "flex", alignItems: "flex-end", gap: 8, flexDirection: isArabic ? "row-reverse" : "row", zIndex: 5 }}>
-          {hint && phase === "idle" && (
-            <button type="button" onClick={tap} className="spr-in" style={{ background: "transparent", border: 0, padding: 0, cursor: "pointer", marginBottom: 56, fontSize: 9.5, letterSpacing: "0.2em", textTransform: "uppercase", color: GOLD, fontFamily: "Georgia, serif", whiteSpace: "nowrap" }}>
-              {L("Tap to spray", "اضغط للرش")}
-            </button>
-          )}
           <button
             ref={triggerRef}
             type="button"
@@ -790,6 +785,10 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
             aria-label={L("Spray and smell this perfume", "رشّ وتخيّل العطر")}
             style={{ position: "relative", width: 72, height: 144, background: "transparent", border: 0, padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent", touchAction: "manipulation", visibility: phase === "idle" ? "visible" : "hidden" }}
           >
+            {/* label beside the arrow */}
+            <span style={{ position: "absolute", top: 4, [facing === "left" ? "right" : "left"]: 46, whiteSpace: "nowrap", fontSize: 9, lineHeight: "12px", letterSpacing: "0.16em", textTransform: "uppercase", color: GOLD, fontFamily: "Georgia, serif", textAlign: facing === "left" ? "right" : "left", pointerEvents: "none" }}>
+              {L("Press to spray", "اضغط للرش")}<br />{L("& smell", "وشمّ العطر")}
+            </span>
             {/* gold arrow pointing down at the sprayer */}
             <svg className="spr-arrow" width="11" height="14" viewBox="0 0 30 40" aria-hidden="true" style={{ position: "absolute", left: 30.5, top: 8, filter: "drop-shadow(0 1px 2px rgba(0,0,0,.2))" }}>
               <path d="M11 1 H19 V20 H27 L15 38 L3 20 H11Z" fill={GOLD} />
