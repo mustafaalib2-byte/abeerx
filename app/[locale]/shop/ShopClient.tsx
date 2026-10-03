@@ -460,8 +460,8 @@ function ShopContent({ products, locale }: { products: Product[], locale: string
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
-            {filteredProducts.slice(0, visibleCount).map(product => (
-              <Link key={product.id} href={`/${locale}/product/${product.slug}`} className="group flex flex-col bg-card p-2 sm:p-4 hover:shadow-lg transition-shadow border border-border">
+            {filteredProducts.slice(0, visibleCount).map((product, index) => (
+              <Link key={product.id} href={`/${locale}/product/${product.slug}`} className={`group flex flex-col bg-card p-2 sm:p-4 hover:shadow-lg transition-shadow border border-border ${index % 5 === 4 ? 'col-span-2 sm:col-span-1' : ''}`}>
                 <div className="relative aspect-square bg-secondary mb-2 sm:mb-4 overflow-hidden border border-border/50">
                   <Image 
                     src={product.images[0] || '/placeholder.jpg'} 

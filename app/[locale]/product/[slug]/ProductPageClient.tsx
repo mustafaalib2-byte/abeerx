@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Product } from "@/types/product";
 import { useCart } from "@/features/cart/CartContext";
+import SprayExperience from "@/components/SprayExperience";
 
 export default function ProductPageClient({ product, locale }: { product: Product, locale: string }) {
   const isArabic = locale === 'ar';
@@ -28,7 +29,7 @@ export default function ProductPageClient({ product, locale }: { product: Produc
         
         {/* Left: Image Gallery */}
         <div className="flex flex-col space-y-2 md:space-y-4">
-          <div className="h-[30vh] min-h-[190px] md:h-auto md:aspect-square bg-secondary w-full relative border border-border">
+          <div data-spray-anchor className="h-[30vh] min-h-[190px] md:h-auto md:aspect-square bg-secondary w-full relative border border-border">
             <Image 
               src={product.images[selectedImageIndex] || product.images[0] || '/placeholder.jpg'} 
               alt={product.name} 
@@ -129,6 +130,8 @@ export default function ProductPageClient({ product, locale }: { product: Produc
                 : (isArabic ? "أضف للسلة" : "Add to Cart")}
             </button>
           </div>
+
+          <SprayExperience product={product} isArabic={isArabic} />
 
           <p className="text-muted-foreground mb-6 leading-relaxed">
             {(isArabic && product.descriptionAr) ? product.descriptionAr : product.description}
