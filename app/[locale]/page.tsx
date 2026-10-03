@@ -3,6 +3,7 @@ import { ProductService } from "@/services/ProductService";
 import Link from "next/link";
 import Image from "next/image";
 import { AddToCartButton } from "@/features/cart/AddToCartButton";
+import HeroSlideshow from "@/components/HeroSlideshow";
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -11,37 +12,23 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   // Fetch featured products using our Data Access Layer
   const featuredProducts = await ProductService.getFeaturedProducts();
 
+  // Hero slideshow: in-stock perfumes that have a photo (one slide per perfume)
+  const heroSlides = featuredProducts
+    .filter(p => p.images?.[0])
+    .slice(0, 8)
+    .map(p => ({ image: p.images[0], name: p.name, brand: p.brand, href: `/${locale}/product/${p.slug}` }));
+
   return (
     <div className="flex flex-col w-full">
-      {/* 1. Premium Hero Section */}
-      <section className="relative w-full h-[80vh] bg-secondary flex items-center justify-center overflow-hidden">
-        {/* We would use next/image here, but using a styled div for placeholder until assets are uploaded */}
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=2000')] bg-cover bg-center" />
-        
-        <div className="relative z-20 text-center text-white px-4 max-w-3xl">
-          <h1 className="text-5xl md:text-7xl font-serif mb-6 leading-tight">
-            {isArabic ? "اكتشف عطرك المميز" : "Discover Your Signature Scent"}
-          </h1>
-          <p className="text-lg md:text-xl font-light mb-10 opacity-90">
-            {isArabic ? "مجموعة حصرية من العطور الفاخرة والأصلية في الكويت." : "An exclusive collection of authentic luxury perfumes curated for Kuwait."}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link 
-              href={`/${locale}/shop`}
-              className="bg-ring text-white px-8 py-4 text-sm tracking-widest uppercase font-bold hover:bg-black transition-colors w-full sm:w-auto"
-            >
-              {isArabic ? "تسوق الآن" : "Shop Now"}
-            </Link>
-            <Link 
-              href={`/${locale}/collections`}
-              className="bg-transparent border border-white text-white px-8 py-4 text-sm tracking-widest uppercase font-bold hover:bg-white hover:text-black transition-colors w-full sm:w-auto"
-            >
-              {isArabic ? "استكشف المجموعة" : "Explore Collection"}
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* 1. Hero: slideshow of our own product photos */}
+      {heroSlides.length > 0 ? (
+        <HeroSlideshow slides={heroSlides} locale={locale} />
+      ) : (
+        <section className="relative w-full h-[60vh] bg-black flex flex-col items-center justify-between py-12 px-4 text-center">
+          <h1 className="text-4xl md:text-6xl font-serif text-white">{isArabic ? "اكتشف عطرك المميز" : "Discover Your Signature Scent"}</h1>
+          <Link href={`/${locale}/shop`} className="bg-ring text-white px-10 py-4 text-sm tracking-widest uppercase font-bold">{isArabic ? "تسوق الآن" : "Shop Now"}</Link>
+        </section>
+      )}
 
       {/* 2. Featured Categories */}
       <section className="py-20 px-4 container mx-auto">
