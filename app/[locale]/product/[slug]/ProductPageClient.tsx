@@ -102,6 +102,9 @@ export default function ProductPageClient({ product, locale }: { product: Produc
             </div>
           )}
 
+          {/* Spray & Smell bottle - sits just above Add to Cart */}
+          <SprayExperience product={product} isArabic={isArabic} />
+
           {/* Quantity & Add to Cart */}
           <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
             <div className="flex items-center border border-border">
@@ -130,8 +133,6 @@ export default function ProductPageClient({ product, locale }: { product: Produc
                 : (isArabic ? "أضف للسلة" : "Add to Cart")}
             </button>
           </div>
-
-          <SprayExperience product={product} isArabic={isArabic} />
 
           <p className="text-muted-foreground mb-6 leading-relaxed">
             {(isArabic && product.descriptionAr) ? product.descriptionAr : product.description}

@@ -14,9 +14,10 @@ export function middleware(request: NextRequest) {
 
   if (pathnameIsMissingLocale) {
     // We can use a negotiated locale here, but for simplicity, we default to 'en'
-    return NextResponse.redirect(
-      new URL(`/${defaultLocale}${pathname.startsWith('/') ? '' : '/'}${pathname}`, request.url)
-    )
+    // Keep the query string (e.g. Google Ads ?gclid=…, utm_…) so ad clicks and sales are still credited
+    const url = request.nextUrl.clone()
+    url.pathname = `/${defaultLocale}${pathname.startsWith('/') ? '' : '/'}${pathname}`
+    return NextResponse.redirect(url)
   }
 }
 

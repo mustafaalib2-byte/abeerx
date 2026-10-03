@@ -87,7 +87,7 @@ function labelLines(name: string): string[] {
   return best.filter(Boolean);
 }
 
-function Bottle({ pressed, style, brand, name }: { pressed: boolean; style?: CSSProperties; brand?: string; name?: string }) {
+function Bottle({ pressed, style, brand, name, knobLoop }: { pressed: boolean; style?: CSSProperties; brand?: string; name?: string; knobLoop?: boolean }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const id = (n: string) => `sb${n}${uid}`;
   const u = (n: string) => `url(#${id(n)})`;
@@ -215,7 +215,7 @@ function Bottle({ pressed, style, brand, name }: { pressed: boolean; style?: CSS
       <rect x="53" y="110" width="54" height="2" rx="1" fill="#fff" opacity="0.35" />
 
       {/* atomiser — moves down when pressed */}
-      <g style={{ transform: pressed ? "translateY(5px)" : "translateY(0)", transition: "transform .08s ease-out" }}>
+      <g className={knobLoop && !pressed ? "spr-knob" : undefined} style={knobLoop && !pressed ? undefined : { transform: pressed ? "translateY(6px)" : "translateY(0)", transition: "transform .08s ease-out" }}>
         <rect x="75" y="84" width="10" height="8" fill={u("silver")} />
         <rect x="64" y="58" width="32" height="28" rx="3" fill={u("gold")} />
         <ellipse cx="80" cy="58" rx="16" ry="3.2" fill={u("goldTop")} />
@@ -618,6 +618,7 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
   const [pressed, setPressed] = useState(false);
   const [reduced, setReduced] = useState(false);
   const [hint, setHint] = useState(true);
+  const [tapPress, setTapPress] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null);
   const nozzleRef = useRef<HTMLDivElement>(null);
@@ -673,6 +674,13 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
     }, 550); // let the bottle settle in first
   }, [tiers, reduced, isArabic]);
 
+  // the knob visibly goes down under the finger, then the show starts
+  const tap = useCallback(() => {
+    setTapPress(true);
+    playSpraySound(0.06);
+    setTimeout(() => { setTapPress(false); start(); }, 180);
+  }, [start]);
+
   const close = useCallback(() => {
     setPhase("closing");
     if (engineRef.current) engineRef.current.dismiss();
@@ -683,8 +691,7 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
 
   const cur = tierIdx >= 0 ? tiers[tierIdx] : null;
   const visible = phase === "spraying" || phase === "done";
-  const side = isArabic ? { left: 16 } : { right: 16 };
-  const pill: CSSProperties = {
+    const pill: CSSProperties = {
     background: "rgba(255,255,255,.92)", border: `1px solid ${GOLD}`, padding: "8px 16px", fontSize: 11,
     letterSpacing: "0.22em", textTransform: "uppercase", color: "#5a4718", fontFamily: "Georgia, serif", cursor: "pointer",
   };
@@ -700,45 +707,49 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
         .spr-puff{animation:spr-puff 1.6s ease-out infinite}
         @keyframes spr-arrow{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
         .spr-arrow{animation:spr-arrow .9s ease-in-out infinite}
-        @keyframes spr-press{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(1.5px)}}
-        .spr-press{animation:spr-press 1.6s ease-in-out infinite}
-        @media (prefers-reduced-motion: reduce){.spr-in,.spr-ring,.spr-puff,.spr-arrow,.spr-press{animation:none!important}}
+        @keyframes spr-knob{0%,62%,100%{transform:translateY(0)}68%,76%{transform:translateY(6px)}}
+        .spr-knob{animation:spr-knob 2.2s ease-in-out infinite}
+        @keyframes spr-tpuff{0%,64%{transform:translate(0,0) scale(.3);opacity:0}70%{opacity:.9}100%{transform:translate(34px,-4px) scale(1.9);opacity:0}}
+        .spr-tpuff{animation:spr-tpuff 2.2s ease-out infinite}
+        .spr-trigger:active .spr-bottlebox{transform:scale(.97)}
+        @media (prefers-reduced-motion: reduce){.spr-in,.spr-ring,.spr-puff,.spr-arrow,.spr-knob,.spr-tpuff{animation:none!important}}
       `}</style>
+
+      {/* Bottle trigger: sits on the right, just above the Add to Cart button */}
+      <div style={{ position: "relative", height: 0 }} dir="ltr">
+        <div style={{ position: "absolute", [isArabic ? "left" : "right"]: 2, bottom: 10, display: "flex", alignItems: "flex-end", gap: 8, flexDirection: isArabic ? "row-reverse" : "row", zIndex: 5 }}>
+          {hint && phase === "idle" && (
+            <button type="button" onClick={tap} className="spr-in" style={{ background: "transparent", border: 0, padding: 0, cursor: "pointer", marginBottom: 86, fontSize: 9.5, letterSpacing: "0.2em", textTransform: "uppercase", color: GOLD, fontFamily: "Georgia, serif", whiteSpace: "nowrap" }}>
+              {L("Tap to spray", "اضغط للرش")}
+            </button>
+          )}
+          <button
+            type="button"
+            className="spr-trigger"
+            onPointerDown={() => setTapPress(true)}
+            onPointerUp={() => setTapPress(false)}
+            onPointerLeave={() => setTapPress(false)}
+            onClick={tap}
+            aria-label={L("Spray and smell this perfume", "رشّ وتخيّل العطر")}
+            style={{ position: "relative", width: 52, height: 104, background: "transparent", border: 0, padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent", touchAction: "manipulation", visibility: phase === "idle" ? "visible" : "hidden" }}
+          >
+            {/* gold arrow pointing down at the sprayer */}
+            <svg className="spr-arrow" width="11" height="14" viewBox="0 0 30 40" aria-hidden="true" style={{ position: "absolute", left: 20.5, top: 1, filter: "drop-shadow(0 1px 2px rgba(0,0,0,.2))" }}>
+              <path d="M11 1 H19 V20 H27 L15 38 L3 20 H11Z" fill={GOLD} />
+            </svg>
+            <span className="spr-bottlebox" style={{ position: "absolute", inset: 0, display: "block", transition: "transform .1s", filter: "drop-shadow(0 6px 8px rgba(0,0,0,.18))" }}>
+              <Bottle pressed={tapPress} knobLoop={!tapPress} brand={product.brand} name={product.name} />
+            </span>
+            {/* mist leaving the nozzle each time the knob goes down */}
+            {[0, 0.12, 0.24].map((d, i) => (
+              <span key={i} className="spr-tpuff" style={{ position: "absolute", left: 50 * NOZ_X + 3, top: 104 * NOZ_Y - 6, width: 14, height: 10, borderRadius: "50%", background: "radial-gradient(closest-side, rgba(140,155,175,.8), rgba(140,155,175,0))", animationDelay: `${d}s`, pointerEvents: "none" }} />
+            ))}
+          </button>
+        </div>
+      </div>
 
       {mounted && createPortal(
         <>
-          {/* Floating button */}
-          {phase === "idle" && (
-            <div style={{ position: "fixed", ...side, bottom: "calc(env(safe-area-inset-bottom) + var(--spr-fab-bottom, 168px))", zIndex: 45, display: "flex", alignItems: "center", gap: 10, flexDirection: isArabic ? "row" : "row-reverse" }} className="spr-fab-wrap">
-              <style>{`@media (min-width:768px){.spr-fab-wrap{--spr-fab-bottom:40px}}`}</style>
-              <button
-                type="button"
-                onClick={start}
-                aria-label={L("Spray and smell this perfume", "رشّ وتخيّل العطر")}
-                style={{ position: "relative", width: 60, height: 60, borderRadius: "50%", background: "#fff", border: `1px solid ${GOLD}`, boxShadow: "0 6px 20px rgba(0,0,0,.14)", cursor: "pointer", padding: 0 }}
-              >
-                <span className="spr-ring" style={{ position: "absolute", inset: -1, borderRadius: "50%", border: `1px solid ${GOLD}`, pointerEvents: "none" }} />
-                {/* gold arrow pointing at the pump */}
-                <svg className="spr-arrow" width="8" height="10" viewBox="0 0 30 40" aria-hidden="true" style={{ position: "absolute", left: 23, top: 4 }}>
-                  <path d="M11 1 H19 V20 H27 L15 38 L3 20 H11Z" fill={GOLD} />
-                </svg>
-                {/* mini bottle */}
-                <span className="spr-press" style={{ position: "absolute", left: 16, top: 13, width: 20, height: 40, display: "block" }}>
-                  <Bottle pressed={false} />
-                </span>
-                {/* little puffs leaving the nozzle */}
-                {[0, 0.55, 1.1].map((d, i) => (
-                  <span key={i} className="spr-puff" style={{ position: "absolute", left: 35, top: 18, width: 10, height: 7, borderRadius: "50%", background: "radial-gradient(closest-side, rgba(140,155,175,.75), rgba(140,155,175,0))", animationDelay: `${d}s`, pointerEvents: "none" }} />
-                ))}
-              </button>
-              {hint && (
-                <button type="button" onClick={start} className="spr-in" style={{ ...pill, boxShadow: "0 4px 14px rgba(0,0,0,.1)", padding: "7px 12px", fontSize: 10.5, whiteSpace: "nowrap" }}>
-                  {L("Spray & Smell", "رشّ وتخيّل العطر")}
-                </button>
-              )}
-            </div>
-          )}
-
           {/* Blurred page behind the show (tap anywhere to close) */}
           <div
             onClick={open ? close : undefined}
