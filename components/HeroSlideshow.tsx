@@ -17,6 +17,13 @@ export default function HeroSlideshow({ slides, locale }: { slides: HeroSlide[];
   const touchX = useRef<number | null>(null);
   const count = slides.length;
 
+  // Every visit starts on a different perfume, so returning customers see something new
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (count > 1) setIndex(Math.floor(Math.random() * count));
+    setReady(true);
+  }, [count]);
+
   useEffect(() => {
     if (count < 2 || paused) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -57,7 +64,7 @@ export default function HeroSlideshow({ slides, locale }: { slides: HeroSlide[];
       {/* Slides — middle */}
       <div className="relative flex-1 min-h-0">
       {slides.map((s, i) => {
-        const active = i === index;
+        const active = ready && i === index;
         return (
           <div
             key={s.href + i}

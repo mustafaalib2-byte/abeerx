@@ -70,6 +70,7 @@ function playSpraySound(volume = 0.1) {
 // viewBox 160 x 320. The nozzle opening sits at (NOZ_X, NOZ_Y) of that box.
 const VB_W = 160, VB_H = 320;
 const NOZ_X = 97 / VB_W;
+const NOZ_X_LEFT = 63 / VB_W; // nozzle position when the sprayer faces left
 const NOZ_Y = 72 / VB_H;
 
 // Splits a product name into at most 2 lines that fit the bottle front.
@@ -87,7 +88,7 @@ function labelLines(name: string): string[] {
   return best.filter(Boolean);
 }
 
-function Bottle({ pressed, style, brand, name, knobLoop }: { pressed: boolean; style?: CSSProperties; brand?: string; name?: string; knobLoop?: boolean }) {
+function Bottle({ pressed, style, brand, name, knobLoop, facing = "right" }: { pressed: boolean; style?: CSSProperties; brand?: string; name?: string; knobLoop?: boolean; facing?: "left" | "right" }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const id = (n: string) => `sb${n}${uid}`;
   const u = (n: string) => `url(#${id(n)})`;
@@ -220,7 +221,7 @@ function Bottle({ pressed, style, brand, name, knobLoop }: { pressed: boolean; s
         <rect x="64" y="58" width="32" height="28" rx="3" fill={u("gold")} />
         <ellipse cx="80" cy="58" rx="16" ry="3.2" fill={u("goldTop")} />
         <rect x="64" y="82" width="32" height="4" rx="1.5" fill="#3d2c08" opacity="0.25" />
-        <ellipse cx="96" cy="72" rx="1.1" ry="2.1" fill="#1a1205" />
+        <ellipse cx={facing === "left" ? 64 : 96} cy="72" rx="1.1" ry="2.1" fill="#1a1205" />
       </g>
     </svg>
   );
@@ -310,8 +311,18 @@ function noteArt(key: string): HTMLCanvasElement | null {
 const FLY = 1.5;      // seconds a note drifts in the mist before heading to its place
 const SETTLE = 1.5;   // seconds to glide into its place
 
+// Size of the note rows at the bottom of the screen (shared by the animation and the bottle placement)
+function rowsLayout(W: number, H: number) {
+  const margin = 34 + Math.min(26, H * 0.03); // clear of phone gesture bars
+  const size = clamp(Math.min(W / 6.2, H / 9.5), 46, 84);
+  const nameFs = clamp(size / 6.2, 9.5, 13);
+  const capH = 16;
+  const rowH = capH + size + nameFs * 2.2 + 16; // room for two-line names
+  return { size, rowH, capH, nameFs, margin };
+}
+
 type Engine = {
-  start: (tiers: Tier[], tierLabels: string[], getNozzle: () => { x: number; y: number } | null) => void;
+  start: (tiers: Tier[], tierLabels: string[], getNozzle: () => { x: number; y: number } | null, dir?: 1 | -1) => void;
   dismiss: () => void;
   stop: () => void;
 };
@@ -339,6 +350,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
   let labels: string[] = [];
   let tIdx = 0, tClock = -1, tEnd = 0, doneFired = true, emitAcc = 0, emitting = 0, lastTier = -1, laneCursor = 0;
   let fade = 1, dismissing = false;
+  let dir: 1 | -1 = 1; // 1 = spray to the right, -1 = to the left
   let nozzleFn: () => { x: number; y: number } | null = () => null;
   let raf = 0, last = 0, running = false;
   let layout = { size: 64, rowH: 100, capH: 16, nameFs: 11, margin: 24 };
@@ -347,12 +359,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
 
   // Rows at the bottom: base notes lowest, heart above, top notes on top.
   const computeLayout = () => {
-    const margin = 34 + Math.min(26, H * 0.03); // clear of phone gesture bars
-    const size = clamp(Math.min(W / 6.2, H / 9.5), 46, 84);
-    const nameFs = clamp(size / 6.2, 9.5, 13);
-    const capH = 16;
-    const rowH = capH + size + nameFs * 2.2 + 16; // room for two-line names
-    layout = { size, rowH, capH, nameFs, margin };
+    layout = rowsLayout(W, H);
   };
   const slotFor = (tier: number, idx: number) => {
     const n = tiersRef[tier].notes.length;
@@ -368,7 +375,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
     const sp = v0 * (burst ? 0.45 + Math.random() * 0.75 : 0.25 + Math.random() * 0.32);
     puffs.push({
       x: n.x + Math.random() * 4, y: n.y + (Math.random() - 0.5) * 3,
-      vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - Math.random() * 12 * s,
+      vx: Math.cos(ang) * sp * dir, vy: Math.sin(ang) * sp - Math.random() * 12 * s,
       age: -delay, life: (burst ? 3.2 : 3.6) + Math.random() * 2.4,
       s0: (10 + Math.random() * 12) * s, s1: (burst ? 150 + Math.random() * 170 : 120 + Math.random() * 140) * s,
       rot: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.4,
@@ -380,13 +387,13 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
 
   const spritz = (tier: number) => {
     const n = nozzle();
-    const v0 = clamp(W - n.x, 260, 1500) * 0.9;
+    const v0 = clamp(dir > 0 ? W - n.x : n.x, 260, 1500) * 0.9;
     emitting = 2.0;
     for (let i = 0; i < 56; i++) spawnPuff(n, v0, true, Math.random() * 0.5);
     for (let i = 0; i < 110; i++) {
       const a = (Math.random() - 0.5) * 0.45 - 0.04;
       const sp = v0 * (0.8 + Math.random() * 1.2);
-      drops.push({ x: n.x, y: n.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: -Math.random() * 0.35, life: 0.45 + Math.random() * 1.0, r: (0.5 + Math.random() * 1.3) * s });
+      drops.push({ x: n.x, y: n.y, vx: Math.cos(a) * sp * dir, vy: Math.sin(a) * sp, age: -Math.random() * 0.35, life: 0.45 + Math.random() * 1.0, r: (0.5 + Math.random() * 1.3) * s });
     }
     cb.onSpritz(tier);
   };
@@ -401,7 +408,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
     const laneY = n.y + (lane / 4 - 0.35) * H * 0.22;
     notes.push({
       key, label: ev.label || "", tier: ev.tier, age: 0,
-      x0: n.x, y0: n.y, laneY, dist: clamp(W * 0.55, 140, Math.max(160, W - n.x - layout.size)),
+      x0: n.x, y0: n.y, laneY, dist: clamp(W * 0.55, 140, Math.max(160, (dir > 0 ? W - n.x : n.x) - layout.size)),
       slotX: slot.x, slotY: slot.y, slotW: slot.w,
       spin: (Math.random() - 0.5) * 60, phase: Math.random() * 6.28,
     });
@@ -473,7 +480,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
       emitting -= dt;
       emitAcc += dt * 34;
       const n = nozzle();
-      const v0 = clamp(W - n.x, 260, 1500) * 0.9;
+      const v0 = clamp(dir > 0 ? W - n.x : n.x, 260, 1500) * 0.9;
       while (emitAcc >= 1) { emitAcc -= 1; spawnPuff(n, v0, false); }
     }
     if (dismissing) fade = Math.max(0, fade - real * 2.4);
@@ -488,7 +495,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
       if (p.age < 0) continue;
       if (p.age > p.life) { puffs.splice(i, 1); continue; }
       const drag = Math.exp(-0.85 * dt);
-      p.vx = p.vx * drag + 14 * s * dt;
+      p.vx = p.vx * drag + 14 * s * dt * dir;
       p.vy = p.vy * drag + Math.sin(p.seed + p.age * 1.6 + p.x * 0.006) * 46 * s * dt - 6 * s * dt;
       p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
     }
@@ -513,7 +520,7 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
       nt.age += real;
       const img = noteArt(nt.key);
       const tf = clamp(nt.age / (FLY + 0.8), 0, 1);
-      const fx = nt.x0 + nt.dist * easeOutCubic(tf);
+      const fx = nt.x0 + nt.dist * easeOutCubic(tf) * dir;
       const fy = lerp(nt.y0, nt.laneY, easeOutCubic(clamp(nt.age / 1.1, 0, 1))) + Math.sin(nt.age * 3 + nt.phase) * 8 * s;
       const q = easeInOut(clamp((nt.age - FLY) / SETTLE, 0, 1));
       const x = lerp(fx, nt.slotX, q);
@@ -562,7 +569,8 @@ function createEngine(canvas: HTMLCanvasElement, cb: { onTier: (i: number) => vo
   };
 
   return {
-    start(tiers, tierLabels, getNozzle) {
+    start(tiers, tierLabels, getNozzle, direction = 1) {
+      dir = direction;
       nozzleFn = getNozzle;
       tiersRef = tiers;
       labels = tierLabels;
@@ -619,6 +627,13 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
   const [reduced, setReduced] = useState(false);
   const [hint, setHint] = useState(true);
   const [tapPress, setTapPress] = useState(false);
+  // where the bottle stands during the show, and the jump from the page button to there
+  const [stage, setStage] = useState<{ left: number; top: number; height: number } | null>(null);
+  const [flip, setFlip] = useState<{ dx: number; dy: number; s: number } | null>(null);
+  const [atButton, setAtButton] = useState(false); // true = drawn exactly over the page button
+  const [animateMove, setAnimateMove] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const stageRef = useRef<{ left: number; top: number; height: number } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null);
   const nozzleRef = useRef<HTMLDivElement>(null);
@@ -644,6 +659,9 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
   }, [open]);
 
   const L = (en: string, ar: string) => (isArabic ? ar : en);
+  // The page bottle sits at the edge, so it sprays towards the middle of the screen
+  const facing: "left" | "right" = isArabic ? "right" : "left";
+  const nozX = facing === "left" ? NOZ_X_LEFT : NOZ_X;
 
   const start = useCallback(() => {
     setTierIdx(-1);
@@ -662,7 +680,7 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
             try { navigator.vibrate?.(i === 0 ? [22] : [12]); } catch { /* optional */ }
           },
           onDone: () => setPhase(p => (p === "spraying" ? "done" : p)),
-          onGone: () => { setPhase("idle"); setTierIdx(-1); },
+          onGone: () => setTierIdx(-1),
         });
       }
       engineRef.current.start(tiers, tiers.map(t => (isArabic ? t.ar : t.en).toUpperCase()), () => {
@@ -670,21 +688,57 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
         if (!el) return null;
         const r = el.getBoundingClientRect();
         return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-      });
-    }, 550); // let the bottle settle in first
-  }, [tiers, reduced, isArabic]);
+      }, facing === "left" ? -1 : 1);
+    }, 750); // let the bottle glide into place first
+  }, [tiers, reduced, isArabic, facing]);
 
-  // the knob visibly goes down under the finger, then the show starts
+  // Bottle position for the show: exactly where it stands on the page, lifted up just enough
+  // to clear the rows where the notes settle.
+  const computeStage = useCallback(() => {
+    const W = window.innerWidth, H = window.innerHeight;
+    const Lr = rowsLayout(W, H);
+    const el = triggerRef.current;
+    const r = el ? el.getBoundingClientRect() : { left: W - 90, top: H * 0.4, height: 144 };
+    const rowsTop = H - Lr.margin - tiers.length * Lr.rowH - 14;
+    const top = clamp(Math.min(r.top - 40, rowsTop - r.height), 56, Math.max(56, r.top));
+    return { left: r.left, top, height: r.height };
+  }, [tiers.length]);
+
+  // How to draw the stage bottle so it sits exactly on the page button
+  const flipFrom = (st: { left: number; top: number; height: number }) => {
+    const el = triggerRef.current;
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return { dx: r.left - st.left, dy: r.top - st.top, s: r.height / st.height };
+  };
+
+  // The knob goes down under the finger, then the SAME bottle lifts off the page and sprays
   const tap = useCallback(() => {
     setTapPress(true);
     playSpraySound(0.06);
-    setTimeout(() => { setTapPress(false); start(); }, 180);
-  }, [start]);
+    setTimeout(() => {
+      setTapPress(false);
+      const st = computeStage();
+      const f = flipFrom(st);
+      setStage(st);
+      stageRef.current = st;
+      setFlip(f);
+      setAnimateMove(false);
+      setAtButton(!!f);
+      // next frames: glide from the button up to the stage
+      requestAnimationFrame(() => requestAnimationFrame(() => { setAnimateMove(true); setAtButton(false); }));
+      start();
+    }, 180);
+  }, [start, computeStage]);
 
   const close = useCallback(() => {
     setPhase("closing");
     if (engineRef.current) engineRef.current.dismiss();
-    else setTimeout(() => setPhase("idle"), 300);
+    // glide the bottle back down onto the page, then hand over to the page button
+    const st = stageRef.current;
+    const f = st ? flipFrom(st) : null;
+    if (f) { setFlip(f); setAnimateMove(true); setAtButton(true); }
+    setTimeout(() => { setPhase("idle"); setAtButton(false); setAnimateMove(false); }, 700);
   }, []);
 
   if (!tiers.length) return null;
@@ -711,19 +765,22 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
         .spr-knob{animation:spr-knob 2.2s ease-in-out infinite}
         @keyframes spr-tpuff{0%,64%{transform:translate(0,0) scale(.3);opacity:0}70%{opacity:.9}100%{transform:translate(34px,-4px) scale(1.9);opacity:0}}
         .spr-tpuff{animation:spr-tpuff 2.2s ease-out infinite}
+        @keyframes spr-tpuffL{0%,64%{transform:translate(0,0) scale(.3);opacity:0}70%{opacity:.9}100%{transform:translate(-34px,-4px) scale(1.9);opacity:0}}
+        .spr-tpuffL{animation:spr-tpuffL 2.2s ease-out infinite}
         .spr-trigger:active .spr-bottlebox{transform:scale(.97)}
-        @media (prefers-reduced-motion: reduce){.spr-in,.spr-ring,.spr-puff,.spr-arrow,.spr-knob,.spr-tpuff{animation:none!important}}
+        @media (prefers-reduced-motion: reduce){.spr-in,.spr-ring,.spr-puff,.spr-arrow,.spr-knob,.spr-tpuff,.spr-tpuffL{animation:none!important}}
       `}</style>
 
       {/* Bottle trigger: sits on the right, just above the Add to Cart button */}
       <div style={{ position: "relative", height: 0 }} dir="ltr">
         <div style={{ position: "absolute", [isArabic ? "left" : "right"]: 2, bottom: 10, display: "flex", alignItems: "flex-end", gap: 8, flexDirection: isArabic ? "row-reverse" : "row", zIndex: 5 }}>
           {hint && phase === "idle" && (
-            <button type="button" onClick={tap} className="spr-in" style={{ background: "transparent", border: 0, padding: 0, cursor: "pointer", marginBottom: 86, fontSize: 9.5, letterSpacing: "0.2em", textTransform: "uppercase", color: GOLD, fontFamily: "Georgia, serif", whiteSpace: "nowrap" }}>
+            <button type="button" onClick={tap} className="spr-in" style={{ background: "transparent", border: 0, padding: 0, cursor: "pointer", marginBottom: 56, fontSize: 9.5, letterSpacing: "0.2em", textTransform: "uppercase", color: GOLD, fontFamily: "Georgia, serif", whiteSpace: "nowrap" }}>
               {L("Tap to spray", "اضغط للرش")}
             </button>
           )}
           <button
+            ref={triggerRef}
             type="button"
             className="spr-trigger"
             onPointerDown={() => setTapPress(true)}
@@ -731,18 +788,18 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
             onPointerLeave={() => setTapPress(false)}
             onClick={tap}
             aria-label={L("Spray and smell this perfume", "رشّ وتخيّل العطر")}
-            style={{ position: "relative", width: 52, height: 104, background: "transparent", border: 0, padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent", touchAction: "manipulation", visibility: phase === "idle" ? "visible" : "hidden" }}
+            style={{ position: "relative", width: 72, height: 144, background: "transparent", border: 0, padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent", touchAction: "manipulation", visibility: phase === "idle" ? "visible" : "hidden" }}
           >
             {/* gold arrow pointing down at the sprayer */}
-            <svg className="spr-arrow" width="11" height="14" viewBox="0 0 30 40" aria-hidden="true" style={{ position: "absolute", left: 20.5, top: 1, filter: "drop-shadow(0 1px 2px rgba(0,0,0,.2))" }}>
+            <svg className="spr-arrow" width="11" height="14" viewBox="0 0 30 40" aria-hidden="true" style={{ position: "absolute", left: 30.5, top: 8, filter: "drop-shadow(0 1px 2px rgba(0,0,0,.2))" }}>
               <path d="M11 1 H19 V20 H27 L15 38 L3 20 H11Z" fill={GOLD} />
             </svg>
             <span className="spr-bottlebox" style={{ position: "absolute", inset: 0, display: "block", transition: "transform .1s", filter: "drop-shadow(0 6px 8px rgba(0,0,0,.18))" }}>
-              <Bottle pressed={tapPress} knobLoop={!tapPress} brand={product.brand} name={product.name} />
+              <Bottle pressed={tapPress} knobLoop={!tapPress} brand={product.brand} name={product.name} facing={facing} />
             </span>
             {/* mist leaving the nozzle each time the knob goes down */}
             {[0, 0.12, 0.24].map((d, i) => (
-              <span key={i} className="spr-tpuff" style={{ position: "absolute", left: 50 * NOZ_X + 3, top: 104 * NOZ_Y - 6, width: 14, height: 10, borderRadius: "50%", background: "radial-gradient(closest-side, rgba(140,155,175,.8), rgba(140,155,175,0))", animationDelay: `${d}s`, pointerEvents: "none" }} />
+              <span key={i} className={facing === "left" ? "spr-tpuffL" : "spr-tpuff"} style={{ position: "absolute", left: facing === "left" ? 72 * nozX - 17 : 72 * nozX + 3, top: 144 * NOZ_Y - 6, width: 14, height: 10, borderRadius: "50%", background: "radial-gradient(closest-side, rgba(140,155,175,.8), rgba(140,155,175,0))", animationDelay: `${d}s`, pointerEvents: "none" }} />
             ))}
           </button>
         </div>
@@ -763,12 +820,15 @@ export default function SprayExperience({ product, isArabic }: { product: Produc
 
           {/* The bottle */}
           <div aria-hidden="true" style={{
-            position: "fixed", left: "max(14px, 6vw)", top: "13vh", height: "min(34vh, 300px)", aspectRatio: `${VB_W} / ${VB_H}`, zIndex: 71,
-            pointerEvents: "none", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(14px)", transition: "opacity .5s ease, transform .5s ease",
-            filter: "drop-shadow(0 10px 14px rgba(0,0,0,.12))",
+            position: "fixed", left: stage?.left ?? 14, top: stage?.top ?? 60, height: stage?.height ?? 260, aspectRatio: `${VB_W} / ${VB_H}`, zIndex: 71,
+            pointerEvents: "none", opacity: open ? 1 : 0,
+            transformOrigin: "0 0",
+            transform: atButton && flip ? `translate(${flip.dx}px, ${flip.dy}px) scale(${flip.s})` : "none",
+            transition: animateMove ? "transform .65s cubic-bezier(.22,.8,.25,1)" : "none",
+            filter: "drop-shadow(0 10px 14px rgba(0,0,0,.14))",
           }}>
-            <Bottle pressed={pressed} brand={product.brand} name={product.name} />
-            <div ref={nozzleRef} style={{ position: "absolute", left: `${NOZ_X * 100}%`, top: `${NOZ_Y * 100}%`, width: 2, height: 2 }} />
+            <Bottle pressed={pressed} brand={product.brand} name={product.name} facing={facing} />
+            <div ref={nozzleRef} style={{ position: "absolute", left: `${nozX * 100}%`, top: `${NOZ_Y * 100}%`, width: 2, height: 2 }} />
           </div>
 
           <canvas ref={canvasRef} aria-hidden="true" style={{ position: "fixed", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 72 }} />

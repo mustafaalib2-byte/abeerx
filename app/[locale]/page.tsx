@@ -4,18 +4,21 @@ import Link from "next/link";
 import Image from "next/image";
 import { AddToCartButton } from "@/features/cart/AddToCartButton";
 import HeroSlideshow from "@/components/HeroSlideshow";
+import { dailyShuffle } from "@/lib/dailyPick";
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const isArabic = locale === 'ar';
   
-  // Fetch featured products using our Data Access Layer
-  const featuredProducts = await ProductService.getFeaturedProducts();
+  // A fresh selection every day (changes at midnight Kuwait time).
+  // Only in-stock perfumes with a photo and a price are in the catalogue to begin with.
+  const allProducts = await ProductService.getAllProducts();
+  const todays = dailyShuffle(allProducts.filter(p => p.images?.[0]));
+  const featuredProducts = todays.slice(0, 8);
 
-  // Hero slideshow: in-stock perfumes that have a photo (one slide per perfume)
-  const heroSlides = featuredProducts
-    .filter(p => p.images?.[0])
-    .slice(0, 8)
+  // Hero slideshow: 10 different perfumes from today's selection (not the same as the featured grid)
+  const heroPool = todays.length > 18 ? todays.slice(8, 18) : todays.slice(0, 10);
+  const heroSlides = heroPool
     .map(p => ({ image: p.images[0], name: p.name, brand: p.brand, href: `/${locale}/product/${p.slug}` }));
 
   return (
