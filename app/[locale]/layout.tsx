@@ -12,6 +12,8 @@ const kufiArabic = Noto_Kufi_Arabic({ subsets: ["arabic"], variable: "--font-ara
 export const metadata: Metadata = {
   title: "ABEERX | Luxury Perfumes in Kuwait",
   description: "Discover your signature scent with ABEERX. Authentic luxury perfumes delivered across Kuwait.",
+  // Google Merchant Center / Search Console site ownership (outputs <meta name="google-site-verification">)
+  verification: { google: "fDI25SAyReAkHKEUIH8UEqFdTcdVDNz3A0FoBMHUNM4" },
 };
 
 export async function generateStaticParams() {
