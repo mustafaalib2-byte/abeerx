@@ -59,6 +59,8 @@
   .nav-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 24px; background: transparent; border: none; color: #e6d5cc; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; text-align: left; cursor: pointer; transition: all 0.2s; border-left: 4px solid transparent; }
   .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
   .nav-btn.active { background: rgba(242, 56, 124, 0.15); color: var(--brand-pink); border-left-color: var(--brand-pink); }
+  .nav-subgroup { background: rgba(255,255,255,0.03); }
+  .nav-btn.nav-sub { padding: 12px 24px 12px 44px; font-size: 0.88rem; }
   
   .web-badge { background: var(--brand-pink); color: #fff; border-radius: 12px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; font-family: 'DM Mono', monospace; }
 
@@ -371,9 +373,13 @@
   <div class="nav-menu">
     <button class="nav-btn active" onclick="showTab('sale',this)">🧾 Invoices (KD)</button>
     <button class="nav-btn" onclick="showTab('weborders',this)">🌐 Web Orders <span class="web-badge" id="web-order-badge">0</span></button>
-    <button id="nav-analyzer" class="nav-btn" onclick="showTab('analyzer',this)" style="color:#00ff00;">🔍 Data Analyzer</button>
-    
-<button id="nav-imagemgr" class="nav-btn" onclick="showTab('imagemgr',this)" style="color:#ff00ff;">🖼️ Web Image Manager</button>
+    <button id="nav-website" class="nav-btn nav-group-btn" onclick="toggleWebsiteGroup()">🌍 Website <span id="nav-website-caret" style="font-size:0.8em;">▸</span></button>
+    <div id="nav-website-group" class="nav-subgroup" style="display:none;">
+      <button id="nav-imagemgr" class="nav-btn nav-sub" onclick="showTab('imagemgr',this)">🖼️ Web Image Manager</button>
+      <button id="nav-webeditor" class="nav-btn nav-sub" onclick="showTab('webeditor',this)" style="display:none;">✏️ Web Editor</button>
+      <button id="nav-coupons" class="nav-btn nav-sub" onclick="showTab('coupons',this)" style="display:none;">🎟️ Coupons</button>
+      <button id="nav-analyzer" class="nav-btn nav-sub" onclick="showTab('analyzer',this)">🔍 Data Analyzer</button>
+    </div>
     <button class="nav-btn" onclick="showTab('quote',this)">📝 Quotations</button>
     <button id="nav-purchase" class="nav-btn" onclick="showTab('purchase',this)" style="display:none;">🛒 Purchases</button>
     <button id="nav-po" class="nav-btn" onclick="showTab('po',this)" style="display:none;">🧰 Purchase Orders</button>
@@ -386,9 +392,6 @@
     <button id="nav-barcode" class="nav-btn" onclick="showTab('barcode',this)" style="display:none;">🏷️ Barcode & Labels</button>
     <button id="nav-catalog" class="nav-btn" onclick="showTab('catalog',this)" style="display:none;">📚 Item Catalog</button>
     <button id="nav-items" class="nav-btn" onclick="showTab('items',this)" style="display:none;">⚙️ Data & Settings</button>
-    <button id="nav-webeditor" class="nav-btn" onclick="showTab('webeditor',this)" style="display:none;">🌍 Web Editor</button>
-    
-    <button id="nav-coupons" class="nav-btn" onclick="showTab('coupons',this)" style="display:none;">🎟️ Coupons</button>
   </div>
   <div class="lock-area">
     <button id="lock-btn" class="lock-btn" onclick="toggleAdminLock()">🔒 Admin Login</button>
@@ -1607,8 +1610,24 @@
         <button class="btn" onclick="loadWebCatalog()">🔄 Load Website Products</button>
         <button class="btn" style="background:#00e5ff; color:black; font-weight:bold;" onclick="autoLinkWebImages()">🔗 Auto-Link Uploaded Images</button>
         
-        <input type="text" id="imagemgr-search" placeholder="Search products..." style="padding:10px; border:1px solid var(--border); border-radius:8px; flex:1;" oninput="filterImageMgr()">
+        <input type="text" id="imagemgr-search" placeholder="Search products, barcode or brand..." style="padding:10px; border:1px solid var(--border); border-radius:8px; flex:1;" oninput="filterImageMgr()">
     </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin:-8px 0 12px; padding:10px 12px; background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; font-size:0.9rem;">
+        <b>Filters:</b>
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="imgf-stock" onchange="filterImageMgr()" style="width:16px; height:16px;"> In stock</label>
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="imgf-price" onchange="filterImageMgr()" style="width:16px; height:16px;"> With sale price</label>
+        <label style="display:flex; align-items:center; gap:6px;">Verified:
+            <select id="imgf-verified" onchange="filterImageMgr()" style="padding:5px 8px; border:1px solid var(--border); border-radius:6px;">
+                <option value="all">All</option><option value="no">❌ Not verified yet</option><option value="yes">✅ Verified</option>
+            </select></label>
+        <label style="display:flex; align-items:center; gap:6px;">Photos:
+            <select id="imgf-photos" onchange="filterImageMgr()" style="padding:5px 8px; border:1px solid var(--border); border-radius:6px;">
+                <option value="all">All</option><option value="with">With photos</option><option value="without">No photos</option>
+            </select></label>
+        <span style="color:var(--muted); font-size:0.8rem;">Tip: a red size tag on a photo means it is low resolution (blurry). Click a photo to see it full size.</span>
+    </div>
+    <div id="imagemgr-count" style="font-size:0.9rem; margin-bottom:10px;"></div>
     
     <div id="imagemgr-list" style="display:flex; flex-direction:column; gap:15px; max-height: 70vh; overflow-y: auto;">
         <div style="color:var(--muted); text-align:center; padding: 30px;">Click "Load Website Products" to start.</div>
@@ -3528,10 +3547,8 @@ window.onload = () => {
 
   setInterval(() => {
       idleTime++;
-      // Admin sessions relock fast (90s) since they carry full access. Staff sessions get a
-      // longer window (20 min) so a normal lull between customers doesn't force a re-login —
-      // but everyone eventually gets signed all the way out, back to the login gate.
-      const idleLimit = isAdmin ? 90 : 1200;
+      // Everyone is signed out after 30 minutes without any activity, back to the login gate.
+      const idleLimit = 1800; // 30 minutes of no activity, for Admin and Staff
       if ((isAdmin || isStaff) && idleTime >= idleLimit) {
           const wasAdmin = isAdmin;
           firebase.auth().signOut().then(() => {
@@ -3830,83 +3847,172 @@ async function cleanUpOldR2Images() {
 
 
 let webCatalogCache = [];
+let webImgVerified = {};      // Firebase: abeerx/webImageVerified/{key} = { at, by }
+let imgMgrLimit = 60;         // how many cards are drawn; "Show more" adds 60
+let imgMgrStockMap = null;    // POS item name -> stock, built once per render
+
+// Firebase keys cannot contain . # $ [ ] /
+function webImgKey(sku) { return String(sku || '').replace(/[.#$\[\]\/]/g, '_'); }
+
+let webImgVerifiedListening = false;
+function listenWebImgVerified() {
+    if (webImgVerifiedListening) return;
+    webImgVerifiedListening = true;
+    db.ref('abeerx/webImageVerified').on('value', s => {
+        webImgVerified = s.val() || {};
+        if (currentTab === 'imagemgr' && webCatalogCache.length) renderImageMgr(true);
+    }, e => { webImgVerifiedListening = false; console.warn(e); });
+}
 
 async function loadWebCatalog() {
+    listenWebImgVerified();
     const listDiv = document.getElementById('imagemgr-list');
-    listDiv.innerHTML = '<div>Loading from Cloudflare...</div>';
+    listDiv.innerHTML = '<div style="text-align:center; padding:30px;">Loading from Cloudflare...</div>';
     try {
         const res = await fetch('https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog.json?t=' + Date.now());
         webCatalogCache = await res.json();
-        
+        imgMgrStockMap = buildImgMgrStockMap();
         webCatalogCache.sort((a, b) => {
-            const stockA = getStock(a.name) > 0 ? 1 : 0;
-            const stockB = getStock(b.name) > 0 ? 1 : 0;
-            if (stockA !== stockB) return stockB - stockA;
+            const sa = webProdStock(a) > 0 ? 1 : 0, sb = webProdStock(b) > 0 ? 1 : 0;
+            if (sa !== sb) return sb - sa;
             return a.name.localeCompare(b.name);
         });
-        
+        imgMgrLimit = 60;
         renderImageMgr();
     } catch (e) {
         listDiv.innerHTML = '<div style="color:red;">Error loading catalog: ' + e.message + '</div>';
     }
 }
 
-function filterImageMgr() {
-    renderImageMgr();
+// Stock for every POS item in one pass (much faster than asking item by item)
+function buildImgMgrStockMap() {
+    if (!isAdmin) return null; // staff view uses liveStock directly
+    const m = {};
+    purchases.forEach(p => (p.rows || []).forEach(r => { if (r.item) m[r.item] = (m[r.item] || 0) + (parseFloat(r.qty) || 0); }));
+    invoices.forEach(s => (s.rows || []).forEach(r => { if (r.item) m[r.item] = (m[r.item] || 0) - (parseFloat(r.qty) || 0); }));
+    return m;
+}
+function imgMgrItemStock(name) {
+    if (imgMgrStockMap) return imgMgrStockMap[name] || 0;
+    return liveStock[name] || 0;
+}
+function webProdStock(prod) {
+    const vs = prod.variants && prod.variants.length ? prod.variants : [{ key: prod.name }];
+    return vs.reduce((t, v) => t + Math.max(0, imgMgrItemStock(v.key || prod.name)), 0);
+}
+function imgMgrRate(name) {
+    const r = itemRates[name];
+    if (r === undefined || r === null || r === '') return 0;
+    return typeof r === 'object' ? (parseFloat(r.rate) || 0) : (parseFloat(r) || 0);
+}
+// Has a selling price: live POS rate, or the price saved in the website catalogue
+function webProdPrice(prod) {
+    const vs = prod.variants && prod.variants.length ? prod.variants : [{ key: prod.name, price: prod.price, salePrice: prod.salePrice }];
+    let best = 0;
+    vs.forEach(v => { best = Math.max(best, imgMgrRate(v.key || prod.name), parseFloat(v.salePrice) || 0, parseFloat(v.price) || 0); });
+    return best;
+}
+function isWebImgVerified(prod) { return !!webImgVerified[webImgKey(prod.sku)]; }
+
+function filterImageMgr() { imgMgrLimit = 60; renderImageMgr(); }
+function imgMgrShowMore() { imgMgrLimit += 60; renderImageMgr(true); }
+
+async function toggleWebImgVerified(i, checked) {
+    const prod = webCatalogCache[i];
+    if (!prod) return;
+    const ref = db.ref('abeerx/webImageVerified/' + webImgKey(prod.sku));
+    try {
+        if (checked) await ref.set({ at: new Date().toISOString(), by: (currentStaff && currentStaff.name) || 'Admin', name: prod.name });
+        else await ref.remove();
+    } catch (e) { alert('Could not save the tick: ' + e.message); }
 }
 
-function renderImageMgr() {
+// Shows the real pixel size of each photo so blurry / tiny ones stand out
+function imgMgrSizeBadge(img) {
+    const box = img.closest('div');
+    const b = box && box.querySelector('.imgmgr-size');
+    if (!b) return;
+    const w = img.naturalWidth, h = img.naturalHeight;
+    b.textContent = w + '×' + h;
+    b.style.background = Math.min(w, h) < 500 ? '#dc2626' : 'rgba(0,0,0,.55)';
+    b.title = Math.min(w, h) < 500 ? 'Low resolution — may look blurry on the website' : 'Resolution OK';
+}
+
+function renderImageMgr(keepScroll) {
     const listDiv = document.getElementById('imagemgr-list');
-    const search = document.getElementById('imagemgr-search').value.toLowerCase();
-    
-    let html = '';
-    let count = 0;
-    
+    const scrollTop = listDiv.scrollTop;
+    const search = (document.getElementById('imagemgr-search').value || '').toLowerCase().trim();
+    const fStock = document.getElementById('imgf-stock').checked;
+    const fPrice = document.getElementById('imgf-price').checked;
+    const fVer = document.getElementById('imgf-verified').value;   // all | yes | no
+    const fPhoto = document.getElementById('imgf-photos').value;   // all | with | without
+
+    const matches = [];
+    let verifiedCount = 0;
     for (let i = 0; i < webCatalogCache.length; i++) {
         const prod = webCatalogCache[i];
-        if (search && !prod.name.toLowerCase().includes(search) && !prod.sku.toLowerCase().includes(search)) {
-            continue;
-        }
-        
-        if (count > 50) {
-            html += '<div style="padding:10px; text-align:center; color:var(--muted);">Showing first 50 results. Keep typing to narrow down.</div>';
-            break;
-        }
-        
+        if (search && !prod.name.toLowerCase().includes(search) && !String(prod.sku).toLowerCase().includes(search) && !String(prod.brand || '').toLowerCase().includes(search)) continue;
+        const stock = webProdStock(prod);
+        if (fStock && stock <= 0) continue;
+        const price = webProdPrice(prod);
+        if (fPrice && price <= 0) continue;
+        const ver = isWebImgVerified(prod);
+        if (fVer === 'yes' && !ver) continue;
+        if (fVer === 'no' && ver) continue;
+        const nImg = (prod.images || []).length;
+        if (fPhoto === 'with' && nImg === 0) continue;
+        if (fPhoto === 'without' && nImg > 0) continue;
+        if (ver) verifiedCount++;
+        matches.push({ i, prod, stock, price, ver });
+    }
+
+    document.getElementById('imagemgr-count').innerHTML =
+        `<b>${matches.length}</b> products match · <span style="color:#16a34a;">✅ ${verifiedCount} verified</span> · <span style="color:#b45309;">${matches.length - verifiedCount} still to check</span>`;
+
+    let html = '';
+    matches.slice(0, imgMgrLimit).forEach(({ i, prod, stock, price, ver }) => {
         let imagesHtml = '';
-        const images = prod.images || [];
-        images.forEach((imgUrl, imgIdx) => {
-            let label = imgIdx === 0 ? "Cover" : `Image ${imgIdx + 1}`;
+        (prod.images || []).forEach((imgUrl, imgIdx) => {
+            const label = imgIdx === 0 ? 'Cover' : `Image ${imgIdx + 1}`;
             imagesHtml += `
-                <div style="position:relative; width:100px; height:100px; border:1px solid #ddd; border-radius:8px; overflow:hidden;">
-                    <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect fill=\'%23eee\' width=\'100\' height=\'100\'/><text x=\'50\' y=\'50\' text-anchor=\'middle\' dominant-baseline=\'middle\'>Error</text></svg>'">
+                <div style="position:relative; width:130px; height:130px; border:1px solid #ddd; border-radius:8px; overflow:hidden; background:#fff;">
+                    <a href="${imgUrl}" target="_blank" title="Open full size"><img src="${imgUrl}" loading="lazy" decoding="async" onload="imgMgrSizeBadge(this)" style="width:100%; height:100%; object-fit:contain;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 100 100\\'><rect fill=\\'%23eee\\' width=\\'100\\' height=\\'100\\'/><text x=\\'50\\' y=\\'50\\' text-anchor=\\'middle\\' dominant-baseline=\\'middle\\'>Error</text></svg>'"></a>
+                    <span class="imgmgr-size" style="position:absolute; top:3px; left:3px; background:rgba(0,0,0,.55); color:#fff; font-size:9px; padding:1px 4px; border-radius:3px;"></span>
                     <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; font-size:10px; text-align:center; padding:2px;">${label}</div>
-                    <button onclick="deleteWebImage(${i}, ${imgIdx})" style="position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-weight:bold; font-size:12px; line-height:10px;">×</button>
-                </div>
-            `;
+                    <button onclick="deleteWebImage(${i}, ${imgIdx})" title="Remove this photo" style="position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; width:22px; height:22px; cursor:pointer; font-weight:bold; font-size:13px; line-height:10px;">×</button>
+                </div>`;
         });
-        
+        const stockTxt = stock > 0 ? `<span style="color:#16a34a;">In stock: ${stock}</span>` : `<span style="color:#dc2626;">Out of stock</span>`;
+        const priceTxt = price > 0 ? `${price.toFixed(3)} KD` : `<span style="color:#dc2626;">No price</span>`;
         html += `
-            <div style="border: 1px solid var(--border); border-radius: 8px; padding: 15px; background: #fafafa;">
-                <h4 style="margin-bottom:10px; color:var(--brand-brown);">${prod.name} <span style="color:var(--muted); font-size:0.85em;">(${prod.sku})</span></h4>
+            <div style="border: 1px solid ${ver ? '#16a34a' : 'var(--border)'}; border-left: 5px solid ${ver ? '#16a34a' : '#f59e0b'}; border-radius: 8px; padding: 15px; background: ${ver ? '#f0fdf4' : '#fafafa'};">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+                    <div>
+                        <h4 style="margin:0; color:var(--brand-brown);">${escH(prod.name)} <span style="color:var(--muted); font-size:0.85em;">(${escH(String(prod.sku))})</span></h4>
+                        <div style="font-size:0.8rem; color:var(--muted); margin-top:3px;">${escH(prod.brand || '')} · ${stockTxt} · ${priceTxt}</div>
+                    </div>
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; color:${ver ? '#16a34a' : '#92400e'}; background:#fff; border:1px solid ${ver ? '#16a34a' : '#f59e0b'}; padding:6px 12px; border-radius:20px; white-space:nowrap;">
+                        <input type="checkbox" ${ver ? 'checked' : ''} onchange="toggleWebImgVerified(${i}, this.checked)" style="width:18px; height:18px; accent-color:#16a34a;">
+                        ${ver ? 'Images verified ✅' : 'Mark images verified'}
+                    </label>
+                </div>
                 <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
                     ${imagesHtml}
-                    
-                    <div style="width:100px; height:100px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-direction:column; position:relative; background:#fff;">
+                    <div style="width:130px; height:130px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-direction:column; position:relative; background:#fff;">
                         <input type="file" onchange="uploadWebImage(event, ${i})" style="opacity:0; position:absolute; top:0; left:0; width:100%; height:100%; cursor:pointer;" accept="image/*">
                         <span style="font-size:24px; color:#aaa;">+</span>
                         <span style="font-size:10px; color:#aaa;">Add Image</span>
                     </div>
                 </div>
-            </div>
-        `;
-        count++;
+            </div>`;
+    });
+
+    if (matches.length > imgMgrLimit) {
+        html += `<div style="text-align:center; padding:12px;"><button class="btn" onclick="imgMgrShowMore()">Show more (${matches.length - imgMgrLimit} left)</button></div>`;
     }
-    
-    if (count === 0) {
-        html = '<div style="color:var(--muted); text-align:center;">No products match your search.</div>';
-    }
+    if (matches.length === 0) html = '<div style="color:var(--muted); text-align:center; padding:30px;">No products match these filters.</div>';
     listDiv.innerHTML = html;
+    if (keepScroll) listDiv.scrollTop = scrollTop;
 }
 
 
@@ -3930,6 +4036,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (picker) picker.addEventListener('change', runCloudflareBulkUpload);
 });
 
+// "Website" group in the sidebar (Image Manager, Web Editor, Coupons, Data Analyzer)
+function toggleWebsiteGroup(forceOpen) {
+  const g = document.getElementById('nav-website-group');
+  const caret = document.getElementById('nav-website-caret');
+  if (!g) return;
+  const open = forceOpen === true ? true : g.style.display === 'none';
+  g.style.display = open ? 'block' : 'none';
+  if (caret) caret.textContent = open ? '▾' : '▸';
+}
+
 function showTab(name, btn, bypass = false) {
   if(name !== 'sale' && name !== 'quote' && name !== 'weborders' && !isAdmin && !bypass) { pendingTab = name; pendingBtn = btn; openPinModal(); return; }
   toggleMobileSidebar(true);
@@ -3937,6 +4053,7 @@ function showTab(name, btn, bypass = false) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`panel-${name}`).classList.add('active');
   if(btn) btn.classList.add('active');
+  if (btn && btn.classList.contains('nav-sub')) toggleWebsiteGroup(true);
   currentTab = name;
   if(name === 'ledger') renderLedger(); 
   if(name === 'stock') renderStock(); 
@@ -3944,6 +4061,7 @@ function showTab(name, btn, bypass = false) {
   if(name === 'reports') generateReport(); 
   if(name === 'quote') renderQuotations(); 
   if(name === 'weborders') renderWebOrders();
+  if(name === 'imagemgr' && !webCatalogCache.length) loadWebCatalog();
     if(name === 'webeditor') { if (typeof loadWebEditorPage === 'function') loadWebEditorPage(); }
     if(name === 'coupons') { if (typeof renderCoupons === 'function') renderCoupons(); }
   if(name === 'barcode') { updateBarcodePreview(); renderStickerPositionGrid(false); }
@@ -9000,14 +9118,31 @@ async function runDatabaseAnalysis() {
   btn.disabled = false;
 }
 
+// Same rule the website uses to find a product's photos (lib/catalogBuilder.ts safeFileName)
+function webSafeFileName(str) {
+    return String(str || '').replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').toLowerCase();
+}
+
 async function uploadWebImage(event, prodIdx) {
     const file = event.target.files[0];
     if (!file) return;
     const prod = webCatalogCache[prodIdx];
-    const originalText = document.getElementById('imagemgr-search').placeholder;
-    document.getElementById('imagemgr-search').placeholder = 'Uploading image... Please wait...';
+    const searchBox = document.getElementById('imagemgr-search');
+    const originalText = searchBox.placeholder;
+    searchBox.placeholder = 'Uploading image... Please wait...';
+    // Name the file the way the website looks for photos (name_barcode.png, name_barcode_2.png ...)
+    // so the photo stays on the product after every "Update website now".
+    const vs = prod.variants || [];
+    const v = vs.find(x => !x.isTester) || vs[0] || { key: prod.name, sku: prod.sku };
+    const base = webSafeFileName(v.key || prod.name) + '_' + String(v.sku || prod.sku).toLowerCase();
+    const extMatch = file.name.match(/\.(png|jpe?g|webp)$/i);
+    const ext = extMatch ? extMatch[0].toLowerCase() : '.jpg';
+    const used = new Set((prod.images || []).map(u => decodeURIComponent(String(u).split('/').pop()).toLowerCase().replace(/\.(png|jpe?g|webp)$/i, '')));
+    let n = 1;
+    while (used.has(n === 1 ? base : base + '_' + n) && n < 20) n++;
+    const fileName = (n === 1 ? base : base + '_' + n) + ext;
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", new File([file], fileName, { type: file.type }));
     formData.append("prefix", "products");
     try {
         const res = await fetch('https://abeerx.vercel.app/api/r2/upload', { method: "POST", headers: { 'x-admin-key': ADMIN_API_KEY }, body: formData });
@@ -9015,11 +9150,12 @@ async function uploadWebImage(event, prodIdx) {
         if (res.ok && data.success) {
             prod.images = prod.images || [];
             prod.images.push(data.url);
-            renderImageMgr();
+            renderImageMgr(true);
             await saveProductToWeb(prod.sku, prod.images);
         } else alert("Upload failed: " + (data.error || "Unknown error"));
     } catch(e) { alert("Upload error: " + e.message); }
-    document.getElementById('imagemgr-search').placeholder = originalText;
+    searchBox.placeholder = originalText;
+    event.target.value = '';
 }
 
 async function deleteWebImage(prodIdx, imgIdx) {
@@ -9027,7 +9163,7 @@ async function deleteWebImage(prodIdx, imgIdx) {
     const prod = webCatalogCache[prodIdx];
     const removedUrl = prod.images[imgIdx];
     prod.images.splice(imgIdx, 1);
-    renderImageMgr();
+    renderImageMgr(true);
     await saveProductToWeb(prod.sku, prod.images);
     try {
         const key = removedUrl.split('.r2.dev/')[1];
