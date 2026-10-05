@@ -1609,6 +1609,7 @@
     <div style="display:flex; gap:10px; margin-bottom:20px;">
         <button class="btn" onclick="loadWebCatalog()">🔄 Load Website Products</button>
         <button class="btn" style="background:#00e5ff; color:black; font-weight:bold;" onclick="autoLinkWebImages()">🔗 Auto-Link Uploaded Images</button>
+        <button class="btn" id="btn-dl-photos" style="background:#16a34a; color:#fff; font-weight:bold;" onclick="downloadAllWebsitePhotos()" title="Save every photo on the website into a folder on this computer">💾 Download All Photos</button>
         
         <input type="text" id="imagemgr-search" placeholder="Search products, barcode or brand..." style="padding:10px; border:1px solid var(--border); border-radius:8px; flex:1;" oninput="filterImageMgr()">
     </div>
@@ -1627,6 +1628,7 @@
             </select></label>
         <span style="color:var(--muted); font-size:0.8rem;">Tip: a red size tag on a photo means it is low resolution (blurry). Click a photo to see it full size.</span>
     </div>
+    <div id="photo-dl-status" style="display:none; font-size:0.9rem; margin-bottom:10px; padding:10px 12px; border-radius:8px; background:#f0fdf4; border:1px solid #86efac;"></div>
     <div id="imagemgr-count" style="font-size:0.9rem; margin-bottom:10px;"></div>
     
     <div id="imagemgr-list" style="display:flex; flex-direction:column; gap:15px; max-height: 70vh; overflow-y: auto;">
@@ -1636,7 +1638,8 @@
 
 <div class="card" style="border-left: 5px solid #00e5ff;">
     <div class="card-title">☁️ Cloudflare Bulk Uploader</div>
-    <p style="margin-bottom: 15px; color: var(--muted);">Select your Perfume_Images folder. This safely tunnels images through the Vercel API Bridge, completely bypassing Windows SSL network restrictions.</p>
+    <p style="margin-bottom: 8px; color: var(--muted);">Select a folder of photos to upload to the website (for example your <b>Desktop\Website_Photos</b> backup). Photos already on the website are skipped, so only missing ones are uploaded. Accepts .webp, .png and .jpg.</p>
+    <p style="margin-bottom: 15px; color: var(--muted); font-size:0.85rem;">💾 To back up every website photo to your computer, click <b>Download All Photos</b> at the top of the Image Manager. After uploading here, click <b>Update website now</b> so the photos appear on the products.</p>
     <input type="file" id="cf-bulk-picker" onchange="runCloudflareBulkUpload(event)" webkitdirectory directory multiple style="margin-bottom:15px; font-size:1rem; padding:10px;" />
     <button class="btn btn-outline" style="margin-left: 15px; border-color: red; color: red;" onclick="cleanUpOldR2Images()">🗑️ Clean Up Misnamed Images</button>
     <div id="cf-bulk-progress" style="font-weight:bold; font-size:1.1rem; margin-bottom:10px;"></div>
@@ -4031,10 +4034,8 @@ async function saveProductToWeb(sku, images) {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    const picker = document.getElementById('cf-bulk-picker');
-    if (picker) picker.addEventListener('change', runCloudflareBulkUpload);
-});
+// (the folder picker already calls runCloudflareBulkUpload through its onchange — a second
+//  listener here used to upload every photo twice)
 
 // "Website" group in the sidebar (Image Manager, Web Editor, Coupons, Data Analyzer)
 function toggleWebsiteGroup(forceOpen) {
@@ -9118,6 +9119,97 @@ async function runDatabaseAnalysis() {
   btn.disabled = false;
 }
 
+// ---- 💾 Download every website photo into a folder on this computer ----------------------
+// Chrome / Edge only (they can save into a folder you choose). Only new or changed photos are
+// downloaded, so running it again is quick. Photos no longer on the website are moved into
+// "_removed_from_website" — nothing on this computer or on the website is deleted.
+async function downloadAllWebsitePhotos() {
+    if (!window.showDirectoryPicker) {
+        alert('This needs Google Chrome or Microsoft Edge on a computer.\n\nOr double-click Download_Website_Photos.bat in the website folder instead.');
+        return;
+    }
+    const status = document.getElementById('photo-dl-status');
+    const btn = document.getElementById('btn-dl-photos');
+    const show = (html) => { status.style.display = 'block'; status.innerHTML = html; };
+    let picked;
+    try {
+        alert('Choose where to save the photos.\n\nTip: pick your Desktop — a "Website_Photos" folder will be created there (or pick that folder if it already exists).');
+        picked = await window.showDirectoryPicker({ id: 'website-photos', mode: 'readwrite', startIn: 'desktop' });
+    } catch (e) { return; } // cancelled
+    let dir = picked;
+    if (picked.name !== 'Website_Photos') dir = await picked.getDirectoryHandle('Website_Photos', { create: true });
+
+    btn.disabled = true;
+    const oldTxt = btn.innerText;
+    btn.innerText = '⏳ Downloading...';
+    try {
+        show('Reading the list of photos on the website...');
+        const res = await fetch('https://abeerx.vercel.app/api/r2/list', { headers: { 'x-admin-key': ADMIN_API_KEY } });
+        const data = await res.json();
+        if (!res.ok || !data.files) throw new Error(data.error || ('HTTP ' + res.status));
+        const remote = data.files
+            .map(f => ({ key: f.key, size: f.size, name: f.key.slice('products/'.length) }))
+            .filter(f => f.name && !f.name.includes('/'));
+
+        // What is already in the folder
+        const local = {};
+        for await (const [name, handle] of dir.entries()) {
+            if (handle.kind === 'file') { try { local[name] = (await handle.getFile()).size; } catch (e) {} }
+        }
+        const todo = remote.filter(r => local[r.name] !== r.size);
+        show(`Photos on the website: <b>${remote.length}</b> · already saved: ${remote.length - todo.length} · to download: <b>${todo.length}</b>`);
+
+        let i = 0, done = 0, failed = 0;
+        const failedNames = [];
+        const worker = async () => {
+            while (i < todo.length) {
+                const r = todo[i++];
+                let ok = false;
+                for (let attempt = 0; attempt < 3 && !ok; attempt++) {
+                    try {
+                        const resp = await fetch('https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/' + r.key.split('/').map(encodeURIComponent).join('/'), { cache: 'no-store' });
+                        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                        const blob = await resp.blob();
+                        const fh = await dir.getFileHandle(r.name, { create: true });
+                        const w = await fh.createWritable();
+                        await w.write(blob);
+                        await w.close();
+                        ok = true;
+                    } catch (e) { if (attempt < 2) await new Promise(z => setTimeout(z, 800)); }
+                }
+                if (ok) done++; else { failed++; failedNames.push(r.name); }
+                if ((done + failed) % 25 === 0 || done + failed === todo.length) {
+                    const pct = Math.round(((done + failed) / Math.max(1, todo.length)) * 100);
+                    show(`Downloading... <b>${done + failed} / ${todo.length}</b> (${pct}%)${failed ? ` · <span style="color:#dc2626;">${failed} failed</span>` : ''}<br><span style="color:var(--muted); font-size:0.8rem;">Keep this tab open until it finishes.</span>`);
+                }
+            }
+        };
+        await Promise.all(Array.from({ length: 6 }, worker));
+
+        // Set aside photos that are no longer on the website (never deleted)
+        const remoteNames = new Set(remote.map(r => r.name));
+        const gone = Object.keys(local).filter(n => !remoteNames.has(n));
+        if (gone.length) {
+            const removedDir = await dir.getDirectoryHandle('_removed_from_website', { create: true });
+            for (const n of gone) {
+                try {
+                    const file = await (await dir.getFileHandle(n)).getFile();
+                    const w = await (await removedDir.getFileHandle(n, { create: true })).createWritable();
+                    await w.write(file); await w.close();
+                    await dir.removeEntry(n);
+                } catch (e) {}
+            }
+        }
+        show(`✅ <b>Done.</b> Folder <b>${dir.name}</b> now has <b>${remote.length - failed}</b> photos (downloaded now: ${done}).`
+            + (gone.length ? ` · ${gone.length} photo(s) no longer on the website were moved to <i>_removed_from_website</i>.` : '')
+            + (failed ? `<br><span style="color:#dc2626;">${failed} failed — click Download All Photos again to retry. e.g. ${failedNames.slice(0, 3).join(', ')}</span>` : ''));
+    } catch (e) {
+        show(`<span style="color:#dc2626;">Download stopped: ${e.message}</span>`);
+    }
+    btn.disabled = false;
+    btn.innerText = oldTxt;
+}
+
 // Same rule the website uses to find a product's photos (lib/catalogBuilder.ts safeFileName)
 function webSafeFileName(str) {
     return String(str || '').replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').toLowerCase();
@@ -9195,7 +9287,7 @@ async function autoLinkWebImages() {
 }
 
 async function runCloudflareBulkUpload(e) {
-    const files = Array.from(e.target.files).filter(f => f.name.match(/\.(jpg|jpeg|png)$/i));
+    const files = Array.from(e.target.files).filter(f => f.name.match(/\.(jpg|jpeg|png|webp)$/i) && !/(^|[\\/])_removed_from_website[\\/]/i.test(f.webkitRelativePath || ''));
     if (files.length === 0) return alert("No images found!");
     document.getElementById('cf-bulk-progress').innerText = `Uploading 0 / ${files.length}`;
     let uploaded = 0, skipped = 0;
