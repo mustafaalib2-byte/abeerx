@@ -3,6 +3,7 @@ import { Inter, Playfair_Display, Noto_Kufi_Arabic } from "next/font/google";
 import "@/app/globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { SITE_URL } from "@/lib/seo";
 
 // Fonts
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -10,6 +11,7 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-headin
 const kufiArabic = Noto_Kufi_Arabic({ subsets: ["arabic"], variable: "--font-arabic" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "ABEERX | Luxury Perfumes in Kuwait",
   description: "Discover your signature scent with ABEERX. Authentic luxury perfumes delivered across Kuwait.",
   // Google Merchant Center / Search Console site ownership (outputs <meta name="google-site-verification">)

@@ -16,8 +16,10 @@ export function middleware(request: NextRequest) {
     // We can use a negotiated locale here, but for simplicity, we default to 'en'
     // Keep the query string (e.g. Google Ads ?gclid=…, utm_…) so ad clicks and sales are still credited
     const url = request.nextUrl.clone()
-    url.pathname = `/${defaultLocale}${pathname.startsWith('/') ? '' : '/'}${pathname}`
-    return NextResponse.redirect(url)
+    url.pathname = pathname === '/' ? `/${defaultLocale}` : `/${defaultLocale}${pathname.startsWith('/') ? '' : '/'}${pathname}`
+    // Permanent (308): "/" and other locale-less paths always move to the English version,
+    // so Google indexes the final /en/... address instead of the redirecting one.
+    return NextResponse.redirect(url, 308)
   }
 }
 

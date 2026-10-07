@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
+import { pageAlternates } from "@/lib/seo";
 export const revalidate = 0; // Disable static caching so it always fetches fresh content
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'ar' ? "الاسترجاع والاسترداد | ABEERX" : "Returns & Refunds | ABEERX",
+    alternates: pageAlternates(locale, '/returns-refunds'),
+  };
+}
 
 export default async function ReturnsRefundsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

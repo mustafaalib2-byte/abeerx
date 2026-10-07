@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageAlternates } from "@/lib/seo";
 export const revalidate = 60;
 import { ProductService } from "@/services/ProductService";
 import Link from "next/link";
@@ -5,6 +7,13 @@ import Image from "next/image";
 import { AddToCartButton } from "@/features/cart/AddToCartButton";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import { dailyShuffle } from "@/lib/dailyPick";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    alternates: pageAlternates(locale, ''),
+  };
+}
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

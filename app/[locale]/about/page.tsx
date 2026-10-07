@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
+import { pageAlternates } from "@/lib/seo";
 import Link from "next/link";
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'ar' ? "من نحن | ABEERX" : "About ABEERX | Luxury Perfumes in Kuwait",
+    alternates: pageAlternates(locale, '/about'),
+  };
+}
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

@@ -1,7 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ProductService } from "@/services/ProductService";
+import { brandSlug, pageAlternates } from "@/lib/seo";
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return { title: locale === 'ar' ? "ماركات العطور | ABEERX" : "Perfume Brands | ABEERX", alternates: pageAlternates(locale, '/brands') };
+}
 
 export default async function BrandsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -38,7 +45,7 @@ export default async function BrandsPage({ params }: { params: Promise<{ locale:
             <ul className="space-y-3">
               {groupedBrands[letter].map(brand => (
                 <li key={brand}>
-                  <Link href={`/${locale}/shop?brand=${encodeURIComponent(brand)}`} className="text-lg text-muted-foreground hover:text-ring transition-colors block">
+                  <Link href={`/${locale}/brands/${brandSlug(brand)}`} className="text-lg text-muted-foreground hover:text-ring transition-colors block">
                     {brand}
                   </Link>
                 </li>
