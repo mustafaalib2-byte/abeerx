@@ -14,12 +14,17 @@
 //  --connect    one-time setup: turns META_USER_TOKEN into a permanent Page token and saves
 //               META_PAGE_ID / META_IG_USER_ID / META_PAGE_TOKEN into .env.local
 //  --check      checks the saved Meta keys work, without posting
+//  --auto       what the schedule runs: posts whatever is left of today's quota
+//               (SOCIAL_POSTS_PER_DAY, default 12), one after another, then stops until tomorrow.
+//               Runs when Windows starts and every hour, so a PC that was off catches up.
 //
 // Settings in .env.local:
 //   META_PAGE_ID, META_IG_USER_ID, META_PAGE_TOKEN   (written by --connect)
 //   META_APP_ID, META_APP_SECRET, META_USER_TOKEN     (only needed for --connect)
 //   CLOUDFLARE_ACCESS_KEY_ID, CLOUDFLARE_SECRET_ACCESS_KEY  (already there for the photo scripts)
-//   SOCIAL_POSTS_PER_RUN   optional, default 1
+//   SOCIAL_POSTS_PER_RUN   optional, default 1 (manual runs)
+//   SOCIAL_POSTS_PER_DAY   optional, default 12 (--auto)
+//   SOCIAL_GAP_MINUTES     optional, default 2: wait between posts in --auto
 //   SOCIAL_PLATFORMS       optional, "instagram,facebook" (default) or just one of them
 
 const fs = require('fs');
@@ -41,6 +46,10 @@ const ENV_PATH = path.join(__dirname, '.env.local');
 
 const argv = process.argv.slice(2);
 const DRY = argv.includes('--dry');
+const AUTO = argv.includes('--auto');
+const PER_DAY = Math.max(1, Math.min(50, parseInt(process.env.SOCIAL_POSTS_PER_DAY || '12', 10) || 12));
+const GAP_MS = Math.max(0, parseFloat(process.env.SOCIAL_GAP_MINUTES || '2') || 0) * 60000;
+const LOCK_PATH = path.join(__dirname, 'social_autopost.lock');
 const argValue = (name) => { const i = argv.indexOf(name); return i !== -1 ? argv[i + 1] : undefined; };
 
 const FEED_URL = process.env.SOCIAL_FEED_URL || 'https://www.abeerx.com/api/feeds/google-shopping';
@@ -56,6 +65,21 @@ const R2_PUBLIC = 'https://pub-209a4e728df44d029c946408e718e9c8.r2.dev';
 const SITE = 'abeerx.com';
 
 // ---------------------------------------------------------------- feed
+
+// Network hiccups ("fetch failed") and a slow first load of the feed are common, so GETs are
+// retried a few times before giving up. Posting calls are never retried, to avoid double posts.
+async function fetchRetry(url, tries = 4) {
+  // Waits 3, 6, 12, 24, 48... seconds between tries (capped at 1 minute).
+  for (let i = 1; ; i++) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(90000) });
+      if (res.status < 500 || i >= tries) return res;
+    } catch (e) {
+      if (i >= tries) throw new Error(`could not reach ${url} (${(e.cause && e.cause.code) || e.message}). Check the internet connection and try again.`);
+    }
+    await new Promise(r => setTimeout(r, Math.min(60000, 3000 * 2 ** (i - 1))));
+  }
+}
 
 function unescapeXml(s) {
   return s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
@@ -95,30 +119,86 @@ function groupProducts(items) {
 
 // ---------------------------------------------------------------- captions
 
-const kwd = (n) => `${n.toFixed(3)} KWD`;
 const hashtag = (s) => (s || '').replace(/[^\p{L}\p{N}]+/gu, '');
 
+// Perfume details (gender, type, accords, notes) come from the website's catalog. A field that
+// still looks damaged in the data is left out rather than posted.
+function detail(v) {
+  let t = String(v || '').trim();
+  if (/^\[[\s\S]*\]$/.test(t)) t = t.slice(1, -1).split(',').map(x => x.trim().replace(/^['"]+|['"]+$/g, '')).filter(Boolean).join(', ');
+  if (!t || /\uFFFD/.test(t) || /[\u00d8-\u00db][\u0080-\u00bf]/.test(t)) return '';
+  const parts = t.split(', ');
+  if (parts.length >= 5 && parts.every(x => x.length <= 1)) return '';
+  return t.replace(/\s+/g, ' ');
+}
+
+const GENDER = { Men: ['Men', 'رجالي'], Women: ['Women', 'نسائي'], Unisex: ['Unisex', 'للجنسين'] };
+const CONCENTRATION = {
+  EDP: ['Eau de Parfum', 'أو دو بارفان'], EDT: ['Eau de Toilette', 'أو دو تواليت'], EDC: ['Eau de Cologne', 'أو دو كولونيا'],
+  Parfum: ['Parfum', 'بارفان'], 'Extrait de Parfum': ['Extrait de Parfum', 'إكستريه دو بارفان'],
+  'Body Mist': ['Body Mist', 'معطر للجسم'], 'Hair Mist': ['Hair Mist', 'عطر للشعر'], 'Parfum de Toilette': ['Parfum de Toilette', 'بارفان دو تواليت'],
+};
+
+function detailLines(d, name) {
+  if (!d) return { en: [], ar: [] };
+  // Older imports filled empty cells with "Unisex" and "EDP". Trust them only when the perfume
+  // was researched (has accords or notes), or when the name itself says it.
+  const researched = [d.mainAccord, d.topNotes, d.heartNotes, d.baseNotes].some(v => detail(v));
+  const g = (researched || d.gender !== 'Unisex') && GENDER[d.gender];
+  const c = (researched || /EDP|EDT|EDC|PARFUM|EXTRAIT|MIST|COLOGNE|TOILETTE/i.test(name)) && ( CONCENTRATION[d.concentration] || (detail(d.concentration) ? [detail(d.concentration), detail(d.concentration)] : null));
+  const en = [], ar = [];
+  if (g) { en.push(`👤 For: ${g[0]}`); ar.push(`👤 ${g[1]}`); }
+  if (c) { en.push(`💧 Type: ${c[0]}`); ar.push(`💧 ${c[1]}`); }
+  const rows = [
+    ['🌿 Family', d.fragranceFamily], ['🎯 Main accords', d.mainAccord],
+    ['🍊 Top notes', d.topNotes], ['🌸 Heart notes', d.heartNotes], ['🪵 Base notes', d.baseNotes],
+    ['🌙 Best for', d.occasion],
+  ];
+  for (const [label, v] of rows) { const t = detail(v); if (t) en.push(`${label}: ${t}`); }
+  return { en, ar };
+}
+
+// No prices or sizes in captions: prices change in the POS, and a post stays up for good.
 function caption(p, platform) {
-  const prices = p.options.length === 1
-    ? `💰 ${p.options[0].label ? p.options[0].label + ': ' : ''}${kwd(p.options[0].price)}`
-    : p.options.slice(0, 4).map(o => `💰 ${o.label || 'Price'}: ${kwd(o.price)}`).join('\n');
   // Links are only clickable in Facebook posts; on Instagram the bio link is the way in.
-  const shopLine = platform === 'facebook' ? `🛍️ Order now: ${p.link}` : `🛍️ Order now at ${SITE} (link in bio)`;
+  const shopLine = platform === 'facebook' ? `🛍️ See today's price and order: ${p.link}` : `🛍️ See today's price and order at ${SITE} (link in bio)`;
   const brandTag = hashtag(p.brand);
+  const { en, ar } = detailLines(p.details, p.name);
   return [
     p.name + (p.brand && !p.name.toLowerCase().includes(p.brand.toLowerCase()) ? ` by ${p.brand}` : ''),
     '',
-    prices,
-    '',
+    ...(en.length ? [...en, ''] : []),
     '✨ 100% original, delivered across Kuwait.',
     shopLine,
     '',
     `عطر ${p.name} متوفر الآن في ABEERX`,
+    ...ar,
     '✨ أصلي 100٪ مع التوصيل لجميع مناطق الكويت',
     `🛍️ اطلب الآن عبر ${SITE}`,
     '',
     ['#abeerx', '#perfume', '#fragrance', '#kuwait', '#عطور', '#عطر', '#الكويت', brandTag && `#${brandTag}`].filter(Boolean).join(' '),
   ].join('\n');
+}
+
+// The website's catalog (on R2) holds each perfume's details. Matched by the product page
+// slug in the feed link, or by the feed's group id (the product's code).
+async function attachDetails(products) {
+  try {
+    const res = await fetchRetry(`${process.env.R2_PUBLIC_BASE || R2_PUBLIC}/catalog.json?t=${Date.now()}`);
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    const catalog = await res.json();
+    const bySlug = new Map(), bySku = new Map();
+    for (const c of catalog) { if (c.slug) bySlug.set(c.slug, c); if (c.sku) bySku.set(String(c.sku), c); }
+    let found = 0;
+    for (const p of products) {
+      const slug = decodeURIComponent((p.link.match(/\/product\/([^/?#]+)/) || [])[1] || '');
+      p.details = bySlug.get(slug) || bySku.get(String(p.groupId)) || null;
+      if (p.details) found++;
+    }
+    console.log(`Perfume details found for ${found} of ${products.length}.`);
+  } catch (e) {
+    console.log(`Could not load perfume details (${e.message}). Posts will go out without notes.`);
+  }
 }
 
 // ---------------------------------------------------------------- state
@@ -127,6 +207,12 @@ function loadState() {
   try { return JSON.parse(fs.readFileSync(STATE_PATH, 'utf-8')); } catch { return { round: 1, posted: {} }; }
 }
 function saveState(state) { fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2)); }
+
+// Posts made today on this PC's calendar, counted from the saved post times.
+function postedToday(state) {
+  const day = new Date().toLocaleDateString('en-CA');
+  return Object.values(state.posted || {}).filter(e => e && e.at && (e.instagram || e.facebook) && new Date(e.at).toLocaleDateString('en-CA') === day).length;
+}
 
 function pickNext(products, state, count) {
   const done = (p) => { const s = state.posted[p.groupId]; return s && PLATFORMS.every(pl => s[pl]); };
@@ -150,7 +236,7 @@ function pickNext(products, state, count) {
 
 async function makeSocialPhoto(p) {
   const sharp = require('sharp');
-  const res = await fetch(p.image);
+  const res = await fetchRetry(p.image);
   if (!res.ok) throw new Error(`photo download failed (${res.status}) ${p.image}`);
   const input = Buffer.from(await res.arrayBuffer());
   const jpg = await sharp(input)
@@ -259,12 +345,26 @@ async function run() {
   if (argv.includes('--connect')) return connect();
   if (argv.includes('--check')) return check();
 
+  let count = COUNT;
+  if (AUTO && !DRY) {
+    // Only one run at a time (start-up and the hourly run can overlap). A lock older than
+    // 3 hours is left over from a crash or shutdown, so it is ignored.
+    try { if (Date.now() - fs.statSync(LOCK_PATH).mtimeMs < 3 * 3600000) { console.log('Another posting run is still going. Skipping.'); return; } } catch {}
+    fs.writeFileSync(LOCK_PATH, String(process.pid));
+    process.on('exit', () => { try { fs.unlinkSync(LOCK_PATH); } catch {} });
+    const already = postedToday(loadState());
+    count = PER_DAY - already;
+    if (count <= 0) { console.log(`Today's ${PER_DAY} posts are already done (${already}). Next ones tomorrow.`); return; }
+    console.log(`${already} posted today. Posting ${count} more, one after another.`);
+  }
+
   const xml = FEED_FILE ? fs.readFileSync(FEED_FILE, 'utf-8') : await (async () => {
-    const res = await fetch(FEED_URL);
+    const res = await fetchRetry(FEED_URL, AUTO ? 8 : 4);
     if (!res.ok) throw new Error(`Could not read the product feed (${res.status}) ${FEED_URL}`);
     return res.text();
   })();
   const products = groupProducts(parseFeed(xml));
+  await attachDetails(products);
   const state = loadState();
   const done = Object.keys(state.posted).length;
   console.log(`${products.length} perfumes in stock. ${done} posted so far in round ${state.round || 1}.`);
@@ -276,9 +376,16 @@ async function run() {
     if (missing.length) { console.log(`Missing ${missing.join(', ')} in .env.local. Run Social_Connect.bat first.`); process.exit(1); }
   }
 
-  const picked = pickNext(products, state, COUNT);
-  let failures = 0;
+  // The preview (--dry) remembers what it showed, so the real run right after posts exactly that.
+  const byId = new Map(products.map(p => [p.groupId, p]));
+  const previewed = (DRY || AUTO) ? null : (state.preview || []).map(id => byId.get(id)).filter(p => p && !(state.posted[p.groupId] && PLATFORMS.every(pl => state.posted[p.groupId][pl])));
+  const picked = previewed && previewed.length ? previewed : pickNext(products, state, count);
+  delete state.preview;
+  if (DRY) { state.preview = picked.map(p => p.groupId); saveState(state); }
+  let failures = 0, failedInARow = 0, first = true;
   for (const p of picked) {
+    if (AUTO && !DRY && !first && GAP_MS) await new Promise(r => setTimeout(r, GAP_MS));
+    first = false;
     console.log(`\n=== ${p.name} (${p.brand}) ===`);
     if (DRY) {
       console.log(`Photo: ${p.image}\n--- Instagram caption ---\n${caption(p, 'instagram')}\n--- Facebook caption ---\n${caption(p, 'facebook')}`);
@@ -299,8 +406,9 @@ async function run() {
     } catch (e) {
       failures++; console.log(`FAILED - ${e.message}`);
     }
-    if (!entry.instagram && !entry.facebook) delete state.posted[p.groupId];
+    if (!entry.instagram && !entry.facebook) { delete state.posted[p.groupId]; failedInARow++; } else failedInARow = 0;
     saveState(state); // after every perfume, so a crash never re-posts what already went out
+    if (failedInARow >= 3) { console.log('\n3 perfumes in a row could not be posted. Stopping until the next run.'); break; }
   }
   if (DRY) console.log('\nPreview only. Nothing was posted.');
   else console.log(failures ? `\nDone, but ${failures} post(s) failed. They will be retried next run.` : '\nDone. All posted.');
@@ -309,4 +417,4 @@ async function run() {
 
 if (require.main === module) run().catch(e => { console.error(e.message); process.exit(1); });
 
-module.exports = { parseFeed, groupProducts, caption, pickNext };
+module.exports = { parseFeed, groupProducts, caption, pickNext, postedToday };
