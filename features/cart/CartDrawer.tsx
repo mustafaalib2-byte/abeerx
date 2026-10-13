@@ -56,7 +56,7 @@ export function CartDrawer({ locale }: { locale: string }) {
                         <button onClick={() => removeFromCart(sku)} className="text-muted-foreground hover:text-destructive">×</button>
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {item.variant ? item.variant.size : 'Standard'}
+                        {item.variant ? (item.variant.size || (item.variant.isTester ? 'Tester' : 'Standard')) : 'Standard'}
                       </p>
                     </div>
                     <div className="flex justify-between items-end mt-2">

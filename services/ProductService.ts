@@ -1,4 +1,5 @@
 import { Product } from "@/types/product";
+import { cleanText, displayName, resolveConcentration, resolveGender } from "@/lib/productData";
 
 function hashString(str: string): number {
   let hash = 0;
@@ -53,18 +54,6 @@ function getPriority(p: any) {
     return 0;
 }
 
-// Some notes were stored as a Python-style list text, e.g. "['Mint', 'Lemon']".
-// Turn that into "Mint, Lemon" so filters and product pages show clean names.
-function cleanNotes(value: unknown): string | undefined {
-  if (value === undefined || value === null) return undefined;
-  const text = String(value).trim().replace(/^\[/, "").replace(/\]$/, "");
-  return text
-    .split(",")
-    .map(part => part.trim().replace(/^['"\u2018\u2019\u201c\u201d]+|['"\u2018\u2019\u201c\u201d]+$/g, "").trim())
-    .filter(Boolean)
-    .join(", ");
-}
-
 export const ProductService = {
   async getAllProducts(): Promise<Product[]> {
     try {
@@ -74,9 +63,20 @@ export const ProductService = {
 
       const [liveStock, liveRates] = await Promise.all([this.getLiveStock(), this.getLiveRates()]);
       products.forEach((p: any) => {
-          p.topNotes = cleanNotes(p.topNotes);
-          p.heartNotes = cleanNotes(p.heartNotes);
-          p.baseNotes = cleanNotes(p.baseNotes);
+          // Same clean-up as the catalog builder, so a catalog published before that clean-up
+          // existed still shows clean details.
+          for (const f of ['topNotes', 'heartNotes', 'baseNotes', 'mainAccord', 'occasion', 'origin', 'description', 'descriptionAr', 'fragranceFamily', 'brand']) {
+              p[f] = cleanText(p[f]);
+          }
+          // Old catalogs filled an empty scent family with "General", and imports with "Floral"
+          // for items that were never researched (no accord, no notes). Neither is real data.
+          if (p.fragranceFamily === 'General' || (p.fragranceFamily === 'Floral' && !p.mainAccord && !p.topNotes && !p.heartNotes && !p.baseNotes)) {
+              p.fragranceFamily = '';
+          }
+          p.name = displayName(p.name);
+          p.concentration = resolveConcentration(p.name, p.concentration);
+          p.shortDescription = p.concentration;
+          p.gender = resolveGender(p.name, p.gender);
           const variants = Array.isArray(p.variants) ? p.variants : [];
           if (variants.some((v: any) => v.key)) {
               let total = 0;
@@ -112,8 +112,19 @@ export const ProductService = {
           }
         }
 
-        // Never show a size (or a product) whose selling price is zero.
-        const sellable = variants.filter((v: any) => Number(v.price) > 0);
+        // Never show a size (or a product) whose selling price is zero, or a size that is out of
+        // stock. When two POS items are the same size (and tester or not), show the one with
+        // the most stock so the size appears once.
+        const hasKeys = variants.some((v: any) => v.key);
+        const best = new Map<string, any>();
+        for (const v of variants) {
+          if (!(Number(v.price) > 0)) continue;
+          if (hasKeys && !(Number(v.stock) > 0)) continue;
+          const slot = `${v.size}|${v.isTester ? 1 : 0}`;
+          const prev = best.get(slot);
+          if (!prev || Number(v.stock) > Number(prev.stock)) best.set(slot, v);
+        }
+        const sellable = variants.filter((v: any) => [...best.values()].includes(v));
         if (variants.length > 0) {
           if (sellable.length === 0) continue;
           p.variants = sellable;

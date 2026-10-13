@@ -39,7 +39,7 @@ export interface Product {
   occasion?: string;
   origin?: string;
   size?: string;
-      concentration?: 'EDP' | 'EDT' | 'Parfum' | 'Cologne' | 'Oil';
+  concentration?: string; // EDP, EDT, EDC, Parfum, Extrait de Parfum, ... (see lib/productData.ts)
   tags: string[];
   slug: string;
   seoTitle?: string;

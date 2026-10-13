@@ -94,8 +94,9 @@ export default function ProductPageClient({ product, locale }: { product: Produc
                         : 'border-border text-foreground hover:border-foreground'
                     } ${!variant.isAvailable ? 'opacity-40 cursor-not-allowed' : ''}`}
                   >
-                    {variant.size}
-                    {variant.isTester ? ` (${isArabic ? "تيستر" : "Tester"})` : ''}
+                    {variant.size
+                      ? `${variant.size}${variant.isTester ? ` (${isArabic ? "تيستر" : "Tester"})` : ''}`
+                      : (variant.isTester ? (isArabic ? "تيستر" : "Tester") : (isArabic ? "قياسي" : "Standard"))}
                   </button>
                 ))}
               </div>

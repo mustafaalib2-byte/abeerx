@@ -1,4 +1,7 @@
 import { S3Client, ListObjectsV2Command, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  cleanText, displayName, normalizeStoredSize, resolveConcentration, resolveGender, SIZE_AT_END,
+} from "./productData";
 
 /**
  * Builds the website catalog straight from the POS database (abeerx-final) and
@@ -170,34 +173,47 @@ export function buildCatalog(
     }
 
     const isTester = !!item.tester || looksLikeTester(key);
+    const name = displayName(key);
+    const concentration = resolveConcentration(name, item.concentration);
+    const mainAccord = cleanText(item.mainAccord);
+    const topNotes = cleanText(item.topNotes);
+    const heartNotes = cleanText(item.heartNotes);
+    const baseNotes = cleanText(item.baseNotes);
+    // Imports filled an empty scent family with "Floral". When the item has no research at
+    // all (no accord, no notes) that "Floral" is a guess, so don't show it.
+    let scentFamily = cleanText(item.scentFamily);
+    if (scentFamily === "Floral" && !mainAccord && !topNotes && !heartNotes && !baseNotes) scentFamily = "";
+    const occasion = cleanText(item.occasion);
+    const origin = cleanText(item.origin);
+    const storedSize = normalizeStoredSize(item.size);
 
     rows.push({
-      key, sku, isTester, price, salePrice, discountPercentage,
+      key, name, sku, isTester, price, salePrice, discountPercentage, storedSize,
       images: photosFor(safeFileName(key), sku, idx),
       product: {
         id: key,
         sku,
-        name: key,
-        brand: item.brand || "ABEERX",
-        categoryId: item.category || item.scentFamily || "Uncategorized",
-        gender: item.gender || "Unisex",
-        shortDescription: item.concentration || "EDP",
-        description: item.description || "",
-        descriptionAr: item.descriptionAr || "",
+        name,
+        brand: cleanText(item.brand) || "ABEERX",
+        categoryId: cleanText(item.category) || scentFamily || "Uncategorized",
+        gender: resolveGender(name, item.gender),
+        shortDescription: concentration,
+        description: cleanText(item.description),
+        descriptionAr: cleanText(item.descriptionAr),
         price, salePrice, discountPercentage,
         currency: "KWD",
         totalStock: 0,
         isAvailable: true,
-        fragranceFamily: item.scentFamily || "General",
-        topNotes: item.topNotes || "",
-        heartNotes: item.heartNotes || "",
-        baseNotes: item.baseNotes || "",
-        mainAccord: item.mainAccord || "",
-        occasion: item.occasion || "",
-        origin: item.origin || "",
-        size: item.size || "100ml",
-        concentration: item.concentration || "EDP",
-        tags: [item.concentration || "EDP", item.size || "100ml", item.occasion, item.mainAccord, item.origin].filter(Boolean),
+        fragranceFamily: scentFamily,
+        topNotes,
+        heartNotes,
+        baseNotes,
+        mainAccord,
+        occasion,
+        origin,
+        size: storedSize,
+        concentration,
+        tags: [concentration, storedSize, occasion, mainAccord, origin].filter(Boolean),
         isFeatured: true,
         isBestSeller: false,
         isNewArrival: false,
@@ -209,7 +225,7 @@ export function buildCatalog(
   const grouped = new Map<string, any>();
   const now = new Date().toISOString();
   for (const r of rows) {
-    let baseName = r.key;
+    let baseName = r.name;
     if (r.isTester) {
       baseName = baseName
         .replace(/\s*[-(]*\s*\b(tester|testers|tstr|tst|testr|test)\b\s*[-)]*\s*$/i, "")
@@ -217,8 +233,10 @@ export function buildCatalog(
         .replace(/\s+T\.?\s*$/, "");
     }
     baseName = baseName.trim();
-    let size = "100ml";
-    const sizeMatch = baseName.match(/\s*[-()]*\s*(\d+)\s*(ml|oz)\s*[-()]*\s*$/i);
+    // Size from the end of the POS name; otherwise the researched size. Never invent one:
+    // an unknown size used to become "100ml", which showed wrong sizes on the site.
+    let size = r.storedSize;
+    const sizeMatch = baseName.match(SIZE_AT_END);
     if (sizeMatch) {
       baseName = baseName.substring(0, sizeMatch.index).trim();
       size = sizeMatch[1] + sizeMatch[2].toLowerCase();
@@ -260,13 +278,13 @@ export function buildCatalog(
       if (!r.isTester) existing._photosFromTester = false;
     }
 
-    // One variant per size + tester flag. If two POS items collide, keep the one with a price.
-    const dupe = existing.variants.find((v: any) => v.size === variant.size && v.isTester === variant.isTester);
-    if (!dupe) existing.variants.push(variant);
-    else if (!(dupe.price > 0) && variant.price > 0) Object.assign(dupe, variant);
+    // Two POS items can be the same size of the same perfume (e.g. "X 100 ML" and a
+    // re-coded "X 100 ML."). Keep both here: which one to show depends on live stock, so
+    // ProductService picks the one that is actually on the shelf.
+    existing.variants.push(variant);
 
     existing.variants.sort((a: any, b: any) =>
-      (parseInt(a.size) - parseInt(b.size)) || ((a.isTester ? 1 : 0) - (b.isTester ? 1 : 0)));
+      ((parseFloat(a.size) || 0) - (parseFloat(b.size) || 0)) || ((a.isTester ? 1 : 0) - (b.isTester ? 1 : 0)));
   }
 
   const catalog = [...grouped.values()];

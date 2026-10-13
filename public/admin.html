@@ -8664,6 +8664,72 @@ function scanCatalogForDuplicates() {
     }, 50);
 }
 
+// ---- Clean-up for imported product details (same rules as lib/productData.ts on the website) ----
+// "A, r, o, m, a, t, i, c" -> "Aromatic" (a text split into single letters)
+function importFixLetterSplit(v) {
+  if (v.indexOf(', ') === -1) return v;
+  const parts = v.split(', ');
+  if (parts.length < 5 || !parts.every(p => p.length <= 1)) return v;
+  return parts.map(p => p || ' ').join('').replace(/\s+/g, ' ').trim();
+}
+// "Ø¹Ø·Ø±" -> "عطر" (Arabic UTF-8 that was read as Latin-1)
+function importFixMojibake(v) {
+  if (!/[\u00d8-\u00db][\u0080-\u00bf]/.test(v)) return v;
+  for (let i = 0; i < v.length; i++) if (v.charCodeAt(i) > 255) return v;
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(Uint8Array.from(v, c => c.charCodeAt(0))); } catch (e) { return v; }
+}
+// "['Mint', 'Lemon']" -> "Mint, Lemon"
+function importFixListText(v) {
+  const t = v.trim();
+  if (!/^\[.*\]$/.test(t)) return v;
+  return t.slice(1, -1).split(',').map(p => p.trim().replace(/^['"\u2018\u2019\u201c\u201d]+|['"\u2018\u2019\u201c\u201d]+$/g, '').trim()).filter(Boolean).join(', ');
+}
+function importCell(row, idx) {
+  if (idx === -1 || row[idx] === undefined || row[idx] === null || row[idx] === '') return '';
+  let v = String(row[idx]);
+  v = importFixMojibake(v); v = importFixLetterSplit(v); v = importFixListText(v);
+  return v.replace(/\uFFFD/g, '').replace(/\s+/g, ' ').trim();
+}
+// The item name is the most reliable source: "... EDT 125 ML" is an EDT.
+function importConcentrationFromName(name) {
+  const n = String(name).toUpperCase();
+  const W = p => new RegExp('(?<![A-Z])(?:' + p + ')(?![A-Z])');
+  const rules = [
+    ['HAIR MIST|HAIR PERFUME|PARFUM POUR LES CHEVEUX', 'Hair Mist'], ['BODY MIST|BODY SPRAY', 'Body Mist'],
+    ['PARFUM DE TOILETTE', 'Parfum de Toilette'], ['EXTRAIT|EXTRAIIT|EXRAIT|EXTRIAT|EXTARIT|EXTRAIT DEPARFUM', 'Extrait de Parfum'],
+    ['EDP|EAU DE PARFUM', 'EDP'], ['EDT|EAU DE TOILETTE', 'EDT'], ['EDC|EAU DE COLOGNE|ED COLOGNE|COLOGNE|COLONGE', 'EDC'],
+    ['PARFUM|PROFUMO', 'Parfum'],
+  ];
+  for (const [p, c] of rules) if (W(p).test(n)) return c;
+  return '';
+}
+function importGenderFromName(name) {
+  const n = String(name).toUpperCase();
+  const W = p => new RegExp('(?<![A-Z])(?:' + p + ')(?![A-Z])');
+  const men = W('MEN|MAN|HOMME|UOMO|HOMBRE|FOR HIM|POUR LUI|MASCULINE|MUSCULINE').test(n);
+  const women = W('WOMEN|WOMAN|FEMME|DONNA|MUJER|LADY|LADIES|FOR HER|POUR ELLE|W').test(n);
+  return men && !women ? 'Men' : women && !men ? 'Women' : '';
+}
+// Imported values for one row. Empty cells stay empty (no made-up "EDP" / "100ml" / "Floral").
+function importDetails(row, originalName, idx) {
+  return {
+    brand: importCell(row, idx.brand),
+    gender: importGenderFromName(originalName) || importCell(row, idx.gender) || 'Unisex',
+    concentration: importConcentrationFromName(originalName) || importCell(row, idx.conc),
+    size: importCell(row, idx.size),
+    category: importCell(row, idx.cat) || 'Perfume',
+    scentFamily: importCell(row, idx.fam),
+    mainAccord: importCell(row, idx.accord),
+    topNotes: importCell(row, idx.top),
+    heartNotes: importCell(row, idx.heart),
+    baseNotes: importCell(row, idx.base),
+    occasion: importCell(row, idx.occ),
+    origin: importCell(row, idx.origin),
+    description: importCell(row, idx.desc),
+    descriptionAr: importCell(row, idx.descAr),
+  };
+}
+
 function importItemsExcel(event) {
   if (!isAdmin) return toast('❌ Security Block: Admin login required.');
   const file = event.target.files[0]; if (!file) return; 
@@ -8724,20 +8790,10 @@ function importItemsExcel(event) {
           let existingSku = (itemDetails[itemKey] && itemDetails[itemKey].sku) ? itemDetails[itemKey].sku : '';
           let sku = excelSku || existingSku; // your Excel/Sheet SKU wins; only keep the old one if the cell is empty
           
-          let brand = brandIdx !== -1 && row[brandIdx] ? String(row[brandIdx]).trim() : '';
-          let gender = genderIdx !== -1 && row[genderIdx] ? String(row[genderIdx]).trim() : 'Unisex';
-          let concentration = concIdx !== -1 && row[concIdx] ? String(row[concIdx]).trim() : 'EDP';
-          let size = sizeIdx !== -1 && row[sizeIdx] ? String(row[sizeIdx]).trim() : '100ml';
-          let category = catIdx !== -1 && row[catIdx] ? String(row[catIdx]).trim() : 'Perfume';
-          let scentFamily = famIdx !== -1 && row[famIdx] ? String(row[famIdx]).trim() : 'Floral';
-          let mainAccord = accordIdx !== -1 && row[accordIdx] ? String(row[accordIdx]).trim() : '';
-          let topNotes = topIdx !== -1 && row[topIdx] ? String(row[topIdx]).trim() : '';
-          let heartNotes = heartIdx !== -1 && row[heartIdx] ? String(row[heartIdx]).trim() : '';
-          let baseNotes = baseIdx !== -1 && row[baseIdx] ? String(row[baseIdx]).trim() : '';
-          let occasion = occIdx !== -1 && row[occIdx] ? String(row[occIdx]).trim() : '';
-          let origin = originIdx !== -1 && row[originIdx] ? String(row[originIdx]).trim() : '';
-          let description = descIdx !== -1 && row[descIdx] ? String(row[descIdx]).trim() : '';
-          let descriptionAr = descArIdx !== -1 && row[descArIdx] ? String(row[descArIdx]).trim() : '';
+          const { brand, gender, concentration, size, category, scentFamily, mainAccord, topNotes, heartNotes, baseNotes,
+                  occasion, origin, description, descriptionAr } = importDetails(row, originalName, {
+            brand: brandIdx, gender: genderIdx, conc: concIdx, size: sizeIdx, cat: catIdx, fam: famIdx, accord: accordIdx,
+            top: topIdx, heart: heartIdx, base: baseIdx, occ: occIdx, origin: originIdx, desc: descIdx, descAr: descArIdx });
           // Tester column: accept Yes/No, True/False, 1/0, or an already-blank cell.
           let testerRaw = testerIdx !== -1 && row[testerIdx] ? String(row[testerIdx]).trim().toLowerCase() : '';
           let tester = ['yes', 'y', 'true', '1', 'tester', 'available'].includes(testerRaw);
@@ -8789,7 +8845,13 @@ async function syncGoogleSheets() {
         const arrayBuffer = await response.arrayBuffer();
         
         const data = new Uint8Array(arrayBuffer);
-        const workbook = XLSX.read(data, {type: 'array'});
+        // A published CSV is UTF-8 text. Reading its bytes directly makes SheetJS treat it as
+        // Latin-1, which turned every Arabic description into "Ø¹Ø·Ø±...". Decode it as UTF-8
+        // first; a published .xlsx (a zip, starts with "PK") is still read as a file.
+        const isZip = data[0] === 0x50 && data[1] === 0x4B;
+        const workbook = isZip
+          ? XLSX.read(data, {type: 'array'})
+          : XLSX.read(new TextDecoder('utf-8').decode(data), {type: 'string'});
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
         
@@ -8808,7 +8870,7 @@ async function syncGoogleSheets() {
         const skuIdx = headers.findIndex(h => h.includes('sku') || h.includes('barcode'));
         const brandIdx = headers.findIndex(h => h.includes('brand'));
         const genderIdx = headers.findIndex(h => h.includes('gender') || h.includes('men/women'));
-        const concIdx = headers.findIndex(h => h.includes('edp'));
+        const concIdx = headers.findIndex(h => h.includes('concentration') || h.includes('edp'));
         const sizeIdx = headers.findIndex(h => h.includes('size') || h.includes('ml'));
         const catIdx = headers.findIndex(h => h.includes('category'));
         const famIdx = headers.findIndex(h => h.includes('family') || h.includes('scent'));
@@ -8842,20 +8904,10 @@ async function syncGoogleSheets() {
           let existingSku = (itemDetails[itemKey] && itemDetails[itemKey].sku) ? itemDetails[itemKey].sku : '';
           let sku = excelSku || existingSku; // your Excel/Sheet SKU wins; only keep the old one if the cell is empty
           
-          let brand = brandIdx !== -1 && row[brandIdx] ? String(row[brandIdx]).trim() : '';
-          let gender = genderIdx !== -1 && row[genderIdx] ? String(row[genderIdx]).trim() : 'Unisex';
-          let concentration = concIdx !== -1 && row[concIdx] ? String(row[concIdx]).trim() : 'EDP';
-          let size = sizeIdx !== -1 && row[sizeIdx] ? String(row[sizeIdx]).trim() : '100ml';
-          let category = catIdx !== -1 && row[catIdx] ? String(row[catIdx]).trim() : 'Perfume';
-          let scentFamily = famIdx !== -1 && row[famIdx] ? String(row[famIdx]).trim() : 'Floral';
-          let mainAccord = accordIdx !== -1 && row[accordIdx] ? String(row[accordIdx]).trim() : '';
-          let topNotes = topIdx !== -1 && row[topIdx] ? String(row[topIdx]).trim() : '';
-          let heartNotes = heartIdx !== -1 && row[heartIdx] ? String(row[heartIdx]).trim() : '';
-          let baseNotes = baseIdx !== -1 && row[baseIdx] ? String(row[baseIdx]).trim() : '';
-          let occasion = occIdx !== -1 && row[occIdx] ? String(row[occIdx]).trim() : '';
-          let origin = originIdx !== -1 && row[originIdx] ? String(row[originIdx]).trim() : '';
-          let description = descIdx !== -1 && row[descIdx] ? String(row[descIdx]).trim() : '';
-          let descriptionAr = descArIdx !== -1 && row[descArIdx] ? String(row[descArIdx]).trim() : '';
+          const { brand, gender, concentration, size, category, scentFamily, mainAccord, topNotes, heartNotes, baseNotes,
+                  occasion, origin, description, descriptionAr } = importDetails(row, originalName, {
+            brand: brandIdx, gender: genderIdx, conc: concIdx, size: sizeIdx, cat: catIdx, fam: famIdx, accord: accordIdx,
+            top: topIdx, heart: heartIdx, base: baseIdx, occ: occIdx, origin: originIdx, desc: descIdx, descAr: descArIdx });
           let testerRaw = testerIdx !== -1 && row[testerIdx] ? String(row[testerIdx]).trim().toLowerCase() : '';
           let tester = ['yes', 'y', 'true', '1', 'tester', 'available'].includes(testerRaw);
 
