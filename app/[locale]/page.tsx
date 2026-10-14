@@ -158,8 +158,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <p className="text-sm text-muted-foreground">Express delivery across all of Kuwait.</p>
           </div>
           <div>
-            <h3 className="font-serif text-lg mb-2">Secure Payment</h3>
-            <p className="text-sm text-muted-foreground">KNET, Visa, Mastercard, Apple Pay.</p>
+            <h3 className="font-serif text-lg mb-2">Cash on Delivery</h3>
+            <p className="text-sm text-muted-foreground">Pay in cash when your order arrives.</p>
           </div>
           <div>
             <h3 className="font-serif text-lg mb-2">Expert Support</h3>

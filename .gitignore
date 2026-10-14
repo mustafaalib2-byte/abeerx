@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Social auto-posting: written on this PC on every run. Never commit them: every push starts
+# a new Vercel deployment, which uses up the hosting plan.
+social_autopost.log
+social_posted.json
+social_autopost.lock
+Social_AutoPost_Hidden.vbs
+
+# exported store data (private)
+/data_audit/

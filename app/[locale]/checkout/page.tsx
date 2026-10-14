@@ -10,6 +10,9 @@ import { useDeliverySettings } from "@/features/delivery/DeliveryContext";
 import { deliveryFeeFor, formatAmount } from "@/lib/delivery";
 import { saveLastOrder } from "@/lib/orderTracking";
 
+// Payment options shown at checkout.
+const PAYMENT_METHODS = ['Cash on Delivery'];
+
 export default function CheckoutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = use(params);
   const { items, cartTotal, clearCart } = useCart();
@@ -20,7 +23,10 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
     name: '', mobile: '', email: '', area: '', block: '', street: '', house: '', notes: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('KNET'); // KNET, Visa/Mastercard, Cash on Delivery
+  // Only cash on delivery for now. Online payment (KNET / cards) was never connected to a
+  // payment gateway, so it must not be offered. To bring it back, add the methods to
+  // PAYMENT_METHODS (top of this file) once /api/payment/create really takes the payment.
+  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string, type: string, value: number, min: number} | null>(null);
@@ -292,10 +298,10 @@ export default function CheckoutPage({ params }: { params: Promise<{ locale: str
               {isArabic ? "طريقة الدفع" : "Payment Method"}
             </h2>
             <div className="space-y-3">
-              {['KNET', 'Visa / Mastercard', 'Cash on Delivery'].map(method => (
+              {PAYMENT_METHODS.map(method => (
                 <label key={method} className={`flex items-center p-4 border cursor-pointer transition-colors ${paymentMethod === method ? 'border-ring bg-secondary' : 'border-border'}`}>
                   <input type="radio" name="payment" value={method} checked={paymentMethod === method} onChange={(e) => setPaymentMethod(e.target.value)} className="mr-4 accent-ring" />
-                  <span className="font-medium text-foreground">{method}</span>
+                  <span className="font-medium text-foreground">{method === 'Cash on Delivery' && isArabic ? 'الدفع عند الاستلام' : method}</span>
                 </label>
               ))}
             </div>
