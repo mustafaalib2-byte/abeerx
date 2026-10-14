@@ -2179,7 +2179,7 @@ function resetLabelPositions() {
       resizeAndCompressImageToBlob(file).then(blob => {
           return uploadBlobToR2(blob, itemName);
       }).then(url => {
-          return dbRef.child('abeerx/productImages/' + itemName).set(url);
+          return dbRef.child('productImages/' + itemName).set(url);
       }).then(() => {
           hideLoading(); toast('Image synced to website!');
       }).catch(err => {
@@ -3328,8 +3328,48 @@ window.addEventListener('DOMContentLoaded', () => {
     smartImgMutObserver.observe(document.body, { childList: true, subtree: true });
 });
 
+// Website photos. The website keeps its photos in catalog.json on Cloudflare (Image Manager),
+// not in abeerx/productImages, so the POS only showed the few photos uploaded from the POS.
+// Load the catalog once and look items up by name (variant key), then by SKU.
+let webThumbByName = {}, webThumbBySku = {};
+function buildWebThumbs(catalog) {
+    const byName = {}, bySku = {};
+    (catalog || []).forEach(p => {
+        const imgs = Array.isArray(p.images) ? p.images : [];
+        const img = imgs.find(u => typeof u === 'string' && u);
+        if (!img) return;
+        (p.variants || []).forEach(v => {
+            if (v.key && !byName[v.key]) byName[v.key] = img;
+            const vs = normalizeSku(v.sku); if (vs && !bySku[vs]) bySku[vs] = img;
+        });
+        if (p.name && !byName[p.name]) byName[p.name] = img;
+        const ps = normalizeSku(p.sku); if (ps && !bySku[ps]) bySku[ps] = img;
+    });
+    webThumbByName = byName; webThumbBySku = bySku;
+    refreshAllItemThumbs();
+}
+let webThumbsLoading = false;
+async function loadWebThumbs() {
+    if (webThumbsLoading) return; webThumbsLoading = true;
+    try {
+        // one copy per hour, so the browser can reuse it instead of downloading it on every page load
+        const res = await fetch('https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog.json?h=' + Math.floor(Date.now() / 3600000));
+        if (res.ok) buildWebThumbs(await res.json());
+    } catch (e) { console.warn('Website photos not loaded', e); }
+    webThumbsLoading = false;
+}
+// The photo for a POS item: one uploaded in the POS first, otherwise the website's photo.
+function itemImageUrl(name) {
+    const own = extractImageUrl(productImages[name]);
+    if (own && typeof own === 'string') return own;
+    if (!name) return null;
+    const alt = String(name).replace(/[\uFFFD\u2024]/g, '.');
+    const sku = normalizeSku(itemDetails[name] && itemDetails[name].sku);
+    return webThumbByName[name] || webThumbByName[alt] || (sku && webThumbBySku[sku]) || null;
+}
+
 function getItemThumbHtml(name, size = 28, extraClass = '') {
-    const url = extractImageUrl(productImages[name]);
+    const url = itemImageUrl(name);
     const cls = size >= 34 ? 'item-thumb-lg' : 'item-thumb';
     if (url && typeof url === 'string') {
         return `<img class="${cls} ${extraClass} smart-lazy-image" data-src="${escH(url)}" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" style="width:${size}px; height:${size}px;" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && (this.nextElementSibling.style.display='inline-flex');">`;
@@ -3426,6 +3466,7 @@ function attachPublicListeners() {
         productImages = s.val() || {};
         refreshAllItemThumbs();
     }, e => console.warn(e));
+    loadWebThumbs();
 }
 
 function attachPrivateListeners() { initCoupons(); loadWebEditorPage(); 
@@ -3878,6 +3919,7 @@ async function loadWebCatalog() {
     try {
         const res = await fetch('https://pub-209a4e728df44d029c946408e718e9c8.r2.dev/catalog.json?t=' + Date.now());
         webCatalogCache = await res.json();
+        buildWebThumbs(webCatalogCache); // keep POS photos in step with Image Manager changes
         imgMgrStockMap = buildImgMgrStockMap();
         webCatalogCache.sort((a, b) => {
             const sa = webProdStock(a) > 0 ? 1 : 0, sb = webProdStock(b) > 0 ? 1 : 0;
@@ -7002,7 +7044,7 @@ function buildPrintHtml(bill, type, isAnonymous = false, isImage = false) {
   // Print image column helper — build the <td> for the image cell in each row
   const printImgTd = (itemName) => {
       if (!printWithImages) return '';
-      const url = extractImageUrl(productImages[itemName]);
+      const url = itemImageUrl(itemName);
       if (url && typeof url === 'string') {
           return `<td style="padding:4px 6px; border-bottom:1px dashed #ddd; text-align:center; vertical-align:middle; width:44px;"><img src="${escH(url)}" style="width:36px; height:36px; object-fit:cover; border-radius:4px; display:block; margin:0 auto;" crossorigin="anonymous"></td>`;
       }
