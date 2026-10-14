@@ -1720,6 +1720,10 @@
 <input type="text" id="google-sheet-url" class="input" placeholder="https://docs.google.com/spreadsheets/.../pub?output=csv" style="flex:1;">
 <button class="btn" style="background:#10b981; color:white; width:auto; padding:0 20px;" onclick="syncGoogleSheets()">🔄 Sync</button>
 </div>
+<div style="display:flex; gap:10px; margin-top:10px;">
+<button class="btn btn-outline" style="flex:1; border-color:#10b981; color:#10b981;" onclick="openGoogleSheet(false)">📄 Open Google Sheet</button>
+<button class="btn btn-outline" style="width:auto; padding:0 14px;" title="Change which sheet opens" onclick="openGoogleSheet(true)">✏️ Link</button>
+</div>
 </div>
 
       </div>
@@ -8308,6 +8312,48 @@ function deleteParty(name) {
 }
 
 
+// Supplier bills are matched by SKU / barcode only: the code on the bill is exact, while the
+// supplier's description is spelled differently from our item names more often than not. When
+// a row's code is found, the item name comes from our catalogue. Rows whose code we don't have
+// (or that have no code) are left red, showing the bill's description, for the admin to check.
+function normalizeSku(v) {
+  if (v === undefined || v === null) return '';
+  let s = String(v).trim().replace(/^'+/, '');
+  if (/^\d+\.0+$/.test(s)) s = s.replace(/\.0+$/, ''); // 3423478999268.0 -> 3423478999268
+  if (/e\+?\d+$/i.test(s)) return ''; // "3.42348E+12": Excel already lost the digits, so it can't match
+  return s.replace(/\s+/g, '').toLowerCase();
+}
+
+// SKU -> item name, built from the catalogue. Barcodes also match without leading zeros
+// (Excel drops them when the column is a number). Only for real barcodes (8+ digits), so a
+// short number like 1 never matches our own SKU 000001.
+function buildSkuIndex() {
+  const exact = new Map(), noZeros = new Map();
+  items.forEach(name => {
+    const sku = normalizeSku(itemDetails[name] && itemDetails[name].sku);
+    if (!sku) return;
+    if (!exact.has(sku)) exact.set(sku, []);
+    exact.get(sku).push(name);
+    if (/^\d{8,}$/.test(sku)) {
+      const nz = sku.replace(/^0+/, '');
+      if (!noZeros.has(nz)) noZeros.set(nz, []);
+      noZeros.get(nz).push(name);
+    }
+  });
+  return {
+    find(code, billName) {
+      const sku = normalizeSku(code);
+      if (!sku) return null;
+      let names = exact.get(sku);
+      if (!names && /^\d{8,}$/.test(sku)) names = noZeros.get(sku.replace(/^0+/, ''));
+      if (!names || !names.length) return null;
+      if (names.length === 1) return names[0];
+      // The same code on several items: prefer the one whose name is closest to the bill's.
+      return names.slice().sort((a, b) => nameSimilarity(billName || '', b) - nameSimilarity(billName || '', a))[0];
+    },
+  };
+}
+
 function importPurchaseExcel(event) {
   const file = event.target.files[0]; if (!file) return;
   showLoading('Processing Supplier Bill...');
@@ -8320,51 +8366,67 @@ function importPurchaseExcel(event) {
       const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
       if(rows.length < 2) { hideLoading(); toast('⚠️ Excel empty.'); return; }
 
+      const SKU_WORDS = ['barcode', 'bar code', 'sku', 'ean', 'upc', 'item code', 'product code', 'code'];
       let hIdx = 0, headers = [];
-      for(let i=0; i<Math.min(5, rows.length); i++) {
-        const rStr = (rows[i]||[]).map(c=>String(c).toLowerCase());
-        if(rStr.some(c=>c.includes('description') || c.includes('item') || c.includes('product'))) {
+      for(let i=0; i<Math.min(8, rows.length); i++) {
+        const rStr = (rows[i]||[]).map(c=>String(c ?? '').toLowerCase().trim());
+        if(rStr.some(c=>c.includes('description') || c.includes('item') || c.includes('product') || SKU_WORDS.some(w => c.includes(w)))) {
           hIdx = i; headers = rStr; break;
         }
       }
 
-      const getIdx = kws => headers.findIndex(h => kws.some(kw => h.includes(kw)));
-      const itemIdx = getIdx(['description', 'item', 'name']);
-      const qtyIdx = getIdx(['qty', 'quantity']);
-      const rateIdx = getIdx(['rate', 'price', 'aed', 'dh']);
+      // First column whose header contains one of the words, trying the words in order.
+      const getIdx = (kws, skip = []) => {
+        for (const kw of kws) {
+          const idx = headers.findIndex((h, n) => !skip.includes(n) && h.includes(kw));
+          if (idx !== -1) return idx;
+        }
+        return -1;
+      };
+      const skuIdx = getIdx(SKU_WORDS);
+      const itemIdx = getIdx(['description', 'name', 'item', 'product'], [skuIdx]);
+      const qtyIdx = getIdx(['qty', 'quantity'], [skuIdx]);
+      const rateIdx = getIdx(['rate', 'price', 'aed', 'dh'], [skuIdx]);
 
-      if(itemIdx === -1 || qtyIdx === -1 || rateIdx === -1) { hideLoading(); return toast('❌ Could not find Description, Qty, or Rate columns.'); }
+      if(skuIdx === -1 || qtyIdx === -1 || rateIdx === -1) {
+        hideLoading();
+        return toast('❌ Could not find the Barcode/SKU, Qty and Rate columns.');
+      }
+
+      const skuIndex = buildSkuIndex();
+      let bySku = 0, notFound = 0;
 
       for(let i = hIdx+1; i<rows.length; i++) {
         const row = rows[i]; if(!row || !row.length) continue;
-        
-        // --- FIX FOR DECIMAL/DOT IN NAMES ---
-        // Converts standard '.' into '․' (Unicode One Dot Leader) so it perfectly maps against database keys
-        let rawItem = String(row[itemIdx]||'').trim().replace(/\./g, '․'); 
-        
-        let qty = parseInt(row[qtyIdx]||0, 10); 
-        let rate = parseFloat(row[rateIdx]||0);
-        
-        if(rawItem && qty > 0) { 
-          // Check for a case-insensitive match in the database
-          let matchedItemName = items.find(dbItem => dbItem.toLowerCase() === rawItem.toLowerCase());
-          let finalItem = matchedItemName ? matchedItemName : rawItem;
-          let isUnmatched = !matchedItemName;
-          
-          let matchedSku = matchedItemName && itemDetails[matchedItemName] ? itemDetails[matchedItemName].sku : '';
 
-          addRow('purchase', false, { 
-              sku: matchedSku, 
-              item: finalItem, 
-              qty, 
-              rate, 
-              tax: 0, 
-              amount: qty*rate,
-              unmatched: isUnmatched 
-          }); 
-        }
+        // Same dot replacement as item names in the database ('.' -> '․' One Dot Leader).
+        const billName = itemIdx !== -1 ? String(row[itemIdx] ?? '').trim().replace(/\./g, '․') : '';
+        const billSku = skuIdx !== -1 ? String(row[skuIdx] ?? '').trim().replace(/^'+/, '').replace(/^(\d+)\.0+$/, '$1') : '';
+
+        let qty = parseInt(row[qtyIdx]||0, 10);
+        let rate = parseFloat(row[rateIdx]||0);
+        if(!(qty > 0) || (!billName && !billSku)) continue;
+
+        const matched = skuIndex.find(billSku, billName);
+        if (matched) bySku++; else notFound++;
+
+        const finalItem = matched || billName || billSku;
+        const sku = matched && itemDetails[matched] && itemDetails[matched].sku ? itemDetails[matched].sku : billSku;
+
+        addRow('purchase', false, {
+            sku,
+            item: finalItem,
+            qty,
+            rate,
+            tax: 0,
+            amount: qty*rate,
+            unmatched: !matched
+        });
       }
-      calcTotal('purchase'); hideLoading(); toast('✅ Supplier bill imported successfully!'); event.target.value = '';
+      calcTotal('purchase'); hideLoading(); event.target.value = '';
+      toast(notFound
+        ? `⚠️ Supplier bill imported: ${bySku} found by SKU, ${notFound} SKU NOT FOUND (red rows, please check).`
+        : `✅ Supplier bill imported: all ${bySku} items found by SKU.`);
     } catch(err) { hideLoading(); toast('❌ Error parsing Excel.'); console.error(err); }
   };
   reader.readAsArrayBuffer(file);
@@ -8730,93 +8792,152 @@ function importDetails(row, originalName, idx) {
   };
 }
 
+// Item names are Firebase keys, and keys can't contain "." — so a dot in a name is stored as
+// another character. Older code used two different ones ("�" in the Google Sheet sync, "․" in
+// the Excel import), so switching between the two renamed ~260 items and cut them off from
+// their stock and price. Always reuse the key the item already has; new items get "�", which
+// is what the live data and the website use.
+function itemKeyFor(name) {
+  const base = String(name || '').replace(/[#$\[\]\/\n\r]/g, '-').trim();
+  if (!base.includes('.')) return base;
+  const a = base.replace(/\./g, '�'), b = base.replace(/\./g, '․');
+  if (itemDetails[a] !== undefined || itemRates[a] !== undefined) return a;
+  if (itemDetails[b] !== undefined || itemRates[b] !== undefined) return b;
+  return a;
+}
+
+// Shared by "Choose Excel File" and "Sync from Google Sheets", so both behave exactly the same.
+// Replaces the whole item list, so it first shows what will change and asks to confirm, and
+// saves a backup file of the current items to the computer before writing anything.
+async function applyItemSheetRows(rows, sourceLabel) {
+  if (!rows || rows.length < 2) { toast('⚠️ The sheet appears empty. Nothing was changed.'); return false; }
+
+  let headerRowIdx = -1; let headers = [];
+  for (let i = 0; i < Math.min(10, rows.length); i++) {
+    const rowString = (rows[i] || []).map(c => String(c).toLowerCase().trim());
+    if (rowString.some(c => c.includes('sku') || c.includes('item') || c.includes('product name') || c.includes('core product'))) { headerRowIdx = i; headers = rowString; break; }
+  }
+  if (headerRowIdx === -1) { toast('❌ Could not find the header row (SKU / Product Name). Nothing was changed.'); return false; }
+
+  const getIdx = (keywords) => headers.findIndex(h => keywords.some(kw => h.includes(kw)));
+  const skuIdx    = getIdx(['sku', 'barcode']);
+  const itemIdx   = getIdx(['product name', 'item name', 'name', 'item', 'product']);
+  const genderIdx = getIdx(['gender']);
+  const concIdx   = getIdx(['concentration']);
+  const sizeIdx   = getIdx(['size', 'volume']);
+  const catIdx    = getIdx(['category']);
+  const famIdx    = getIdx(['scent family', 'family']);
+  const accordIdx = getIdx(['main accord', 'accord']);
+  const topIdx    = getIdx(['top notes']);
+  const heartIdx  = getIdx(['heart notes', 'middle notes']);
+  const baseIdx   = getIdx(['base notes']);
+  const occIdx    = getIdx(['occasion']);
+  const originIdx = getIdx(['country', 'origin']);
+  const rateIdx   = getIdx(['sale price', 'sale rate', 'rate', 'price']);
+  const brandIdx  = getIdx(['brand']);
+  // "description (arabic)" also contains "description", so find the Arabic one first and
+  // keep the English one off it.
+  const descArIdx = getIdx(['description (arabic)', 'arabic']);
+  const descIdx   = headers.findIndex((h, n) => n !== descArIdx && h.includes('description'));
+  const testerIdx = getIdx(['tester']);
+
+  if (itemIdx === -1 || itemIdx === skuIdx) { toast('❌ Could not find the "Product Name" column. Nothing was changed.'); return false; }
+  if (rateIdx === -1) { toast('❌ Could not find the "Sale Price" column. Nothing was changed.'); return false; }
+
+  const newItems = []; const newItemRates = {}; const newItemDetails = {};
+  for (let i = headerRowIdx + 1; i < rows.length; i++) {
+    const row = rows[i]; if (!row || row.length === 0) continue;
+    const originalName = String(row[itemIdx] || '').trim();
+    const itemKey = itemKeyFor(originalName);
+    if (!itemKey) continue;
+
+    let rate = parseFloat(row[rateIdx]); if (isNaN(rate)) rate = 0.00;
+
+    const excelSku = skuIdx !== -1 && row[skuIdx] ? String(row[skuIdx]).trim() : '';
+    const existingSku = (itemDetails[itemKey] && itemDetails[itemKey].sku) ? itemDetails[itemKey].sku : '';
+    const sku = excelSku || existingSku; // the sheet's SKU wins; keep the old one only if the cell is empty
+
+    const { brand, gender, concentration, size, category, scentFamily, mainAccord, topNotes, heartNotes, baseNotes,
+            occasion, origin, description, descriptionAr } = importDetails(row, originalName, {
+      brand: brandIdx, gender: genderIdx, conc: concIdx, size: sizeIdx, cat: catIdx, fam: famIdx, accord: accordIdx,
+      top: topIdx, heart: heartIdx, base: baseIdx, occ: occIdx, origin: originIdx, desc: descIdx, descAr: descArIdx });
+    // Tester column: accept Yes/No, True/False, 1/0, or a blank cell.
+    const testerRaw = testerIdx !== -1 && row[testerIdx] ? String(row[testerIdx]).trim().toLowerCase() : '';
+    const tester = ['yes', 'y', 'true', '1', 'tester', 'available'].includes(testerRaw);
+
+    if (!newItems.includes(itemKey)) newItems.push(itemKey);
+    newItemRates[itemKey] = rate;
+    newItemDetails[itemKey] = {
+      name: itemKey, price: rate, sku: sku, brand: brand, gender: gender,
+      concentration: concentration, size: size, category: category, scentFamily: scentFamily, mainAccord: mainAccord,
+      topNotes: topNotes, heartNotes: heartNotes, baseNotes: baseNotes, occasion: occasion, origin: origin,
+      description: description, descriptionAr: descriptionAr, tester: tester, imageName: originalName + '.jpg'
+    };
+  }
+
+  if (newItems.length === 0) { toast('❌ No items found in the sheet. Nothing was changed.'); return false; }
+
+  // What this will do, before doing it.
+  const oldKeys = Object.keys(itemRates || {});
+  const newSet = new Set(newItems), oldSet = new Set(oldKeys);
+  const removed = oldKeys.filter(k => !newSet.has(k));
+  const added = newItems.filter(k => !oldSet.has(k));
+  const priceChanged = newItems.filter(k => oldSet.has(k) && Math.abs((parseFloat(itemRates[k]) || 0) - newItemRates[k]) > 0.0005);
+  const zeroPrice = newItems.filter(k => !(newItemRates[k] > 0));
+  const sample = (list) => list.slice(0, 5).map(k => '   • ' + k).join('\n') + (list.length > 5 ? `\n   … and ${list.length - 5} more` : '');
+
+  let msg = `${sourceLabel}: ${newItems.length} items in the sheet (POS has ${oldKeys.length} now).\n\n`;
+  msg += `➕ New items: ${added.length}\n`;
+  msg += `✏️ Price changes: ${priceChanged.length}\n`;
+  msg += `❌ Items REMOVED from POS and website (not in the sheet): ${removed.length}\n`;
+  if (removed.length) msg += sample(removed) + '\n';
+  msg += `⚠️ Items with no price (hidden on website): ${zeroPrice.length}\n`;
+  if (removed.length > Math.max(20, oldKeys.length * 0.1)) {
+    msg += `\n🛑 WARNING: ${removed.length} items would be deleted. If the sheet is not complete, press Cancel.\n`;
+  }
+  msg += `\nA backup of the current items will be downloaded first. Apply these changes?`;
+  if (!confirm(msg)) { toast('Cancelled. Nothing was changed.'); return false; }
+
+  // Backup to the computer first (items, prices and details as they are right now).
+  try {
+    const backup = JSON.stringify({ savedAt: new Date().toISOString(), items, itemRates, itemDetails });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([backup], { type: 'application/json' }));
+    a.download = `Items_backup_before_import_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+  } catch (e) {
+    if (!confirm('The backup file could not be saved. Continue WITHOUT a backup?')) { toast('Cancelled. Nothing was changed.'); return false; }
+  }
+
+  showLoading('Saving items...');
+  try {
+    await dbRef.update({ items: newItems, itemRates: newItemRates, itemDetails: newItemDetails });
+    hideLoading();
+    toast(`✅ ${newItems.length} items saved (${added.length} new, ${removed.length} removed, ${priceChanged.length} price changes).`);
+    triggerWebsiteUpdate(0);
+    return true;
+  } catch (err) {
+    hideLoading(); console.error('Firebase Update Error:', err);
+    toast('❌ Firebase error. Nothing was saved.');
+    return false;
+  }
+}
+
 function importItemsExcel(event) {
   if (!isAdmin) return toast('❌ Security Block: Admin login required.');
-  const file = event.target.files[0]; if (!file) return; 
-  showLoading('Processing CSV/Excel for POS & Website...'); 
+  const file = event.target.files[0]; if (!file) return;
+  showLoading('Reading Excel file...');
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = async function(e) {
+    let rows;
     try {
       const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'}); const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-      if(rows.length < 2) { hideLoading(); toast('⚠️ File appears empty.'); return; }
-      
-      let headerRowIdx = -1; let headers = [];
-      for(let i = 0; i < Math.min(10, rows.length); i++) {
-        const rowString = (rows[i] || []).map(c => String(c).toLowerCase().trim());
-        if(rowString.some(c => c.includes('sku') || c.includes('item') || c.includes('core product'))) { headerRowIdx = i; headers = rowString; break; }
-      }
-      if (headerRowIdx === -1) { hideLoading(); toast('❌ Could not find header row. Ensure columns are named properly.'); return; }
-      
-      const getIdx = (keywords) => headers.findIndex(h => keywords.some(kw => h.includes(kw))); 
-      let skuIdx    = getIdx(['sku']); 
-        let itemIdx   = getIdx(['product name', 'item', 'product', 'name']);
-        let genderIdx = getIdx(['gender']);
-        let concIdx   = getIdx(['concentration']);
-        let sizeIdx   = getIdx(['size', 'volume']);
-        let catIdx    = getIdx(['category']);
-        let famIdx    = getIdx(['scent family', 'family']);
-        let accordIdx = getIdx(['main accord', 'accord']);
-        let topIdx    = getIdx(['top notes']);
-        let heartIdx  = getIdx(['heart notes']);
-        let baseIdx   = getIdx(['base notes']);
-        let occIdx    = getIdx(['occasion']);
-        let originIdx = getIdx(['country', 'origin']);
-        let rateIdx   = getIdx(['sale price', 'sale rate', 'rate', 'price']);
-        let brandIdx  = getIdx(['brand']);
-        let descIdx   = getIdx(['description']);
-        // NOTE: descIdx above matches the FIRST header containing "description" — this only
-        // stays correct because "Description" comes before "Description (Arabic)" in the
-        // sheet. descArIdx below is matched on the more specific "arabic" keyword so it can't
-        // accidentally grab the English column instead.
-        let descArIdx = getIdx(['description (arabic)', 'arabic']);
-        let testerIdx = getIdx(['tester']);
-
-        if (itemIdx === -1) { hideLoading(); toast('❌ Could not find "Item" column.'); return; }
-        let nameIdxToUse = itemIdx;
-
-        let newItems = []; let newItemRates = {}; let newItemDetails = {}; 
-        
-        for (let i = headerRowIdx + 1; i < rows.length; i++) {
-          const row = rows[i]; if (!row || row.length === 0) continue;
-          let originalName = String(row[nameIdxToUse] || '').trim(); 
-          let itemKey = originalName.replace(/\./g, '․').replace(/[#$\[\]\/\n\r]/g, '-').trim(); 
-          
-          if (!itemKey) continue; 
-          
-          let rawRate = row[rateIdx]; let rate = parseFloat(rawRate); if (isNaN(rate)) rate = 0.00;
-          
-          let excelSku = skuIdx !== -1 && row[skuIdx] ? String(row[skuIdx]).trim() : '';
-          let existingSku = (itemDetails[itemKey] && itemDetails[itemKey].sku) ? itemDetails[itemKey].sku : '';
-          let sku = excelSku || existingSku; // your Excel/Sheet SKU wins; only keep the old one if the cell is empty
-          
-          const { brand, gender, concentration, size, category, scentFamily, mainAccord, topNotes, heartNotes, baseNotes,
-                  occasion, origin, description, descriptionAr } = importDetails(row, originalName, {
-            brand: brandIdx, gender: genderIdx, conc: concIdx, size: sizeIdx, cat: catIdx, fam: famIdx, accord: accordIdx,
-            top: topIdx, heart: heartIdx, base: baseIdx, occ: occIdx, origin: originIdx, desc: descIdx, descAr: descArIdx });
-          // Tester column: accept Yes/No, True/False, 1/0, or an already-blank cell.
-          let testerRaw = testerIdx !== -1 && row[testerIdx] ? String(row[testerIdx]).trim().toLowerCase() : '';
-          let tester = ['yes', 'y', 'true', '1', 'tester', 'available'].includes(testerRaw);
-
-          // Auto image logic
-          let exactImageName = originalName + '.jpg';
-
-          if (!newItems.includes(itemKey)) { newItems.push(itemKey); }
-          newItemRates[itemKey] = rate;
-          newItemDetails[itemKey] = {
-              name: itemKey, price: rate, sku: sku, brand: brand, gender: gender,
-              concentration: concentration, size: size, category: category, scentFamily: scentFamily, mainAccord: mainAccord,
-              topNotes: topNotes, heartNotes: heartNotes, baseNotes: baseNotes, occasion: occasion, origin: origin,
-              description: description, descriptionAr: descriptionAr, tester: tester, imageName: exactImageName
-          };
-        }
-      
-      dbRef.update({ items: newItems, itemRates: newItemRates, itemDetails: newItemDetails }).then(() => {
-         hideLoading(); toast(`✅ ${newItems.length} items synced successfully!`); event.target.value = '';
-         triggerWebsiteUpdate(0);
-      }).catch(err => { hideLoading(); console.error("Firebase Update Error:", err); toast('❌ Firebase Error. Some data might be invalid.'); });
-    } catch(err) { hideLoading(); console.error("File Parse Error:", err); toast('❌ Error reading file. Please check format.'); }
-  }; 
+      rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+    } catch(err) { hideLoading(); console.error("File Parse Error:", err); toast('❌ Error reading file. Please check format.'); event.target.value = ''; return; }
+    hideLoading();
+    await applyItemSheetRows(rows, 'Excel file');
+    event.target.value = '';
+  };
   reader.readAsArrayBuffer(file);
 }
 
@@ -8832,106 +8953,56 @@ db.ref('abeerx/settings/googleSheetUrl').on('value', snap => {
 async function syncGoogleSheets() {
     if (!isAdmin) return toast('Security Block: Admin login required.');
     const url = document.getElementById('google-sheet-url').value.trim();
-    if (!url || !url.includes('google.com')) return toast('Please enter a valid Google Sheets published CSV URL.');
-    
-    showLoading('Fetching live data from Google Sheets...');
-    
-    // Save URL to settings so they don't have to paste it next time
-    dbRef.child('settings/googleSheetUrl').set(url);
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const arrayBuffer = await response.arrayBuffer();
-        
-        const data = new Uint8Array(arrayBuffer);
-        // A published CSV is UTF-8 text. Reading its bytes directly makes SheetJS treat it as
-        // Latin-1, which turned every Arabic description into "Ø¹Ø·Ø±...". Decode it as UTF-8
-        // first; a published .xlsx (a zip, starts with "PK") is still read as a file.
-        const isZip = data[0] === 0x50 && data[1] === 0x4B;
-        const workbook = isZip
-          ? XLSX.read(data, {type: 'array'})
-          : XLSX.read(new TextDecoder('utf-8').decode(data), {type: 'string'});
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-        
-        if(rows.length < 2) { hideLoading(); toast('Google Sheet is empty.'); return; }
-
-        let headerRowIdx = -1;
-        for(let i=0; i<Math.min(5, rows.length); i++) {
-          const rStr = (rows[i]||[]).map(c=>String(c).toLowerCase());
-          if(rStr.some(c=>c.includes('item') || c.includes('product') || c.includes('perfume'))) { headerRowIdx = i; break; }
-        }
-        if(headerRowIdx === -1) { hideLoading(); toast('Could not find header row in Google Sheet.'); return; }
-        
-        const headers = (rows[headerRowIdx]||[]).map(c=>String(c).toLowerCase());
-        const itemIdx = headers.findIndex(h => h.includes('item') || h.includes('product') || h.includes('perfume') || h.includes('name'));
-        const rateIdx = headers.findIndex(h => h.includes('rate') || h.includes('price') || h.includes('kd'));
-        const skuIdx = headers.findIndex(h => h.includes('sku') || h.includes('barcode'));
-        const brandIdx = headers.findIndex(h => h.includes('brand'));
-        const genderIdx = headers.findIndex(h => h.includes('gender') || h.includes('men/women'));
-        const concIdx = headers.findIndex(h => h.includes('concentration') || h.includes('edp'));
-        const sizeIdx = headers.findIndex(h => h.includes('size') || h.includes('ml'));
-        const catIdx = headers.findIndex(h => h.includes('category'));
-        const famIdx = headers.findIndex(h => h.includes('family') || h.includes('scent'));
-        const accordIdx = headers.findIndex(h => h.includes('accord'));
-        const topIdx = headers.findIndex(h => h.includes('top'));
-        const heartIdx = headers.findIndex(h => h.includes('heart') || h.includes('middle'));
-        const baseIdx = headers.findIndex(h => h.includes('base'));
-        const occIdx = headers.findIndex(h => h.includes('occasion'));
-        const originIdx = headers.findIndex(h => h.includes('origin') || h.includes('country'));
-        const descIdx = headers.findIndex(h => h.includes('desc'));
-        // descIdx above matches the FIRST header containing "desc" — stays correct only because
-        // "Description" comes before "Description (Arabic)" in the sheet. descArIdx is matched
-        // on the more specific "arabic" keyword so it can't grab the English column instead.
-        const descArIdx = headers.findIndex(h => h.includes('arabic'));
-        const testerIdx = headers.findIndex(h => h.includes('tester'));
-
-        if (itemIdx === -1 || rateIdx === -1) { hideLoading(); toast('Sheet must have "Item" and "Price" columns.'); return; }
-
-        let newItems = []; let newItemRates = {}; let newItemDetails = {}; 
-        
-        for (let i = headerRowIdx + 1; i < rows.length; i++) {
-          const row = rows[i]; if (!row || row.length === 0) continue;
-          let originalName = String(row[itemIdx] || '').trim(); 
-          let itemKey = originalName.replace(/\./g, '�').replace(/[#$\[\]\/\n\r]/g, '-').trim(); 
-          
-          if (!itemKey) continue; 
-          
-          let rawRate = row[rateIdx]; let rate = parseFloat(rawRate); if (isNaN(rate)) rate = 0.00;
-          
-          let excelSku = skuIdx !== -1 && row[skuIdx] ? String(row[skuIdx]).trim() : '';
-          let existingSku = (itemDetails[itemKey] && itemDetails[itemKey].sku) ? itemDetails[itemKey].sku : '';
-          let sku = excelSku || existingSku; // your Excel/Sheet SKU wins; only keep the old one if the cell is empty
-          
-          const { brand, gender, concentration, size, category, scentFamily, mainAccord, topNotes, heartNotes, baseNotes,
-                  occasion, origin, description, descriptionAr } = importDetails(row, originalName, {
-            brand: brandIdx, gender: genderIdx, conc: concIdx, size: sizeIdx, cat: catIdx, fam: famIdx, accord: accordIdx,
-            top: topIdx, heart: heartIdx, base: baseIdx, occ: occIdx, origin: originIdx, desc: descIdx, descAr: descArIdx });
-          let testerRaw = testerIdx !== -1 && row[testerIdx] ? String(row[testerIdx]).trim().toLowerCase() : '';
-          let tester = ['yes', 'y', 'true', '1', 'tester', 'available'].includes(testerRaw);
-
-          let exactImageName = originalName + '.jpg';
-
-          if (!newItems.includes(itemKey)) { newItems.push(itemKey); }
-          newItemRates[itemKey] = rate;
-          newItemDetails[itemKey] = {
-              name: itemKey, price: rate, sku: sku, brand: brand, gender: gender,
-              concentration: concentration, size: size, category: category, scentFamily: scentFamily, mainAccord: mainAccord,
-              topNotes: topNotes, heartNotes: heartNotes, baseNotes: baseNotes, occasion: occasion, origin: origin,
-              description: description, descriptionAr: descriptionAr, tester: tester, imageName: exactImageName
-          };
-        }
-
-        await dbRef.update({ items: newItems, itemRates: newItemRates, itemDetails: newItemDetails });
-        hideLoading(); 
-        toast('Google Sheets Synced Successfully!'); 
-        triggerWebsiteUpdate(0);
-    } catch(err) { 
-        hideLoading(); 
-        console.error("Google Sheets Sync Error:", err); 
-        toast('Error reading Google Sheet. Ensure it is published as CSV.'); 
+    if (!url || !url.includes('docs.google.com') || !/output=(csv|xlsx)/.test(url)) {
+        return toast('Paste the PUBLISHED link (File > Share > Publish to web > CSV). It ends with output=csv.');
     }
+
+    showLoading('Fetching live data from Google Sheets...');
+    dbRef.child('settings/googleSheetUrl').set(url); // remembered for next time
+
+    let rows;
+    try {
+        // no-store: always the sheet as it is now, not a copy cached by the browser
+        const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = new Uint8Array(await response.arrayBuffer());
+        const isZip = data[0] === 0x50 && data[1] === 0x4B;
+        const text = isZip ? '' : new TextDecoder('utf-8').decode(data);
+        // When the sheet isn't published (or the link is wrong) Google answers with a web page,
+        // not the sheet. Reading that page as items is what can wipe the item list.
+        if (!isZip && /^\s*</.test(text)) {
+            hideLoading();
+            return toast('❌ Google sent a web page, not the sheet. Re-publish it (File > Share > Publish to web > CSV) and paste that link. Nothing was changed.');
+        }
+        // A published CSV is UTF-8; reading its bytes directly would garble Arabic.
+        const workbook = isZip ? XLSX.read(data, {type: 'array'}) : XLSX.read(text, {type: 'string'});
+        rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1, defval: "" });
+    } catch (err) {
+        hideLoading();
+        console.error("Google Sheets Sync Error:", err);
+        return toast('❌ Could not read the Google Sheet (' + err.message + '). Nothing was changed.');
+    }
+    hideLoading();
+    await applyItemSheetRows(rows, 'Google Sheet');
+}
+
+// Opens the Google Sheet for editing. The published CSV link can't be edited, so the edit link
+// is asked for once and remembered.
+let googleSheetEditUrl = '';
+db.ref('abeerx/settings/googleSheetEditUrl').on('value', snap => { googleSheetEditUrl = snap.val() || ''; });
+function openGoogleSheet(changeLink) {
+    let url = googleSheetEditUrl;
+    if (!url || changeLink) {
+        const typed = prompt('Paste the link of your Google Sheet (the normal link you use to edit it, from the browser address bar):', url || '');
+        if (typed === null) return;
+        url = typed.trim();
+        if (!/^https:\/\/docs\.google\.com\/spreadsheets\/d\/[^/]+/.test(url) || url.includes('/d/e/')) {
+            return toast('That is not an edit link. Open the sheet in your browser and copy the address (it looks like docs.google.com/spreadsheets/d/…/edit).');
+        }
+        googleSheetEditUrl = url;
+        if (isAdmin) dbRef.child('settings/googleSheetEditUrl').set(url);
+    }
+    window.open(url, '_blank', 'noopener');
 }
 
 function exportFullLedgerExcel() {
