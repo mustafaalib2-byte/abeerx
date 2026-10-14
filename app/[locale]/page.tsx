@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { pageAlternates } from "@/lib/seo";
-export const revalidate = 60;
+// Rebuilt at most every 5 minutes (each rebuild counts against the hosting plan).
+export const revalidate = 300;
 import { ProductService } from "@/services/ProductService";
 import Link from "next/link";
 import Image from "next/image";

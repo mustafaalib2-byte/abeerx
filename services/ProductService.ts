@@ -54,8 +54,34 @@ function getPriority(p: any) {
     return 0;
 }
 
+// The catalog file is ~10 MB, which is over the 2 MB limit of Next.js' fetch cache, so
+// `next: { revalidate }` never cached it: every page view and every search downloaded and
+// processed the whole file again, and that used up the hosting plan's limits. Keep the
+// finished product list in memory for a minute instead, and let every request that comes
+// in meanwhile share it (including one that is still loading).
+const PRODUCTS_TTL_MS = 60_000;
+let productsCache: { at: number; products: Product[] } | null = null;
+let productsLoading: Promise<Product[]> | null = null;
+
 export const ProductService = {
   async getAllProducts(): Promise<Product[]> {
+    if (productsCache && Date.now() - productsCache.at < PRODUCTS_TTL_MS) return [...productsCache.products];
+    if (!productsLoading) {
+      productsLoading = this.loadAllProducts()
+        .then((products) => {
+          // An empty list means the load failed; don't keep that for a whole minute.
+          if (products.length > 0) productsCache = { at: Date.now(), products };
+          return products;
+        })
+        .finally(() => { productsLoading = null; });
+    }
+    const products = await productsLoading;
+    // A failed refresh keeps showing the last good list rather than an empty shop.
+    if (products.length === 0 && productsCache) return [...productsCache.products];
+    return [...products];
+  },
+
+  async loadAllProducts(): Promise<Product[]> {
     try {
       const res = await fetch(CATALOG_URL, { next: { revalidate: 60 } });
       if (!res.ok) throw new Error("Failed to fetch catalog from R2");

@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import { ProductService } from "@/services/ProductService";
 import { brandSlug, pageAlternates } from "@/lib/seo";
 
-export const revalidate = 60;
+// Pages are rebuilt at most every 10 minutes. Every rebuild counts against the hosting plan,
+// and Google crawls thousands of product pages, so 60 seconds used the plan up.
+export const revalidate = 600;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;

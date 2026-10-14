@@ -1,4 +1,6 @@
-export const revalidate = 60;
+// Pages are rebuilt at most every 10 minutes. Every rebuild counts against the hosting plan,
+// and Google crawls thousands of product pages, so 60 seconds used the plan up.
+export const revalidate = 600;
 import Link from "next/link";
 import { ProductService } from "@/services/ProductService";
 import { notFound } from "next/navigation";
