@@ -6,7 +6,7 @@ import { ProductService } from "@/services/ProductService";
 import { notFound } from "next/navigation";
 import ProductPageClient from "./ProductPageClient";
 import ProductLinkGrid from "@/components/ProductLinkGrid";
-import { brandSlug, pageAlternates } from "@/lib/seo";
+import { brandSlug, pageAlternates, SITE_URL } from "@/lib/seo";
 import type { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string, slug: string }> }): Promise<Metadata> {
@@ -37,8 +37,39 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
     .filter(p => p.brand === product.brand && p.slug !== product.slug)
     .slice(0, 8);
 
+  // Product details for Google (schema.org), one offer per size, with the same price and link
+  // as the Google Shopping feed, so Google can check that the page and the ad agree.
+  const pageUrl = `${SITE_URL}/${locale}/product/${product.slug}`;
+  const variants = product.variants?.length ? product.variants : [{ sku: product.sku, price: product.price, salePrice: product.salePrice, isAvailable: product.isAvailable, size: product.size || '' }];
+  const offers = variants
+    .map((v, i) => ({ v, i }))
+    .filter(({ v }) => Number(v.price) > 0)
+    .map(({ v, i }) => ({
+      "@type": "Offer",
+      sku: v.sku || product.sku,
+      url: i === 0 ? pageUrl : `${pageUrl}?v=${i}`,
+      price: Number(v.salePrice || v.price).toFixed(3),
+      priceCurrency: product.currency || "KWD",
+      availability: v.isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+    }));
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    sku: product.sku,
+    gtin: /^\d{8,14}$/.test(product.sku) ? product.sku : undefined,
+    brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
+    image: product.images?.slice(0, 3),
+    description: (product.description || product.shortDescription || '').slice(0, 500) || undefined,
+    offers,
+  };
+
   return (
     <>
+      {offers.length > 0 && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      )}
       <ProductPageClient product={product} locale={locale} />
       {moreFromBrand.length > 0 && (
         <section className="container mx-auto px-4 pb-12">

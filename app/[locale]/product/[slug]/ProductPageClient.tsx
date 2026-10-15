@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Product } from "@/types/product";
 import { useCart } from "@/features/cart/CartContext";
 import SprayExperience from "@/components/SprayExperience";
@@ -10,7 +10,15 @@ export default function ProductPageClient({ product, locale }: { product: Produc
   const isArabic = locale === 'ar';
   
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+  // Start on the first size that can be bought, not a sold-out or unpriced one.
+  const firstAvailable = Math.max(0, (product.variants || []).findIndex(v => v.isAvailable && v.price > 0));
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(firstAvailable);
+  // ?v=2 opens that size. Google Shopping links each size (e.g. the tester) this way, so the
+  // page shows the same price as the ad; a different price gets the store flagged by Google.
+  useEffect(() => {
+    const v = Number(new URLSearchParams(window.location.search).get('v'));
+    if (Number.isInteger(v) && v >= 0 && v < (product.variants?.length || 0)) setSelectedVariantIndex(v);
+  }, [product.variants]);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
 

@@ -41,7 +41,7 @@ export async function GET() {
 
     // Only what can actually be bought today: a real photo, a selling price above zero and
     // stock on the shelf. One feed item per in-stock size/tester so every price is correct.
-    type FeedItem = { id: string; groupId: string; title: string; price: number; product: any };
+    type FeedItem = { id: string; groupId: string; title: string; price: number; salePrice?: number; variantIndex: number; product: any };
     const items: FeedItem[] = [];
     for (const product of products as any[]) {
       if (!product.sku || !product.name || !getImageLink(product)) continue;
@@ -56,11 +56,15 @@ export async function GET() {
             groupId: String(product.sku),
             title: label ? `${product.name} - ${label}` : product.name,
             price,
+            salePrice: Number(v.salePrice) > 0 && Number(v.salePrice) < price ? Number(v.salePrice) : undefined,
+            variantIndex: i,
             product,
           });
         });
       } else if (Number(product.price) > 0 && Number(product.totalStock) > 0) {
-        items.push({ id: String(product.sku), groupId: String(product.sku), title: product.name, price: Number(product.price), product });
+        items.push({ id: String(product.sku), groupId: String(product.sku), title: product.name, price: Number(product.price),
+          salePrice: Number(product.salePrice) > 0 && Number(product.salePrice) < Number(product.price) ? Number(product.salePrice) : undefined,
+          variantIndex: 0, product });
       }
     }
 
@@ -79,11 +83,12 @@ export async function GET() {
         <g:item_group_id>${escapeXml(it.groupId)}</g:item_group_id>
         <g:title>${escapeXml(title)}</g:title>
         <g:description>${escapeXml(description)}</g:description>
-        <g:link>${SITE_URL}/en/product/${product.slug}</g:link>
+        <g:link>${SITE_URL}/en/product/${product.slug}${it.variantIndex > 0 ? `?v=${it.variantIndex}` : ''}</g:link>
         <g:image_link>${escapeXml(imageLink)}</g:image_link>
         <g:condition>new</g:condition>
         <g:availability>in_stock</g:availability>
-        <g:price>${it.price.toFixed(3)} KWD</g:price>
+        <g:price>${it.price.toFixed(3)} KWD</g:price>${it.salePrice ? `
+        <g:sale_price>${it.salePrice.toFixed(3)} KWD</g:sale_price>` : ''}
         <g:brand>${escapeXml(sanitizeText(product.brand))}</g:brand>
         <g:google_product_category>Health &amp; Beauty &gt; Personal Care &gt; Cosmetics &gt; Perfume &amp; Cologne</g:google_product_category>
       </item>
