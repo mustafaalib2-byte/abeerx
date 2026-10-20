@@ -50,7 +50,7 @@ export default function Footer() {
               </li>
               <li>
                 <span className="font-medium text-foreground">{isArabic ? "البريد الإلكتروني: " : "Email: "}</span>
-                info@abeerx.com
+                abeerxperfumes@gmail.com
               </li>
             </ul>
           </div>
